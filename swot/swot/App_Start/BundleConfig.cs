@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Optimization;
 
-namespace swot
+namespace swot.WebUI
 {
     public class BundleConfig
     {

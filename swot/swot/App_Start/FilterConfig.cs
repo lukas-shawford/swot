@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 
-namespace swot
+namespace swot.WebUI
 {
     public class FilterConfig
     {

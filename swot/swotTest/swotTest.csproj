@@ -54,9 +54,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\swot\swot.csproj">
+    <ProjectReference Include="..\swot\swot.WebUI.csproj">
       <Project>{07cd80f6-cf32-4f94-a9f7-e185779c7738}</Project>
-      <Name>swot</Name>
+      <Name>swot.WebUI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

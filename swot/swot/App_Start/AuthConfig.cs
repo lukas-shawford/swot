@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Web.WebPages.OAuth;
-using swot.Models;
 
-namespace swot
+namespace swot.WebUI
 {
     public static class AuthConfig
     {

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "swot", "swot\swot.csproj", "{07CD80F6-CF32-4F94-A9F7-E185779C7738}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "swot.WebUI", "swot\swot.WebUI.csproj", "{07CD80F6-CF32-4F94-A9F7-E185779C7738}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "swotTest", "swotTest\swotTest.csproj", "{992A1770-2C25-46CB-96A6-C4DAAA7E00A1}"
 EndProject
