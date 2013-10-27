@@ -7,8 +7,8 @@
     <ProjectGuid>{992A1770-2C25-46CB-96A6-C4DAAA7E00A1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>swotTest</RootNamespace>
-    <AssemblyName>swotTest</AssemblyName>
+    <RootNamespace>swot.UnitTests</RootNamespace>
+    <AssemblyName>swot.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
