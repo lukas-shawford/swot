@@ -58,7 +58,7 @@
       <Project>{f4a4e0f8-7cf5-442c-975d-41346851e0f5}</Project>
       <Name>swot.Domain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\swot\swot.WebUI.csproj">
+    <ProjectReference Include="..\swot.WebUI\swot.WebUI.csproj">
       <Project>{07cd80f6-cf32-4f94-a9f7-e185779c7738}</Project>
       <Name>swot.WebUI</Name>
     </ProjectReference>
