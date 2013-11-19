@@ -11,7 +11,7 @@ namespace swot.Domain.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201310290137123_InitialCreate"; }
+            get { return "201311170145169_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source

@@ -9,16 +9,11 @@ namespace swot.WebUI.Controllers
 {
     public class QuestionController : Controller
     {
-        private IQuestionRepository repository;
+        private IQuizRepository repository;
 
-        public QuestionController(IQuestionRepository questionRepository)
+        public QuestionController(IQuizRepository quizRepository)
         {
-            repository = questionRepository;
-        }
-
-        public ViewResult List()
-        {
-            return View(repository.Questions);
+            repository = quizRepository;
         }
     }
 }

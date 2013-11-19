@@ -1,14 +1,20 @@
 ﻿using System.Web.Mvc;
+using swot.Domain.Abstract;
 
 namespace swot.WebUI.Controllers
 {
     public class HomeController : Controller
     {
+        private IQuizRepository repository;
+
+        public HomeController(IQuizRepository quizRepository)
+        {
+            repository = quizRepository;
+        }
+
         public ActionResult Index()
         {
-            ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
-
-            return View();
+            return View(repository.Quizzes);
         }
 
         public ActionResult About()

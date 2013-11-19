@@ -44,13 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Abstract\IQuestionRepository.cs" />
+    <Compile Include="Abstract\IQuizRepository.cs" />
     <Compile Include="Concrete\EFDbContext.cs" />
-    <Compile Include="Concrete\EFQuestionRepository.cs" />
+    <Compile Include="Concrete\EFQuizRepository.cs" />
     <Compile Include="Entities\Question.cs" />
-    <Compile Include="Migrations\201310290137123_InitialCreate.cs" />
-    <Compile Include="Migrations\201310290137123_InitialCreate.Designer.cs">
-      <DependentUpon>201310290137123_InitialCreate.cs</DependentUpon>
+    <Compile Include="Entities\Quiz.cs" />
+    <Compile Include="Migrations\201311170145169_InitialCreate.cs" />
+    <Compile Include="Migrations\201311170145169_InitialCreate.Designer.cs">
+      <DependentUpon>201311170145169_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -60,8 +61,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201310290137123_InitialCreate.resx">
-      <DependentUpon>201310290137123_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201311170145169_InitialCreate.resx">
+      <DependentUpon>201311170145169_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

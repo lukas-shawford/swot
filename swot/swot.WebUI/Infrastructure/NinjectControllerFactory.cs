@@ -28,7 +28,7 @@ namespace swot.WebUI.Infrastructure
         private void AddBindings()
         {
             // put additional bindings here
-            ninjectKernel.Bind<IQuestionRepository>().To<EFQuestionRepository>();
+            ninjectKernel.Bind<IQuizRepository>().To<EFQuizRepository>();
         }
     }
 }
