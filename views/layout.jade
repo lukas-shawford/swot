@@ -1,7 +1,17 @@
 doctype 5
 html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    block content
+    head
+        title= title
+        link(rel='stylesheet', href='/javascripts/vendor/bootstrap-css/css/bootstrap.css')
+        link(rel='stylesheet', href='/stylesheets/style.css')
+
+        block head
+
+    body
+        include menu
+
+        block content
+
+        script(src="/javascripts/vendor/jquery/jquery.min.js")
+        script(src="/javascripts/vendor/bootstrap-javascript/bootstrap.min.js")
+        script(src="/javascripts/vendor/angular/angular.min.js")
