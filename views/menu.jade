@@ -10,9 +10,9 @@ nav(role="navigation").navbar.navbar-fixed-top.navbar-inverse
     div.collapse.navbar-collapse#navbar-collapse-1
         ul.nav.navbar-nav
         ul.nav.navbar-nav.navbar-right
-            if locals.user
+            if username
                 li.dropdown
-                    a(href="#", data-toggle="dropdown").dropdown-toggle #{user.username}
+                    a(href="#", data-toggle="dropdown").dropdown-toggle #{username}
                         b.caret
                     ul.dropdown-menu
                         li: a(href="/logout") Log out

@@ -3,14 +3,22 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 var mongoose = require('mongoose');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var flash = require('connect-flash');
 
 // Project libraries/middleware
-var messages = require('./lib/messages');
 var user = require('./lib/middleware/user');
+var authentication = require('./lib/middleware/authentication');
 
 // Routing includes
 var register = require('./routes/register');
 var login = require('./routes/login');
+
+// Authentication
+passport.use(new LocalStrategy(authentication.authenticate));
+passport.serializeUser(authentication.serializeUser);
+passport.deserializeUser(authentication.deserializeUser);
 
 // Initialize the app and db
 var app = express();
@@ -26,11 +34,13 @@ app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
-app.use(express.cookieParser('your secret here'));
+app.use(express.cookieParser('TFVtSsdIekQ7VwjCzgng'));
 app.use(express.session());
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(user);
-app.use(messages);
 app.use(app.router);
 
 // development only
@@ -43,7 +53,9 @@ app.get('/', login.form);
 app.get('/register', register.form);
 app.post('/register', register.submit);
 app.get('/login', login.form);
-app.post('/login', login.submit);
+app.post('/login', passport.authenticate('local', { successRedirect: '/',
+                                                    failureRedirect: '/login',
+                                                    failureFlash: true }));
 app.get('/logout', login.logout);
 
 // Start the server

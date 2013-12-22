@@ -4,8 +4,6 @@ block content
     h1= title
     p Fill in the form below to sign up!
 
-    include messages
-
     form(action="/register", method="post")
         p: input(type="text", name="user[name]", placeholder="Username")
         p: input(type="password", name="user[pass]", placeholder="Password")
