@@ -49,7 +49,8 @@ describe('userDb', function () {
         before(function (done) {
             User.createUser({
                 username: 'bob',
-                password: 'something'
+                password: 'something',
+                email: 'bob@example.com'
             }, done);
         });
 
@@ -58,6 +59,7 @@ describe('userDb', function () {
                 expect(err).to.be.null;
                 expect(user).to.exist;
                 expect(user.username).to.equal('bob');
+                expect(user.email).to.equal('bob@example.com');
                 done();
             });
         });
