@@ -9,6 +9,10 @@ var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 
+// Database
+var Mongoose = require('mongoose');
+var db = Mongoose.createConnection('localhost', 'swot');
+
 var app = express();
 
 // all environments
