@@ -13,7 +13,9 @@
     "bcrypt-nodejs": "0.0.3",
     "passport": "~0.1.17",
     "passport-local": "~0.1.6",
-    "connect-flash": "~0.1.1"
+    "connect-flash": "~0.1.1",
+    "underscore": "~1.5.2",
+    "async": "~0.2.9"
   },
   "devDependencies": {
     "chai": "~1.8.1",
