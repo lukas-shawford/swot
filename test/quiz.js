@@ -96,6 +96,8 @@ describe('quiz', function () {
                 Quiz.createQuiz('My Test Quiz', questions, corey, function (err, quiz) {
                     expect(err).to.be.null;
                     expect(quiz).to.exist;
+
+                    // Ensure questions got saved
                     expect(quiz.questions).to.have.length(3);
                     expect(quiz.questions[0].questionText).to.equal("What is the capital of North Dakota?");
                     expect(quiz.questions[0].answer).to.equal("Bismarck");
@@ -103,7 +105,14 @@ describe('quiz', function () {
                     expect(quiz.questions[1].answer).to.equal("1200");
                     expect(quiz.questions[2].questionText).to.equal("You are a senior executive at a Pharmacy Benefit Management (PBM) firm. After a recent acquisition of another PBM, your firm is now able to offer clients a wider range of sophisticated administrative and clinically-based services. Does this represent a strength or an opportunity according to SWOT analysis?");
                     expect(quiz.questions[2].answer).to.equal("strength");
-                    done();
+
+                    // Ensure quiz is associated with the user
+                    expect(quiz.createdBy).to.equal(corey._id);                     // Check quiz.createdBy
+                    User.findOne({ _id: corey._id }, function (err, corey) {        // Check User.quizzes (need to reload document first because it's out of sync)
+                        if (err) throw err;
+                        expect(corey.quizzes).to.contain(quiz._id);
+                        done();
+                    });
                 });
             });
         });
