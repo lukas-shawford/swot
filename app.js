@@ -10,6 +10,7 @@ var flash = require('connect-flash');
 // Project libraries/middleware
 var user = require('./lib/middleware/user');
 var authentication = require('./lib/middleware/authentication');
+var restrict = require('./lib/middleware/restrict');
 
 // Routing includes
 var register = require('./routes/register');
@@ -41,6 +42,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(user);
+app.use(restrict({
+    allowedRoutes: ['/', '/login', '/register'],
+    redirectTo: '/login'
+}));
 app.use(app.router);
 
 // development only
