@@ -56,7 +56,10 @@ if ('development' == app.get('env')) {
 }
 
 // Routes
-app.get('/', login.form);
+app.get('/', function(req, res) {
+	if (req.isAuthenticated()) { res.redirect('/quizzes'); }
+	else { res.redirect('/login'); }
+});
 app.get('/register', register.form);
 app.post('/register', register.submit);
 app.get('/login', login.form);
