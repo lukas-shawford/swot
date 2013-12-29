@@ -1,14 +1,13 @@
 extends layout
 
 block content
-    div.container
-        form.form-signin(action="/login", method="post", role="form")
-            h2.form-signin-heading= title
-            if (message != '')
-                div.alert.alert-danger
-                    p !{message}
-            input.form-control(type="text", name="username", placeholder="Username", required="required", autofocus="autofocus")
-            input.form-control(type="password", name="password", placeholder="Password", required="required")
-            label.checkbox.
-                <input type="checkbox" value="remember-me" /> Remember me
-            button.btn.btn-lg.btn-primary.btn-block(type="submit") Sign in
+    form.form-signin(action="/login", method="post", role="form")
+        h2.form-signin-heading= title
+        if (message != '')
+            div.alert.alert-danger
+                p !{message}
+        input.form-control(type="text", name="username", placeholder="Username", required="required", autofocus="autofocus")
+        input.form-control(type="password", name="password", placeholder="Password", required="required")
+        label.checkbox.
+            <input type="checkbox" value="remember-me" /> Remember me
+        button.btn.btn-lg.btn-primary.btn-block(type="submit") Sign in
