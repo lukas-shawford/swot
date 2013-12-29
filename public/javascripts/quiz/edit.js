@@ -32,6 +32,7 @@ editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout, focus) {
     $scope.saveMessage = "";
     $scope.savedSuccessfully = true;
     $scope.addQuestionTooltip = "You can also add a question by hitting the TAB key after typing in the last answer.";
+    $scope.addQuestionTooltipsRemaining = 2;    // Stop showing the tooltip after adding a couple questions.
     
     $scope.isNew = function () {
         return $scope._id === null;
@@ -127,8 +128,10 @@ editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout, focus) {
         // Focus on the first input field for the newly-added question
         focus('newQuestionAdded');
 
-        // Stop showing the tooltip on the Add Question button
-        $scope.addQuestionTooltip = "";
+        // Stop showing the tooltip on the Add Question button after adding a couple questions
+        if (--$scope.addQuestionTooltipsRemaining <= 0) {
+            $scope.addQuestionTooltip = "";
+        }
     };
 
     $scope.removeQuestion = function (index) {
