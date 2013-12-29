@@ -1,0 +1,19 @@
+extends layout
+
+block content
+    h1 My Quizzes
+
+    if (message)
+            div.alert(class="#{message.type}")
+                p !{message.msg}
+
+    if quizzes.length > 0
+        .list-group.quizzes
+            each quiz in quizzes
+                a.list-group-item(href="/edit/" + quiz._id)= quiz.name
+    else
+        p
+            | You currently have no quizzes.
+    div: a.btn.btn-success(href="/create")
+        span.glyphicon.glyphicon-plus
+        | Create a Quiz

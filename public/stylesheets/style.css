@@ -7,6 +7,18 @@ a {
   color: #00B7FF;
 }
 
+/*
+ * Buttons
+ * ------- */
+
+.btn .glyphicon, .glyphicon.glyphicon-menu { margin-right: 4px; }
+ 
+.btn.btn-icon .glyphicon { margin-right: 0; }
+
+/*
+ * Signin / Registration
+ * --------------------- */
+
 .form-signin, .form-register {
     max-width: 330px;
     padding: 15px;
@@ -16,3 +28,87 @@ a {
 .form-signin label.checkbox { line-height: 1.5; }
 
 #register { margin-top: 16px; }
+
+
+/*
+ * Sortable Lists
+ * -------------- */
+
+.sortable-list-container { list-style: none outside none; }
+
+/*
+ * My Quizzes
+ * ---------- */
+
+.quizzes {
+    max-width: 400px;
+}
+
+/*
+ * Edit Quiz
+ * --------- */
+
+.edit-quiz {
+    width: 650px;
+}
+
+.edit-quiz .header-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.edit-quiz .header-container h2 {
+    float: left;
+    margin: 0;
+}
+
+.edit-quiz .question-list-container {
+    margin-bottom: 1em;
+}
+
+.edit-quiz .question-list-container .sortable-list-container {
+    padding: 0;
+}
+
+.edit-quiz .question-container {
+    width: 100%;
+    margin: 8px 0;
+    padding: 1em;
+    border: 1px dotted #aaa;
+    border-radius: 5px;
+    background-color: hsl(230, 32%, 97%);
+
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: move;
+}
+
+.edit-quiz .sortable-list-placeholder {
+    width: 100%;
+    margin: 8px 0;    
+    border: 1px dashed #ccc;
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: move;
+}
+
+.edit-quiz .question-number {
+    margin: 0 0 .2em .8em;
+}
+
+.question-header { margin-bottom: .5em; }
+
+.save-message {
+    color: #aaa;
+    font-style: italic;
+    margin-right: 1em;
+    padding: 4px;
+    background-color: white;
+}
+
+.save-message.error { color: #b94a48; background-color: #f2dede; }
+
+.save-error {
+    margin: 1em 0;
+}

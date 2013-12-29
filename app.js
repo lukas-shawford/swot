@@ -15,6 +15,7 @@ var restrict = require('./lib/middleware/restrict');
 // Routing includes
 var register = require('./routes/register');
 var login = require('./routes/login');
+var quiz = require('./routes/quiz');
 
 // Authentication
 passport.use(new LocalStrategy(authentication.authenticate));
@@ -35,6 +36,7 @@ app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
+app.use(express.bodyParser());
 app.use(express.cookieParser('TFVtSsdIekQ7VwjCzgng'));
 app.use(express.session());
 app.use(flash());
@@ -58,10 +60,17 @@ app.get('/', login.form);
 app.get('/register', register.form);
 app.post('/register', register.submit);
 app.get('/login', login.form);
-app.post('/login', passport.authenticate('local', { successRedirect: '/',
+app.post('/login', passport.authenticate('local', { successRedirect: '/quizzes',
                                                     failureRedirect: '/login',
                                                     failureFlash: true }));
 app.get('/logout', login.logout);
+app.get('/quizzes', quiz.quizzes);
+app.get('/create', quiz.createForm);
+app.post('/create', quiz.create);
+app.get('/edit/:id', quiz.edit);
+app.get('/load', quiz.load);
+app.post('/save', quiz.save);
+app.post('/delete', quiz.deleteQuiz);
 
 // Start the server
 http.createServer(app).listen(app.get('port'), function(){

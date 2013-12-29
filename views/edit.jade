@@ -1,0 +1,69 @@
+extends layout
+
+block content
+    .edit-quiz.container(ng-app="EditQuiz", ng-controller="EditQuizCtrl")
+        .header-container.clearfix
+            h2= title
+            .btn-group.pull-right(ng-hide="isNew()")
+                button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown")
+                    span.glyphicon.glyphicon-cog
+                    span.caret
+                ul.dropdown-menu(role="menu")
+                    li: a(data-toggle="modal", href="#deleteDialog", ng-hide="isNew()")
+                        i.glyphicon.glyphicon-menu.glyphicon-remove
+                        | Delete
+        
+        if (message != '')
+            div.alert.alert-danger
+                p !{message}
+        alert(ng-repeat="alert in alerts", type="alert.type", close="closeAlert($index)") {{alert.msg}}
+
+        .form-group
+            label.control-label(for="quiz-name") Quiz Name:
+            .row.controls
+                .col-xs-6: input#quiz-name.form-control(type="text", name="name", ng-model="name", placeholder="Name")
+
+        label.control-label Questions:
+        .question-list-container
+            ul.sortable-list-container(ui-sortable="sortableOptions", ng-model="questions")
+                li.question-container.sortable-list-item(ng-repeat="question in questions")
+                    .question-header.clearfix
+                        span.question-number {{$index + 1}}.
+                        .pull-right
+                                button.btn.btn-xs.btn-default(type="button", ng-click="removeQuestion($index)")
+                                    span.glyphicon.glyphicon-trash
+                    input.form-control(type="text", name="question", ng-model="question.questionText", placeholder="Question")
+                    input.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer")
+
+        button.btn.btn-success(type="button", ng-click="addQuestion()")
+            span.glyphicon.glyphicon-plus
+            | Add Question
+
+        .pull-right
+            span.save-message(class="{{savedSuccessfully ? '' : 'error'}}", ng-show="saveStatus") {{saveStatus}}
+            button.btn.btn-success(type="button", ng-click="save()")
+                span.glyphicon.glyphicon-floppy-disk
+                | Save
+
+        .save-error.alert.alert-danger.alert-dismissable(ng-show="!savedSuccessfully && saveMessage")
+            button.close(type="button", data-dismiss="alert", aria-hidden="true") &times;
+            | {{saveMessage}}
+
+        // Delete Quiz
+        div#deleteDialog.modal.fade(tabindex="-1", role="dialog", aria-hidden="true")
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+                        h4.modal-title Delete Quiz?
+                    .modal-body Are you sure you want to delete the quiz?
+                    .modal-footer
+                        button.btn.btn-default(type="button", data-dismiss="modal") Cancel
+                        button.btn.btn-primary.btn-danger(type="button", ng-click="deleteQuiz()", data-dismiss="modal") Delete
+
+block scripts
+    script.
+        var _quizId = '!{quizId}';
+    script(src="/javascripts/vendor/jquery-ui/ui/jquery-ui.js")
+    script(src="/javascripts/vendor/angular-ui-sortable/src/sortable.js")
+    script(src="/javascripts/quiz/edit.js")

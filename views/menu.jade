@@ -9,6 +9,8 @@ nav(role="navigation").navbar.navbar-fixed-top.navbar-inverse
 
     div.collapse.navbar-collapse#navbar-collapse-1
         ul.nav.navbar-nav
+            if username
+                li: a(href="/quizzes") My Quizzes
         ul.nav.navbar-nav.navbar-right
             if username
                 li.dropdown
