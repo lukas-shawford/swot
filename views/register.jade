@@ -1,32 +1,32 @@
 extends layout
 
 block content
-    form.form-horizontal.form-register(action='/register', method='post')
+    form.form-register(action='/register', method='post')
         h2.form-signin-heading= title
 
         if (message != '')
             div.alert.alert-danger
                 p !{message}
 
-        .control-group
+        .form-group
             label.control-label(for='username') Username
             .controls
                 input#username.form-control(type='text', name='user[username]', placeholder='')
 
-        .control-group
+        .form-group
             label.control-label(for='email') E-mail
             .controls
                 input#email.form-control(type='text', name='user[email]', placeholder='')
 
-        .control-group
+        .form-group
             label.control-label(for='password') Password
             .controls
                 input#password.form-control(type='password', name='user[password]', placeholder='')
 
-        .control-group
+        .form-group
             label.control-label(for='password_confirm') Password (Confirm)
             .controls
                 input#password_confirm.form-control(type='password', name='user[password_confirm]', placeholder='')
-        .control-group
+        .form-group
             .controls
                 button#register.btn.btn-lg.btn-success Register
