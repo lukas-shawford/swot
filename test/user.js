@@ -1,6 +1,9 @@
 var expect = require('chai').expect;
 var mongoose = require('mongoose');
+var async = require('async');
+var _ = require('underscore');
 var User = require('../lib/user');
+var Quiz = require('../lib/quiz');
 
 var MONGODB_URL = process.env.MONGODB_TEST_URL || 'localhost:27017/swot_test';
 
@@ -102,6 +105,67 @@ describe('userDb', function () {
                 expect(match).to.be.false;
                 done();
             });
+        });
+    });
+
+    describe('ownsQuiz', function () {
+
+        var stephanie;
+        var stephanieQuiz;
+
+        var barbara;
+        var barbaraQuiz;
+
+        before(function (done) {
+
+            // Create test users
+            var users = _.map(['stephanie', 'barbara'], function (username) { return { username: username, password: 'test' }; });
+            async.map(users, User.createUser.bind(User), function (err, results) {
+                if (err) throw err;
+                stephanie = results[0];
+                barbara = results[1];
+
+                // Create 2 test quizzes, one owned by stephanie, and the other by barbara
+                async.map([ stephanie, barbara ], Quiz.createQuiz.bind(Quiz, 'test quiz', []), function (err, results) {
+                    if (err) throw err;
+                    stephanieQuiz = results[0];
+                    barbaraQuiz = results[1];
+
+                    // Reload and update the users as they are now out of sync with the db
+                    var updateUser = function (user, cb) {
+                        User.findOne({ _id: user._id }, function (err, user) {
+                            cb(err, user)
+                        });
+                    };
+                    async.parallel([
+                        function (cb) { updateUser(stephanie, function (err, user) { stephanie = user; cb(err); }) },
+                        function (cb) { updateUser(barbara,   function (err, user) { barbara = user;   cb(err); }) }
+                    ], function (err) {
+                        if (err) throw err;
+                        done();
+                    });
+                });
+            });
+        });
+
+        it('should return true if user owns quiz', function () {
+            expect(stephanie.ownsQuiz(stephanieQuiz._id)).to.be.true;
+            expect(barbara.ownsQuiz(barbaraQuiz._id)).to.be.true;
+        });
+
+        it('should return false if user does not own quiz', function () {
+            expect(stephanie.ownsQuiz(barbaraQuiz._id)).to.be.false;
+            expect(barbara.ownsQuiz(stephanieQuiz._id)).to.be.false;
+        });
+
+        it('should be able to accept quiz objects, quiz ObjectIDs, and quiz IDs as strings', function () {
+            expect(stephanie.ownsQuiz(stephanieQuiz)).to.be.true;                       // Quiz object
+            expect(stephanie.ownsQuiz(stephanieQuiz._id)).to.be.true;                   // Quiz ObjectID
+            expect(stephanie.ownsQuiz(stephanieQuiz._id.toString())).to.be.true;        // Quiz ID as a string
+
+            expect(stephanie.ownsQuiz(barbaraQuiz)).to.be.false;                       // Quiz object
+            expect(stephanie.ownsQuiz(barbaraQuiz._id)).to.be.false;                   // Quiz ObjectID
+            expect(stephanie.ownsQuiz(barbaraQuiz._id.toString())).to.be.false;        // Quiz ID as a string
         });
     });
 });
