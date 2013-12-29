@@ -25,6 +25,7 @@ describe('quiz', function () {
     var quiz1, quiz2, quiz3, quiz4, quiz5, quiz6, quiz7, quiz8, quiz9;
 
     before(function (done) {
+        this.timeout(5000);
         mongoose.connect(MONGODB_URL);
         Quiz.remove({}, function (err) {
             if (err) throw err;
