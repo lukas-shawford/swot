@@ -1,6 +1,29 @@
 var editQuiz = angular.module('EditQuiz', ['ui.bootstrap', 'ui.sortable']);
 
-editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout) {
+// 'focus-on' directive for setting focus to an element
+editQuiz.directive('focusOn', function() {
+    return function(scope, elem, attr) {
+        scope.$on('focusOn', function(e, name) {
+            if(name === attr.focusOn) {
+                elem[0].focus();
+            }
+        });
+    };
+});
+
+editQuiz.factory('focus', function ($rootScope, $timeout) {
+    return function(name) {
+        $timeout(function (){
+            $rootScope.$broadcast('focusOn', name);
+        });
+    }
+});
+
+
+// EditQuiz Controller
+// -------------------
+
+editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout, focus) {
     $scope._id = _quizId || null;
     $scope.name = "";
     $scope.questions = [{}];
@@ -8,7 +31,8 @@ editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout) {
     $scope.saveStatus = "";
     $scope.saveMessage = "";
     $scope.savedSuccessfully = true;
-
+    $scope.addQuestionTooltip = "You can also add a question by hitting the TAB key after typing in the last answer.";
+    
     $scope.isNew = function () {
         return $scope._id === null;
     }
@@ -99,6 +123,12 @@ editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout) {
 
     $scope.addQuestion = function () {
         $scope.questions.push({});
+
+        // Focus on the first input field for the newly-added question
+        focus('newQuestionAdded');
+
+        // Stop showing the tooltip on the Add Question button
+        $scope.addQuestionTooltip = "";
     };
 
     $scope.removeQuestion = function (index) {
@@ -113,6 +143,7 @@ editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout) {
             ui.placeholder.height(ui.item.outerHeight());
         }
     };
+
 
     // Alerts
     // ------
@@ -141,6 +172,22 @@ editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout) {
         $scope.alerts = [];
     };
 
+
+    // Events
+    // ------
+
+    $scope.answerKeypress = function ($index, $event) {
+        // Add new question when hitting TAB on the last input
+        if ($index === $scope.questions.length - 1) {
+            if ($event.keyCode === 9 &&  !$event.ctrlKey && !$event.metaKey && !$event.altKey && !$event.shiftKey) {
+                $scope.addQuestion();
+            }
+        }
+    }
+
+
     // Initialization
+    // --------------
+
     if ($scope._id) { $scope.load(); }
 });

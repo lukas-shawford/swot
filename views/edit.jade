@@ -30,12 +30,12 @@ block content
                     .question-header.clearfix
                         span.question-number {{$index + 1}}.
                         .pull-right
-                                button.btn.btn-xs.btn-default(type="button", ng-click="removeQuestion($index)")
+                                button.btn.btn-xs.btn-default(type="button", ng-click="removeQuestion($index)", tabindex="-1")
                                     span.glyphicon.glyphicon-trash
-                    input.form-control(type="text", name="question", ng-model="question.questionText", placeholder="Question")
-                    input.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer")
+                    input.form-control(type="text", name="question", ng-model="question.questionText", placeholder="Question", focus-on="newQuestionAdded")
+                    input.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer", ng-keypress="answerKeypress($index, $event)")
 
-        button.btn.btn-success(type="button", ng-click="addQuestion()")
+        button.btn.btn-success(type="button", ng-click="addQuestion()", tooltip-trigger="mouseenter", tooltip-placement="bottom", tooltip="{{addQuestionTooltip}}")
             span.glyphicon.glyphicon-plus
             | Add Question
 
