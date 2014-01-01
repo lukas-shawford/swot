@@ -31,7 +31,6 @@ editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout, focus) {
     $scope.saveStatus = "";
     $scope.saveMessage = "";
     $scope.savedSuccessfully = true;
-    $scope.addQuestionTooltip = "You can also add a question by hitting the TAB key after typing in the last answer.";
     $scope.addQuestionTooltipsRemaining = 2;    // Stop showing the tooltip after adding a couple questions.
     
     $scope.isNew = function () {
@@ -53,7 +52,7 @@ editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout, focus) {
 
     $scope.load = function () {
         var handleError = function (error) {
-            alert('An error occurred while loading the quiz: \n' + error);
+            $scope.showError('An error occurred while loading the quiz: \n' + error);
         };
 
         if (!$scope._id) { handleError("Quiz ID is missing."); }
@@ -64,12 +63,10 @@ editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout, focus) {
             if (response.success) {
                 $scope.deserialize(response.quiz);
             } else {
-                console.log(response);
-                alert('An error occurred while loading the quiz: \n' + response.message);
+                handleError(response.message);;
             }
         }).error(function (response) {
-            console.log(response);
-            alert('An error occurred while loading the quiz: \n' + response);
+            handleError(response);
         });
     }
 
@@ -129,8 +126,10 @@ editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout, focus) {
         focus('newQuestionAdded');
 
         // Stop showing the tooltip on the Add Question button after adding a couple questions
-        if (--$scope.addQuestionTooltipsRemaining <= 0) {
-            $scope.addQuestionTooltip = "";
+        // Note that tooltip is now shown where there are no questions, so adding the first question
+        // should not decrement the count.
+        if ($scope.questions.length > 1) {
+            $scope.addQuestionTooltipsRemaining--;
         }
     };
 
@@ -146,6 +145,14 @@ editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout, focus) {
             ui.placeholder.height(ui.item.outerHeight());
         }
     };
+
+    $scope.addQuestionTooltip = function () {
+        if ($scope.addQuestionTooltipsRemaining <= 0 || $scope.questions.length == 0) {
+            return "";
+        }
+
+        return "You can also add a question by hitting the TAB key after typing in the last answer.";
+    }
 
 
     // Alerts
