@@ -8,10 +8,14 @@ html
         block head
 
     body
-        include menu
 
-        .container
-            block content
+        #wrap
+            include menu
+
+            #main.container
+                block content
+
+        #footer
 
         script(src="/javascripts/vendor/jquery/jquery.min.js")
         script(src="/javascripts/vendor/bootstrap-javascript/bootstrap.min.js")
