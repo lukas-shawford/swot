@@ -1,23 +1,4 @@
-var editQuiz = angular.module('EditQuiz', ['ui.bootstrap', 'ui.sortable']);
-
-// 'focus-on' directive for setting focus to an element
-editQuiz.directive('focusOn', function() {
-    return function(scope, elem, attr) {
-        scope.$on('focusOn', function(e, name) {
-            if(name === attr.focusOn) {
-                elem[0].focus();
-            }
-        });
-    };
-});
-
-editQuiz.factory('focus', function ($rootScope, $timeout) {
-    return function(name) {
-        $timeout(function (){
-            $rootScope.$broadcast('focusOn', name);
-        });
-    }
-});
+var editQuiz = angular.module('EditQuiz', ['ui.bootstrap', 'ui.sortable', 'focus']);
 
 
 // EditQuiz Controller
