@@ -89,7 +89,20 @@ viewQuiz.controller('ViewQuizCtrl', function ($scope, $http, focus) {
         } else if (currentQuestion.submission) {    // Submit question, but only if the submission field is not empty.
             $scope.submit();
         }
-    }
+    };
+
+    $scope.numCorrect = function () {
+        return _.where($scope.questions, { isCorrect: true }).length;
+    };
+
+    $scope.numIncorrect = function () {
+        return _.where($scope.questions, { isCorrect: false }).length;
+    };
+
+    $scope.score = function () {
+        var score = 100 * $scope.numCorrect() / $scope.questions.length;
+        return +score.toFixed(1);
+    };
 
 
     // Alerts
