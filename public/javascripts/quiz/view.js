@@ -5,7 +5,6 @@ viewQuiz.controller('ViewQuizCtrl', function ($scope, $http, focus) {
     $scope.questions = [{}];
     $scope.alerts = [];
     $scope.currentQuestionIndex = 0;
-    $scope.questionResult = null;
 
     $scope.load = function () {
         var handleError = function (error) {
@@ -18,7 +17,7 @@ viewQuiz.controller('ViewQuizCtrl', function ($scope, $http, focus) {
             params: { id: $scope._id }
         }).success(function (response) {
             if (response.success) {
-                $scope.questions = response.questions;
+                $scope.questions = _.map(response.questions, function (question) { return { question: question }; });
                 focus('switchedQuestion');
             } else {
                 handleError(response.message);
@@ -30,23 +29,25 @@ viewQuiz.controller('ViewQuizCtrl', function ($scope, $http, focus) {
     }
 
     $scope.submit = function () {
+        var currentQuestion = $scope.currentQuestion();
+        var submission = currentQuestion.submission;
+
         var handleError = function (error) {
             $scope.showError('An error occurred while submitting the question: ' + error);
         };
 
-        $scope.questionResult = null;
         $scope.closeAllAlerts();
 
         $http.post('/submit', {
             _id: $scope._id,
             currentQuestionIndex: $scope.currentQuestionIndex,
-            submission: $scope.submission
+            submission: submission
         }).success(function (response) {
             if (response.success) {
-                $scope.questionResult = {
-                    isCorrect: response.isCorrect,
-                    correctAnswer: response.correctAnswer
-                };
+                currentQuestion.submitted = true;
+                currentQuestion.submission = submission;
+                currentQuestion.isCorrect = response.isCorrect;
+                currentQuestion.correctAnswer = response.correctAnswer;
             } else {
                 handleError(response.message);
             }
@@ -76,16 +77,16 @@ viewQuiz.controller('ViewQuizCtrl', function ($scope, $http, focus) {
     $scope.jumpToQuestion = function (index) {
         if (index >= 0 && index < $scope.questions.length) {
             $scope.currentQuestionIndex = index;
-            $scope.questionResult = null;
-            $scope.submission = "";
             focus('switchedQuestion');
         }
     };
 
     $scope.handleEnter = function ($event) {
-        if ($scope.questionResult) {        // Question has been submitted already.
+        var currentQuestion = $scope.currentQuestion();
+
+        if (currentQuestion.submitted) {            // Question has been submitted already.
             $scope.next();
-        } else if ($scope.submission) {     // Submit question, but only if the submission field is not empty.
+        } else if (currentQuestion.submission) {    // Submit question, but only if the submission field is not empty.
             $scope.submit();
         }
     }
