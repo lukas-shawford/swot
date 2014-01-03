@@ -1,7 +1,7 @@
 extends layout
 
 block content
-    h1 My Quizzes
+    h2 My Quizzes
 
     if (message)
             div.alert(class="#{message.type}")
@@ -10,7 +10,19 @@ block content
     if quizzes.length > 0
         .list-group.quizzes
             each quiz in quizzes
-                a.list-group-item(href="/edit/" + quiz._id)= quiz.name
+                .list-group-item
+                    .quiz-header-container
+                        .quiz-header.list-group-item-heading
+                            h4.quiz-name= quiz.name
+                            span.num-questions &nbsp; (#{quiz.questions.length} question#{quiz.questions.length === 1 ? '' : 's'})
+                            span.quiz-actions.pull-right
+                                a.btn.btn-primary(href="/quiz/" + quiz._id)
+                                    span.glyphicon.glyphicon-circle-arrow-right
+                                    | Take the Quiz
+                                a.btn.btn-info(href="/edit/" + quiz._id)
+                                    span.glyphicon.glyphicon-pencil
+                                    | Edit
+                    p.list-group-item-text Created #{quiz.dateCreated}
     else
         p
             | You currently have no quizzes.

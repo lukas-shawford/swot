@@ -74,6 +74,9 @@ app.get('/edit/:id', quiz.edit);
 app.get('/load', quiz.load);
 app.post('/save', quiz.save);
 app.post('/delete', quiz.deleteQuiz);
+app.get('/quiz/:id', quiz.quiz);
+app.get('/questions', quiz.questions);
+app.post('/submit', quiz.submitQuestion);
 
 // Start the server
 http.createServer(app).listen(app.get('port'), function(){

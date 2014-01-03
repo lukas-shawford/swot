@@ -77,44 +77,73 @@ describe('quiz', function () {
 
     describe('quiz db (lib/quiz.js)', function () {
 
+        var quiz;
+
+        before(function (done) {
+            var questions = [
+                {
+                    questionText: "What is the capital of North Dakota?",
+                    answer: "Bismarck"
+                },
+                {
+                    questionText: "What is the default squawk code for VFR aircraft in the United States?",
+                    answer: "1200"
+                },
+                {
+                    questionText: "You are a senior executive at a Pharmacy Benefit Management (PBM) firm. After a recent acquisition of another PBM, your firm is now able to offer clients a wider range of sophisticated administrative and clinically-based services. Does this represent a strength or an opportunity according to SWOT analysis?",
+                    answer: "strength"
+                }
+            ];
+
+            Quiz.createQuiz('My Test Quiz', questions, corey, function (err, result) {
+                expect(err).to.be.null;
+                quiz = result;
+                done();
+            });
+        });
+
         describe('createQuiz', function () {
             it('should be able to create a quiz and associate it with a user.', function (done) {
-                var questions = [
-                    {
-                        questionText: "What is the capital of North Dakota?",
-                        answer: "Bismarck"
-                    },
-                    {
-                        questionText: "What is the default squawk code for VFR aircraft in the United States?",
-                        answer: "1200"
-                    },
-                    {
-                        questionText: "You are a senior executive at a Pharmacy Benefit Management (PBM) firm. After a recent acquisition of another PBM, your firm is now able to offer clients a wider range of sophisticated administrative and clinically-based services. Does this represent a strength or an opportunity according to SWOT analysis?",
-                        answer: "strength"
-                    }
-                ];
+                // Note: the setup for this test is in the 'before' hook.
 
-                Quiz.createQuiz('My Test Quiz', questions, corey, function (err, quiz) {
-                    expect(err).to.be.null;
-                    expect(quiz).to.exist;
+                expect(quiz).to.exist;
 
-                    // Ensure questions got saved
-                    expect(quiz.questions).to.have.length(3);
-                    expect(quiz.questions[0].questionText).to.equal("What is the capital of North Dakota?");
-                    expect(quiz.questions[0].answer).to.equal("Bismarck");
-                    expect(quiz.questions[1].questionText).to.equal("What is the default squawk code for VFR aircraft in the United States?");
-                    expect(quiz.questions[1].answer).to.equal("1200");
-                    expect(quiz.questions[2].questionText).to.equal("You are a senior executive at a Pharmacy Benefit Management (PBM) firm. After a recent acquisition of another PBM, your firm is now able to offer clients a wider range of sophisticated administrative and clinically-based services. Does this represent a strength or an opportunity according to SWOT analysis?");
-                    expect(quiz.questions[2].answer).to.equal("strength");
+                // Ensure questions got saved
+                expect(quiz.questions).to.have.length(3);
+                expect(quiz.questions[0].questionText).to.equal("What is the capital of North Dakota?");
+                expect(quiz.questions[0].answer).to.equal("Bismarck");
+                expect(quiz.questions[1].questionText).to.equal("What is the default squawk code for VFR aircraft in the United States?");
+                expect(quiz.questions[1].answer).to.equal("1200");
+                expect(quiz.questions[2].questionText).to.equal("You are a senior executive at a Pharmacy Benefit Management (PBM) firm. After a recent acquisition of another PBM, your firm is now able to offer clients a wider range of sophisticated administrative and clinically-based services. Does this represent a strength or an opportunity according to SWOT analysis?");
+                expect(quiz.questions[2].answer).to.equal("strength");
 
-                    // Ensure quiz is associated with the user
-                    expect(quiz.createdBy).to.equal(corey._id);                     // Check quiz.createdBy
-                    User.findOne({ _id: corey._id }, function (err, corey) {        // Check User.quizzes (need to reload document first because it's out of sync)
-                        if (err) throw err;
-                        expect(corey.quizzes).to.contain(quiz._id);
-                        done();
-                    });
+                // Ensure quiz is associated with the user
+                expect(quiz.createdBy).to.equal(corey._id);                     // Check quiz.createdBy
+                User.findOne({ _id: corey._id }, function (err, corey) {        // Check User.quizzes (need to reload document first because it's out of sync)
+                    if (err) throw err;
+                    expect(corey.quizzes).to.contain(quiz._id);
+                    done();
                 });
+            });
+        });
+
+        describe('submitQuestion', function () {
+            it('should return true if the submission matches the correct answer', function () {
+                expect(quiz.submitQuestion(0, "Bismarck")).to.deep.equal([null, true, "Bismarck"]);
+                expect(quiz.submitQuestion(1, "1200")).to.deep.equal([null, true, "1200"]);
+                expect(quiz.submitQuestion(2, "strength")).to.deep.equal([null, true, "strength"]);
+            });
+
+            it('should return false if the submission does not match', function () {
+                expect(quiz.submitQuestion(0, "Pierre")).to.deep.equal([null, false, "Bismarck"]);
+                expect(quiz.submitQuestion(1, "7700")).to.deep.equal([null, false, "1200"]);
+                expect(quiz.submitQuestion(2, "opportunity")).to.deep.equal([null, false, "strength"]);
+            });
+
+            it('should return an error if the question index is out of range or invalid', function () {
+                expect(quiz.submitQuestion(-1, "Pierre")).to.include.members(['Invalid question index.']);
+                expect(quiz.submitQuestion(3, "Pierre")).to.include.members(['Invalid question index.']);
+                expect(quiz.submitQuestion('asparagus', "Pierre")).to.include.members(['Invalid question index.']);
             });
         });
     });

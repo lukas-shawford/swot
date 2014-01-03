@@ -1,0 +1,52 @@
+extends layout
+
+block content
+    .quiz(ng-app="ViewQuiz", ng-controller="ViewQuizCtrl")
+        h2= title
+        
+        if (message != '')
+            div.alert.alert-danger
+                p !{message}
+        alert.ng-cloak(ng-repeat="alert in alerts", type="alert.type", close="closeAlert($index)") {{alert.msg}}
+
+        .header.ng-cloak
+            a.prev(href="#", ng-click="prev()", ng-show="currentQuestionIndex > 0")
+                span.glyphicon.glyphicon-circle-arrow-left
+                | Previous
+            span.current Question {{currentQuestionIndex+1}} of {{questions.length}}
+            a.next(href="#", ng-click="next()", ng-show="currentQuestionIndex < questions.length - 1")
+                | Next
+                span.glyphicon.glyphicon-circle-arrow-right
+
+        .question-container
+
+            .question.ng-cloak
+                {{currentQuestion()}}
+
+            .submission
+                input.form-control(type="text", ng-model="submission", focus-on="switchedQuestion", ui-keypress="{ 'enter': 'handleEnter($event)' }")
+                button.submit.btn.btn-success(type="button", ng-click="submit()", ng-disabled="!submission", ng-hide="questionResult") Submit
+                button.next.btn.btn-primary.ng-cloak(type="button", ng-click="next()", ng-show="questionResult")
+                    | Next
+                    span.glyphicon.glyphicon-circle-arrow-right
+                .result-container.ng-cloak
+                    .result.alert.alert-success(ng-show="questionResult.isCorrect")
+                        span.glyphicon.glyphicon-ok-sign
+                        strong Correct!
+                    .result.alert.alert-danger(ng-show="questionResult && !questionResult.isCorrect")
+                        strong.incorrect
+                            span.glyphicon.glyphicon-remove-sign
+                            | Incorrect!
+                        | The correct answer is:&nbsp;
+                        strong {{questionResult.correctAnswer}}
+
+        #quiz-sidebar
+            .list-group(ng-model="questions")
+                a.list-group-item.ellipsis(href="#", ng-repeat="question in questions", ng-click="jumpToQuestion($index)", ng-class="{active: ($index === currentQuestionIndex)}")
+                    | {{$index+1}}. {{question}}
+
+block scripts
+    script.
+        var _quizId = '!{quizId}';
+    script(src="/javascripts/vendor/jquery-ui/ui/jquery-ui.js")
+    script(src="/javascripts/quiz/view.js")
