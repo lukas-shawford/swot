@@ -48,14 +48,10 @@ block content
                     span.status.ng-cloak
                         span.glyphicon.correct.glyphicon-ok-sign(ng-if="question.submitted && question.isCorrect")
                         span.glyphicon.incorrect.glyphicon-remove-sign(ng-if="question.submitted && !question.isCorrect")
-                .list-group-item.progress-container
+                .list-group-item.progress-container(tooltip-html-unsafe="{{getScoreTooltip()}}", tooltip-placement="bottom")
                     progress
                         bar(type="success", value="numCorrect()/questions.length*100")
                         bar(type="danger", value="numIncorrect()/questions.length*100")
-                .list-group-item.score-container
-                    | Score:&nbsp;
-                    span.score {{numCorrect()}} / {{questions.length}}
-                    span.percent ({{score()}}%)
 
 
 block scripts

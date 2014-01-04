@@ -224,23 +224,11 @@ a {
 #quiz-sidebar .progress {
     border-radius: 0;
     margin-bottom: 0;
-    /*height: 10px;*/
     position: relative;
 }
 
-#quiz-sidebar .score-container { text-align: center; }
-
-#quiz-sidebar .score-container .score {
-    font-weight: bold;
-    font-size: 1.3em;
-    background: hsl(206, 79%, 97%);
-    padding: .1em .7em;
-    border: 1px solid #949AB3;
-    border-radius: 4px;
-}
-
-#quiz-sidebar .score-container .percent {
-    margin-left: .5em;
+#quiz-sidebar .score-tooltip {
+    text-align: left;
 }
 
 

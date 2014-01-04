@@ -99,9 +99,23 @@ viewQuiz.controller('ViewQuizCtrl', function ($scope, $http, focus) {
         return _.where($scope.questions, { isCorrect: false }).length;
     };
 
+    $scope.numRemaining = function() {
+        return $scope.questions.length - _.where($scope.questions, { submitted: true }).length;
+    };
+
     $scope.score = function () {
         var score = 100 * $scope.numCorrect() / $scope.questions.length;
         return +score.toFixed(1);
+    };
+
+    $scope.getScoreTooltip = function() {
+        return '<div class="score-tooltip">' +
+            "Current score: <strong>" + $scope.numCorrect() + " / " +
+            $scope.questions.length + "</strong> (" + $scope.score() + "%)" +
+            "<br/>Correct: " + $scope.numCorrect() +
+            "<br/>Incorrect: " + $scope.numIncorrect() +
+            "<br/>Remaining: " + $scope.numRemaining() +
+            "</div>";
     };
 
 
