@@ -1,4 +1,4 @@
-var swotApp = angular.module('swot', [
+angular.module('swot', [
     'ui.bootstrap',
     'ui.utils',
     'ui.sortable',

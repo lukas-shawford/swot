@@ -1,56 +1,32 @@
-angular.module('swot').controller('ViewQuizCtrl', function ($scope, $http, focus) {
+angular.module('swot').controller('ViewQuizCtrl', function (quiz, $scope, focus) {
     $scope._id = _quizId || null;
     $scope.questions = [{}];
     $scope.alerts = [];
     $scope.currentQuestionIndex = 0;
 
     $scope.load = function () {
-        var handleError = function (error) {
+        $scope.closeAllAlerts();
+
+        quiz.questions($scope._id, function (questions) {
+            $scope.questions = _.map(questions, function (question) { return { question: question }; });
+            focus('switchedQuestion');
+        }, function (error) {
             $scope.showError('An error occurred while loading the quiz: ' + error);
-        };
-
-        if (!$scope._id) { handleError("Quiz ID is missing."); }
-
-        $http.get('/questions', {
-            params: { id: $scope._id }
-        }).success(function (response) {
-            if (response.success) {
-                $scope.questions = _.map(response.questions, function (question) { return { question: question }; });
-                focus('switchedQuestion');
-            } else {
-                handleError(response.message);
-            }
-        }).error(function (response) {
-            console.log(response);
-            handleError(response);
         });
-    }
+    };
 
     $scope.submit = function () {
+        $scope.closeAllAlerts();
         var currentQuestion = $scope.currentQuestion();
         var submission = currentQuestion.submission;
 
-        var handleError = function (error) {
+        quiz.submit($scope._id, $scope.currentQuestionIndex, submission, function (isCorrect, correctAnswer) {
+            currentQuestion.submitted = true;
+            currentQuestion.isCorrect = isCorrect;
+            currentQuestion.correctAnswer = correctAnswer;
+            currentQuestion.submission = submission;    // Restore in case it was edited while waiting for the response.
+        }, function (error) {
             $scope.showError('An error occurred while submitting the question: ' + error);
-        };
-
-        $scope.closeAllAlerts();
-
-        $http.post('/submit', {
-            _id: $scope._id,
-            currentQuestionIndex: $scope.currentQuestionIndex,
-            submission: submission
-        }).success(function (response) {
-            if (response.success) {
-                currentQuestion.submitted = true;
-                currentQuestion.submission = submission;
-                currentQuestion.isCorrect = response.isCorrect;
-                currentQuestion.correctAnswer = response.correctAnswer;
-            } else {
-                handleError(response.message);
-            }
-        }).error(function (response) {
-            handleError(response);
         });
     };
 

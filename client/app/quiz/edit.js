@@ -1,4 +1,4 @@
-angular.module('swot').controller('EditQuizCtrl', function ($scope, $http, $timeout, focus) {
+angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeout, focus) {
     $scope._id = _quizId || null;
     $scope.name = "";
     $scope.questions = [{}];
@@ -23,75 +23,53 @@ angular.module('swot').controller('EditQuizCtrl', function ($scope, $http, $time
     $scope.deserialize = function (data) {
         $scope.name = data.name;
         $scope.questions = data.questions;
-    }
+    };
 
     $scope.load = function () {
-        var handleError = function (error) {
+        quiz.load($scope._id, function (response) {
+            $scope.deserialize(response.quiz);
+        }, function (error) {
             $scope.showError('An error occurred while loading the quiz: \n' + error);
-        };
-
-        if (!$scope._id) { handleError("Quiz ID is missing."); }
-
-        $http.get('/load', {
-            params: { id: $scope._id }
-        }).success(function (response) {
-            if (response.success) {
-                $scope.deserialize(response.quiz);
-            } else {
-                handleError(response.message);;
-            }
-        }).error(function (response) {
-            handleError(response);
         });
-    }
+    };
 
     $scope.save = function () {
-        var handleError = function (error) {
+        $scope.closeAllAlerts();
+
+        var onSaveFinished = function () {
+            $scope.saveStatus = "Saved";
+            $scope.savedSuccessfully = true;
+            $timeout(function () {
+                $scope.saveStatus = "";
+            }, 2000);
+        };
+
+        var onError = function (error) {
             $scope.saveStatus = "";
             $scope.saveMessage = 'An error occurred while saving the quiz: ' + error;
             $scope.savedSuccessfully = false;
         };
 
-        $scope.closeAllAlerts();
-
-        $http.post($scope.isNew() ? '/create' : '/save', $scope.serialize())
-            .success(function (response) {
-                if (response.success) {
-                    if ($scope.isNew()) { $scope._id = response.id; }
-                    $scope.saveStatus = "Saved";
-                    $scope.savedSuccessfully = true;
-                    $timeout(function () {
-                        $scope.saveStatus = "";
-                    }, 2000);
-                } else {
-                    handleError(response.message);
-                }
-            })
-            .error(function (response) {
-                handleError(response);
-            });
+        if ($scope.isNew()) {
+            quiz.create($scope.serialize(), function (id) {
+                $scope._id = id;
+                onSaveFinished();
+            }, onError);
+        } else {
+            quiz.save($scope.serialize(), onSaveFinished, onError);
+        }
     };
 
     $scope.deleteQuiz = function () {
-        var handleError = function (error) {
-            $scope.showError("An error occurred while deleting the quiz: " + error);
-        };
-
         $scope.closeAllAlerts();
 
-        $http.post('/delete', { _id: $scope._id })
-            .success(function (response) {
-                if (response.success) {
-                    bootbox.alert("The quiz has been deleted successfully.", function () {
-                        window.location.href = "/quizzes";
-                    });
-                } else {
-                    handleError(response.message);
-                }
-            })
-            .error(function (response) {
-                handleError(response);
+        quiz.deleteQuiz($scope._id, function () {
+            bootbox.alert("The quiz has been deleted successfully.", function () {
+                window.location.href = "/quizzes";
             });
+        }, function (error) {
+            $scope.showError("An error occurred while deleting the quiz: " + error);
+        });
     };
 
     $scope.addQuestion = function () {
