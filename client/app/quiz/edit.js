@@ -1,10 +1,4 @@
-var editQuiz = angular.module('EditQuiz', ['ui.bootstrap', 'ui.sortable', 'focus']);
-
-
-// EditQuiz Controller
-// -------------------
-
-editQuiz.controller('EditQuizCtrl', function ($scope, $http, $timeout, focus) {
+angular.module('swot').controller('EditQuizCtrl', function ($scope, $http, $timeout, focus) {
     $scope._id = _quizId || null;
     $scope.name = "";
     $scope.questions = [{}];

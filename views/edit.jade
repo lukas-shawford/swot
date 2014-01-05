@@ -1,7 +1,7 @@
 extends layout
 
 block content
-    .edit-quiz.container(ng-app="EditQuiz", ng-controller="EditQuizCtrl")
+    .edit-quiz.container(ng-app="swot", ng-controller="EditQuizCtrl")
         .header-container.clearfix
             h2= title
             .btn-group.pull-right(ng-hide="isNew()")
@@ -64,6 +64,4 @@ block content
 block scripts
     script.
         var _quizId = '!{quizId}';
-    script(src="/vendor/jquery-ui/ui/jquery-ui.js")
-    script(src="/vendor/angular-ui-sortable/src/sortable.js")
     script(src="/app/quiz/edit.js")

@@ -1,6 +1,4 @@
-var viewQuiz = angular.module('ViewQuiz', ['ui.bootstrap', 'ui.utils', 'focus']);
-
-viewQuiz.controller('ViewQuizCtrl', function ($scope, $http, focus) {
+angular.module('swot').controller('ViewQuizCtrl', function ($scope, $http, focus) {
     $scope._id = _quizId || null;
     $scope.questions = [{}];
     $scope.alerts = [];
