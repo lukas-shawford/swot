@@ -1,4 +1,5 @@
 node_modules/
+public/vendor/
 .idea/
 *.sublime-project
 *.sublime-workspace
