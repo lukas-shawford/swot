@@ -55,6 +55,16 @@ angular.module('swot').controller('ViewQuizCtrl', function (quiz, $scope, focus)
         window.location.href = "/quizzes";
     };
 
+    $scope.restart = function () {
+        _.each($scope.questions, function (question) {
+            question.submitted = false;
+            question.isCorrect = null;
+            question.submission = null;
+        });
+
+        $scope.jumpToQuestion(0);
+    };
+
     $scope.currentQuestion = function () {
         var index = $scope.currentQuestionIndex;
         if (index < 0 || index >= $scope.questions.length) { return ""; }
@@ -83,21 +93,25 @@ angular.module('swot').controller('ViewQuizCtrl', function (quiz, $scope, focus)
         }
     };
 
+    $scope.submittedQuestions = function () {
+        return _.where($scope.questions, { submitted: true });
+    };
+
     $scope.numCorrect = function () {
-        return _.where($scope.questions, { isCorrect: true }).length;
+        return _.where($scope.submittedQuestions(), { isCorrect: true }).length;
     };
 
     $scope.numIncorrect = function () {
-        return _.where($scope.questions, { isCorrect: false }).length;
+        return _.where($scope.submittedQuestions(), { isCorrect: false }).length;
     };
 
     $scope.numRemaining = function() {
-        return $scope.questions.length - _.where($scope.questions, { submitted: true }).length;
+        return $scope.questions.length - $scope.submittedQuestions().length;
     };
 
     $scope.isFinished = function () {
         return $scope.numRemaining() === 0;
-    }
+    };
 
     $scope.score = function () {
         var score = 100 * $scope.numCorrect() / $scope.questions.length;

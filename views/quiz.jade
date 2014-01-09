@@ -33,13 +33,13 @@ block content
                         | {{ isLastQuestion() ? 'Finish' : 'Next' }}
                         span.glyphicon.glyphicon-circle-arrow-right
 
-                    .result-container.ng-cloak
+                    .result-container.ng-cloak(ng-show="currentQuestion().submitted")
 
                         .result.alert.alert-success(ng-show="currentQuestion().isCorrect")
                             span.glyphicon.glyphicon-ok-sign
                             strong Correct!
 
-                        .result.alert.alert-danger(ng-show="currentQuestion().submitted && !currentQuestion().isCorrect")
+                        .result.alert.alert-danger(ng-show="!currentQuestion().isCorrect")
                             strong.incorrect
                                 span.glyphicon.glyphicon-remove-sign
                                 | Incorrect!
@@ -55,6 +55,9 @@ block content
                     button.back-to-quizzes.btn.btn-success(type="button", ng-click="exit()")
                         span.glyphicon.glyphicon-circle-arrow-left
                         | Back to Quizzes
+                    button.retake.btn.btn-primary(type="button", ng-click="restart()")
+                        span.glyphicon.glyphicon-refresh
+                        | Retake
 
         #quiz-sidebar(ng-if="questions.length > 0")
             .list-group(ng-model="questions")
