@@ -29,7 +29,7 @@ block content
                     input.form-control(type="text", ng-model="currentQuestion().submission", focus-on="switchedQuestion"
                         ui-keypress="{ 'enter': 'handleEnter($event)' }", ng-readonly="currentQuestion().submitted")
                     button.submit.btn.btn-success(type="button", ng-click="submit()", ng-disabled="!currentQuestion().submission", ng-hide="currentQuestion().submitted") Submit
-                    button.next.btn.btn-primary.ng-cloak(type="button", ng-click="next()", ng-show="currentQuestion().submitted")
+                    button.next.btn.btn-primary.ng-cloak(type="button", ng-click="next()", ng-show="currentQuestion().submitted && !(isLastQuestion() && !isFinished())")
                         | {{ isLastQuestion() ? 'Finish' : 'Next' }}
                         span.glyphicon.glyphicon-circle-arrow-right
 
