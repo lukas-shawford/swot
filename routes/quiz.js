@@ -225,3 +225,44 @@ exports.deleteQuiz = function (req, res, next) {
         return res.json({ success: true });
     });
 };
+
+exports.exportJson = function (req, res, next) {
+
+    // TODO: Error handling / validation is very similar - refactor shared logic.
+
+    // TODO: Error handling should redirect to an error page instead of sending a JSON error response.
+
+    Quiz.findOne({ _id: req.query.id }).lean().exec(function (err, quiz) {
+        if (err) {
+            return res.json({
+                success: false,
+                message: err.toString()
+            });
+        }
+
+        if (!quiz) {
+            return res.json({
+                success: false,
+                message: "Cannot find quiz."
+            });
+        }
+
+        if (!req.user.ownsQuiz(req.query.id)) {
+            return res.json({
+                success: false,
+                message: 'Invalid quiz.'
+            });
+        }
+
+        // Remove question IDs
+        var questions = _.map(quiz.questions, function (question) {
+            delete question._id;
+            return question;
+        });
+
+        // Serve a JSON file containing the questions.
+        res.header('content-type','text/json'); 
+        res.header('content-disposition', 'attachment; filename=' + quiz.name + '.json');
+        res.end(JSON.stringify(questions, null, 4));
+    });
+};

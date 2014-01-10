@@ -33,7 +33,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         });
     };
 
-    $scope.save = function () {
+    $scope.save = function (callback) {
         $scope.closeAllAlerts();
 
         var onSaveFinished = function () {
@@ -42,12 +42,18 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             $timeout(function () {
                 $scope.saveStatus = "";
             }, 2000);
+            if (typeof (callback) === 'function') {
+                callback(true);
+            };
         };
 
         var onError = function (error) {
             $scope.saveStatus = "";
             $scope.saveMessage = 'An error occurred while saving the quiz: ' + error;
             $scope.savedSuccessfully = false;
+            if (typeof (callback) === 'function') {
+                callback(false);
+            };
         };
 
         if ($scope.isNew()) {
@@ -88,7 +94,19 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
 
     $scope.removeQuestion = function (index) {
         $scope.questions.splice(index, 1);
-    }
+    };
+
+    $scope.exportJson = function () {
+        bootbox.confirm('The quiz will be saved before exporting. Continue?', function (confirmed) {
+            if (confirmed) {
+                $scope.save(function (success) {
+                    if (success) {
+                        location.href = '/export?id=' + $scope._id;
+                    }
+                });
+            }
+        });
+    };
 
     $scope.sortableOptions = {
         update: function(e, ui) { },

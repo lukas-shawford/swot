@@ -77,6 +77,7 @@ app.post('/delete', quiz.deleteQuiz);
 app.get('/quiz/:id', quiz.quiz);
 app.get('/questions', quiz.questions);
 app.post('/submit', quiz.submitQuestion);
+app.get('/export', quiz.exportJson);
 
 // Start the server
 http.createServer(app).listen(app.get('port'), function(){

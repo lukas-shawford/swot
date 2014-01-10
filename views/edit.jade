@@ -18,6 +18,9 @@ block content
                             span.glyphicon.glyphicon-cog
                             span.caret
                         ul.dropdown-menu(role="menu")
+                            li: a(href="#", ng-click="exportJson()")
+                                i.glyphicon.glyphicon-menu.glyphicon-cloud-download
+                                | Export as JSON
                             li: a(data-toggle="modal", href="#deleteDialog", ng-hide="isNew()")
                                 i.glyphicon.glyphicon-menu.glyphicon-remove
                                 | Delete
