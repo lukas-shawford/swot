@@ -1,31 +1,30 @@
 extends layout
 
 block content
-    h2 My Quizzes
+    .my-quizzes.container
+        if (message)
+                div.alert(class="#{message.type}")
+                    p !{message.msg}
 
-    if (message)
-            div.alert(class="#{message.type}")
-                p !{message.msg}
-
-    if quizzes.length > 0
-        .list-group.quizzes
-            each quiz in quizzes
-                .list-group-item
-                    .quiz-header-container
-                        .quiz-header.list-group-item-heading
-                            h4.quiz-name= quiz.name
-                            span.num-questions &nbsp; (#{quiz.questions.length} question#{quiz.questions.length === 1 ? '' : 's'})
-                            span.quiz-actions.pull-right
-                                a.btn.btn-primary(href="/quiz/" + quiz._id)
-                                    span.glyphicon.glyphicon-circle-arrow-right
-                                    | Take the Quiz
-                                a.btn.btn-info(href="/edit/" + quiz._id)
-                                    span.glyphicon.glyphicon-pencil
-                                    | Edit
-                    p.list-group-item-text Created #{quiz.dateCreated}
-    else
-        p
-            | You currently have no quizzes.
-    div: a.btn.btn-success(href="/create")
-        span.glyphicon.glyphicon-plus
-        | Create a Quiz
+        if quizzes.length > 0
+            .list-group.quizzes
+                each quiz in quizzes
+                    .list-group-item
+                        .quiz-header-container
+                            .quiz-header.list-group-item-heading
+                                h4.quiz-name= quiz.name
+                                span.num-questions &nbsp; (#{quiz.questions.length} question#{quiz.questions.length === 1 ? '' : 's'})
+                                span.quiz-actions.pull-right
+                                    a.btn.btn-primary(href="/quiz/" + quiz._id)
+                                        span.glyphicon.glyphicon-circle-arrow-right
+                                        | Take the Quiz
+                                    a.btn.btn-info(href="/edit/" + quiz._id)
+                                        span.glyphicon.glyphicon-pencil
+                                        | Edit
+                        p.list-group-item-text Created #{quiz.dateCreated}
+        else
+            p
+                | You currently have no quizzes.
+        div: a.btn.btn-success(href="/create")
+            span.glyphicon.glyphicon-plus
+            | Create a Quiz

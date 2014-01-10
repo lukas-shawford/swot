@@ -63,6 +63,40 @@ a {
 
 
 /*
+ * Navigation
+ * ---------- */
+
+.navbar .nav-center {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    margin: 0 auto;
+    line-height: 50px;
+    display: inline-block;
+    max-width: 300px;
+    overflow: visible;
+}
+
+.navbar .nav-center h1,
+.navbar .nav-center h2,
+.navbar .nav-center h3,
+.navbar .nav-center h4,
+.navbar .nav-center h5,
+.navbar .nav-center h6 {
+    margin: 0;
+    line-height: 50px;
+}
+
+.navbar-inverse .navbar-text {
+    color: #eee;
+}
+
+
+/*
  * Buttons
  * ------- */
 
@@ -108,6 +142,11 @@ a {
  * My Quizzes
  * ---------- */
 
+.my-quizzes.container {
+    width: 40em;
+    margin: 2em auto;
+}
+
 .quizzes {
     max-width: 500px;
 }
@@ -130,29 +169,47 @@ a {
 
 .take-quiz .quiz {}
 
-.quiz .header {}
+.quiz .header {
+    width: 30em;
+    margin: 1em auto;
+    border-bottom: 1px dotted #ccc;
+    padding-bottom: 1em;
+}
 
-.quiz .prev, .quiz .next {
+.quiz .header .prev,
+.quiz .header .current,
+.quiz .header .next {
     display: inline-block;
-    text-align: center;
+    width: 10em;
 }
 
-.quiz .prev { margin-right: 1em; }
-.quiz .next { margin-left: 1em; }
-
-.quiz .current {
-    font-weight: bold;
+.quiz .header a.disabled {
+    color: #999;
 }
+
+.quiz .header a.disabled:hover {
+    cursor: default;
+    text-decoration: none;
+}
+
+.quiz .header .prev { text-align: left; }
+.quiz .header .current { text-align: center; font-weight: bold; }
+.quiz .header .next { text-align: right; }
 
 .quiz-body-container {
     border: 1px solid #ddd;
     border-radius: 4px;
-    padding: 0 2em 1.2em;
     margin: 1.5em 0;
 }
 
+.quiz .question-container,
+.quiz .summary-container {
+    max-width: 30em;
+    margin: 3em auto 5.5em;
+}
+
 .quiz .question {
-    margin: 2em 0;
+    margin-bottom: 2em;
     max-width: 30em;
     line-height: 1.6;
 }
@@ -205,7 +262,7 @@ a {
 #quiz-sidebar {
     position: absolute;
     width: 310px;
-    top: 101px;
+    top: 21px;
     left: -310px;
 }
 
@@ -268,7 +325,8 @@ a {
  * --------- */
 
 .edit-quiz {
-    width: 650px;
+    width: 40em;
+    margin: 2em auto;
 }
 
 .edit-quiz .header-container {

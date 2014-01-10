@@ -1,16 +1,18 @@
 nav(role="navigation").navbar.navbar-fixed-top.navbar-inverse
-    div.navbar-header
-    button(type="button", data-toggle="collapse", data-target="#navbar-collapse-1").navbar-toggle
-        span.sr-only Toggle navigation
-        span.icon-bar
-        span.icon-bar
-        span.icon-bar
-    a(href="/").navbar-brand swot
+    .navbar-header
+        button(type="button", data-toggle="collapse", data-target="#navbar-collapse-1").navbar-toggle
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+        a(href="/").navbar-brand swot
 
-    div.collapse.navbar-collapse#navbar-collapse-1
+    .collapse.navbar-collapse#navbar-collapse-1
         ul.nav.navbar-nav
             if username
                 li: a(href="/quizzes") My Quizzes
+        .nav.navbar-text.nav-center
+            h2= title
         ul.nav.navbar-nav.navbar-right
             if username
                 li.dropdown

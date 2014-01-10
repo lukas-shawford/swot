@@ -38,7 +38,7 @@ angular.module('swot').controller('ViewQuizCtrl', function (quiz, $scope, focus)
     };
 
     $scope.next = function () {
-        if ($scope.isLastQuestion()) {
+        if ($scope.isLastQuestion() && $scope.isFinished()) {
             return $scope.finish();
         }
 

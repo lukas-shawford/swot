@@ -2,24 +2,24 @@ extends layout
 
 block content
     .quiz(ng-app="swot", ng-controller="ViewQuizCtrl")
-        h2= title
         
         if (message != '')
             div.alert.alert-danger
                 p !{message}
         alert.ng-cloak(ng-repeat="alert in alerts", type="alert.type", close="closeAlert($index)") {{alert.msg}}
 
-        .header.ng-cloak(ng-hide="showingSummary")
-            a.prev(href="#", ng-click="prev()", ng-show="currentQuestionIndex > 0")
-                span.glyphicon.glyphicon-circle-arrow-left
-                | Previous
-            span.current Question {{currentQuestionIndex+1}} of {{questions.length}}
-            a.next(href="#", ng-click="next()", ng-show="currentQuestionIndex < questions.length - 1")
-                | Next
-                span.glyphicon.glyphicon-circle-arrow-right
-        .header.ng-cloak(ng-show="showingSummary") &nbsp;
-
         .quiz-body-container
+            .header.ng-cloak(ng-hide="showingSummary")
+                .prev
+                    a(href="#", ng-click="prev()", ng-class="{disabled: currentQuestionIndex < 1}")
+                        span.glyphicon.glyphicon-circle-arrow-left
+                        | Previous
+                span.current Question {{currentQuestionIndex+1}} of {{questions.length}}
+                .next
+                    a(href="#", ng-click="next()", ng-class="{disabled: currentQuestionIndex >= questions.length - 1}")
+                        | Next
+                        span.glyphicon.glyphicon-circle-arrow-right
+
             .question-container(ng-hide="showingSummary")
 
                 .question.ng-cloak
@@ -33,18 +33,18 @@ block content
                         | {{ isLastQuestion() ? 'Finish' : 'Next' }}
                         span.glyphicon.glyphicon-circle-arrow-right
 
-                    .result-container.ng-cloak(ng-show="currentQuestion().submitted")
+                    .result-container
+                        .result.ng-cloak(ng-show="currentQuestion().submitted")
+                            .alert.alert-success(ng-show="currentQuestion().isCorrect")
+                                span.glyphicon.glyphicon-ok-sign
+                                strong Correct!
 
-                        .result.alert.alert-success(ng-show="currentQuestion().isCorrect")
-                            span.glyphicon.glyphicon-ok-sign
-                            strong Correct!
-
-                        .result.alert.alert-danger(ng-show="!currentQuestion().isCorrect")
-                            strong.incorrect
-                                span.glyphicon.glyphicon-remove-sign
-                                | Incorrect!
-                            | The correct answer is:&nbsp;
-                            strong {{currentQuestion().correctAnswer}}
+                            .alert.alert-danger(ng-show="!currentQuestion().isCorrect")
+                                strong.incorrect
+                                    span.glyphicon.glyphicon-remove-sign
+                                    | Incorrect!
+                                | The correct answer is:&nbsp;
+                                strong {{currentQuestion().correctAnswer}}
 
             .summary-container.ng-cloak(ng-show="showingSummary")
                 h3 Summary

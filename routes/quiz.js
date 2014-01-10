@@ -22,6 +22,7 @@ exports.quizzes = function (req, res) {
         });
 
         res.render('quizzes', {
+            title: 'My Quizzes',
             quizzes: quizzes
         });
     });
