@@ -325,8 +325,8 @@ a {
  * --------- */
 
 .edit-quiz {
-    width: 40em;
-    margin: 2em auto;
+    width: 50em;
+    margin: 1em auto 2em;
 }
 
 .edit-quiz .header-container {
@@ -341,6 +341,11 @@ a {
 
 .edit-quiz .question-list-container {
     margin-bottom: 1em;
+    padding-right: 2em;
+    max-height: 68vh;
+    overflow-y: scroll;
+    border-bottom: 1px solid #999;
+    border-top: 1px solid #999;
 }
 
 .edit-quiz .question-list-container .sortable-list-container {
