@@ -45,6 +45,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             if (typeof (callback) === 'function') {
                 callback(true);
             };
+            $scope.editQuizForm.$setPristine();
         };
 
         var onError = function (error) {
@@ -84,6 +85,9 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         // Focus on the first input field for the newly-added question
         focus('newQuestionAdded');
 
+        // Mark the form as dirty
+        $scope.editQuizForm.$setDirty();
+
         // Stop showing the tooltip on the Add Question button after adding a couple questions
         // Note that tooltip is now shown where there are no questions, so adding the first question
         // should not decrement the count.
@@ -94,6 +98,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
 
     $scope.removeQuestion = function (index) {
         $scope.questions.splice(index, 1);
+        $scope.editQuizForm.$setDirty();
     };
 
     $scope.exportJson = function () {

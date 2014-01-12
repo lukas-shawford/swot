@@ -2,5 +2,6 @@ angular.module('swot', [
     'ui.bootstrap',
     'ui.utils',
     'ui.sortable',
-    'focus'
+    'focus',
+    'confirmExit'
 ]);
