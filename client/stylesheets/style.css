@@ -28,7 +28,7 @@ a {
 #main {
     margin: 0 auto 60px;
     background-color: white;
-    padding: 0 40px 60px;
+    padding: 120px 40px 0px;
     height: 100%;
     position: relative;
 }
@@ -39,7 +39,7 @@ a {
     height: auto !important;
     height: 100%;
     /* Negative indent footer by it's height */
-    margin: 60px auto -60px;
+    margin: -60px auto -60px;
 }
 
 /* Set the fixed height of the footer here */
