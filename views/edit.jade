@@ -27,7 +27,7 @@ block content
 
         label.control-label Questions:
         .question-list-container
-            ul.sortable-list-container(ui-sortable="sortableOptions", ng-model="questions")
+            ul.sortable-list-container(ui-sortable="sortableOptions", ng-model="questions", ng-show="questions.length > 0")
                 li.question-container.sortable-list-item(ng-repeat="question in questions")
                     .question-header.clearfix
                         span.question-number {{$index + 1}}.
@@ -36,6 +36,7 @@ block content
                                     span.glyphicon.glyphicon-trash
                     input.form-control(type="text", name="question", ng-model="question.questionText", placeholder="Question", focus-on="newQuestionAdded")
                     input.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer", ng-keydown="answerKeypress($index, $event)")
+            .no-questions.ng-cloak(ng-show="questions.length === 0") Nothing here yet! Click on "Add Question" below to start adding questions.
 
         button.btn.btn-success(type="button", ng-click="addQuestion()", tooltip-trigger="mouseenter", tooltip-placement="bottom", tooltip="{{addQuestionTooltip()}}")
             span.glyphicon.glyphicon-plus
@@ -47,7 +48,7 @@ block content
                 span.glyphicon.glyphicon-floppy-disk
                 | Save
 
-        .save-error.alert.alert-danger.alert-dismissable(ng-show="!savedSuccessfully && saveMessage")
+        .save-error.alert.alert-danger.alert-dismissable.ng-cloak(ng-show="!savedSuccessfully && saveMessage")
             button.close(type="button", data-dismiss="alert", aria-hidden="true") &times;
             | {{saveMessage}}
 

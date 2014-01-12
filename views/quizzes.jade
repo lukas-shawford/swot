@@ -15,9 +15,10 @@ block content
                                 h4.quiz-name= quiz.name
                                 span.num-questions &nbsp; (#{quiz.questions.length} question#{quiz.questions.length === 1 ? '' : 's'})
                                 span.quiz-actions.pull-right
-                                    a.btn.btn-primary(href="/quiz/" + quiz._id)
-                                        span.glyphicon.glyphicon-circle-arrow-right
-                                        | Take the Quiz
+                                    if quiz.questions.length > 0
+                                        a.btn.btn-primary(href="/quiz/" + quiz._id)
+                                            span.glyphicon.glyphicon-circle-arrow-right
+                                            | Take the Quiz
                                     a.btn.btn-info(href="/edit/" + quiz._id)
                                         span.glyphicon.glyphicon-pencil
                                         | Edit

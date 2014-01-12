@@ -262,7 +262,7 @@ a {
 #quiz-sidebar {
     position: absolute;
     width: 310px;
-    top: 21px;
+    top: 140px;
     left: -310px;
 }
 
@@ -339,11 +339,16 @@ a {
     margin: 0;
 }
 
+.edit-quiz .no-questions {
+    margin: 1em auto;
+    text-align: center;
+}
+
 .edit-quiz .question-list-container {
     margin-bottom: 1em;
     padding-right: 2em;
     max-height: 68vh;
-    overflow-y: scroll;
+    overflow-y: auto;
     border-bottom: 1px solid #999;
     border-top: 1px solid #999;
 }
