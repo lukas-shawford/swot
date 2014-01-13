@@ -1,4 +1,4 @@
-angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeout, focus) {
+angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeout, focus, $debounce) {
     $scope._id = _quizId || null;
     $scope.name = "";
     $scope.questions = [{}];
@@ -64,6 +64,12 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             }, onError);
         } else {
             quiz.save($scope.serialize(), onSaveFinished, onError);
+        }
+    };
+
+    $scope.autosave = function () {
+        if (!$scope.isNew() && $scope.editQuizForm.$dirty) {
+            $scope.save();
         }
     };
 
@@ -176,4 +182,6 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     // --------------
 
     if ($scope._id) { $scope.load(); }
+
+    $scope.$watch('questions', $debounce($scope.autosave, 1000), true);
 });

@@ -3,5 +3,6 @@ angular.module('swot', [
     'ui.utils',
     'ui.sortable',
     'focus',
-    'confirmExit'
+    'confirmExit',
+    'ngDebounce'
 ]);
