@@ -1,1 +1,8 @@
-{ "directory" : "client/vendor" }
+{
+    "directory" : "client/vendor",
+    "storage": {
+        "packages": ".bower-cache",
+        "registry": ".bower-registry"
+    },
+    "tmp": ".bower-tmp"
+}
