@@ -18,7 +18,8 @@
     "underscore": "~1.5.2",
     "async": "~0.2.9",
     "moment": "~2.5.0",
-    "bower": "~1.2.8"
+    "bower": "~1.2.8",
+    "connect-mongo": "~0.4.0"
   },
   "devDependencies": {
     "chai": "~1.8.1",

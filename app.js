@@ -6,6 +6,7 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
+var MongoStore = require('connect-mongo')(express);
 
 // Project libraries/middleware
 var user = require('./lib/middleware/user');
@@ -41,7 +42,12 @@ app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(express.bodyParser());
 app.use(express.cookieParser(secret));
-app.use(express.session());
+app.use(express.session({
+    secret: secret,
+    store: new MongoStore({
+        db: mongoose.connection.db
+    })
+}));
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
