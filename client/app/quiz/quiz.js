@@ -1,4 +1,5 @@
 angular.module('swot').service('quiz', ['$http', function ($http) {
+    var self = this;
     
     /**
      * Creates a new quiz. (For updating an existing quiz, use the 'save' method.)
@@ -15,7 +16,7 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
             if (response.success) { success(response.id); }
             else { error(response.message); }
         }).error(function (data) {
-            error(data || "Request failed.");
+            error(self.getError(data));
         });
     };
 
@@ -43,7 +44,7 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
             if (response.success) { success(response); }
             else { error(response.message); }
         }).error(function (data) {
-            error(data || "Request failed.");
+            error(self.getError(data));
         });
     };
 
@@ -61,7 +62,7 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
             if (response.success) { success(); }
             else { error(response.message); }
         }).error(function (data) {
-            error(data || "Request failed.");
+            error(self.getError(data));
         });
     };
 
@@ -79,7 +80,7 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
             if (response.success) { success(); }
             else { error(response.message); }
         }).error(function (data) {
-            error(data || "Request failed.");
+            error(self.getError(data));
         });
     };
 
@@ -98,7 +99,7 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
             if (response.success) { success(response.questions); }
             else { error(response.message); }
         }).error(function (data) {
-            error(data || "Request failed.");
+            error(self.getError(data));
         });
     };
 
@@ -126,8 +127,25 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
             if (response.success) { success(response.isCorrect, response.correctAnswer); }
             else { error(response.message); }
         }).error(function (data) {
-            error(data || "Request failed.");
+            error(self.getError(data));
         });
+    };
+
+    this.getError = function (data) {
+        var defaultMessage = 'Request failed.';
+
+        if (data) {
+            if (typeof data === 'object') {
+                if (typeof data.message === 'string') { return data.message; }
+                if (typeof data.error === 'object') {
+                    return data.error.message + data.error.stack || defaultMessage;
+                }
+            } else if (typeof data === 'string') {
+                return data;
+            }
+        }
+
+        return defaultMessage;
     };
 
 }]);
