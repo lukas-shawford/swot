@@ -31,7 +31,12 @@ describe('quiz', function () {
             if (err) throw err;
 
             // Create some test users to test any user-related functionality with quizzes.
-            var users = _.map(['angela', 'george', 'david', 'corey'], function (username) { return { username: username, password: 'test' }; });
+            var users = _.map([
+                'angela@example.com',
+                'george@example.com',
+                'david@example.com',
+                'corey@example.com'
+            ], function (email) { return { email: email, password: 'test' }; });
             async.map(users, User.createUser.bind(User), function (err, results) {
                 if (err) throw err;
                 testUsers  = results;

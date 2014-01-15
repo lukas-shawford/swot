@@ -18,7 +18,7 @@ var login = require('./routes/login');
 var quiz = require('./routes/quiz');
 
 // Authentication
-passport.use(new LocalStrategy(authentication.authenticate));
+passport.use(new LocalStrategy({ usernameField: 'email' }, authentication.authenticate));
 passport.serializeUser(authentication.serializeUser);
 passport.deserializeUser(authentication.deserializeUser);
 

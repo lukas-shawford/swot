@@ -9,24 +9,19 @@ block content
                 p !{message}
 
         .form-group
-            label.control-label(for='username') Username
-            .controls
-                input#username.form-control(type='text', name='user[username]', placeholder='')
-
-        .form-group
             label.control-label(for='email') E-mail
             .controls
-                input#email.form-control(type='text', name='user[email]', placeholder='')
+                input#email.form-control(type='text', name='user[email]', placeholder='', required='required', autofocus='autofocus')
 
         .form-group
             label.control-label(for='password') Password
             .controls
-                input#password.form-control(type='password', name='user[password]', placeholder='')
+                input#password.form-control(type='password', name='user[password]', placeholder='', required='required')
 
         .form-group
             label.control-label(for='password_confirm') Password (Confirm)
             .controls
-                input#password_confirm.form-control(type='password', name='user[password_confirm]', placeholder='')
+                input#password_confirm.form-control(type='password', name='user[password_confirm]', placeholder='', required='required')
         .form-group
             .controls
                 button#register.btn.btn-lg.btn-success Register

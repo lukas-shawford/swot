@@ -6,11 +6,11 @@ exports.form = function (req, res) {
 
 exports.submit = function (req, res, next) {
     var data = req.body.user;
-    User.findByName(data.username, function (err, user) {
+    User.findByEmail(data.email, function (err, user) {
         if (err) return next(err);
 
         if (user) {
-            req.flash('error', 'Sorry, that username is not available.');
+            req.flash('error', 'An account with that email address already exists.');
             res.redirect('back');
             return;
         }
@@ -22,7 +22,6 @@ exports.submit = function (req, res, next) {
         }
 
         user = new User({
-            username: data.username,
             email: data.email,
             password: data.password
         });

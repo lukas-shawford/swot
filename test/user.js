@@ -22,11 +22,11 @@ describe('userDb', function () {
 
         it('should be able to find user after creating one.', function (done) {
             User.createUser({
-                username: 'Tobi',
+                email: 'tobi@example.com',
                 password: 'i am secret'
             }, function (err, user) {
                 if (err) throw err;
-                User.findByName('Tobi', function (err, user) {
+                User.findByEmail('tobi@example.com', function (err, user) {
                     expect(err).to.be.null;
                     expect(user).to.exist;
                     done();
@@ -34,41 +34,39 @@ describe('userDb', function () {
             });
         });
 
-        it('should not be able to create multiple users with same name.', function (done) {
+        it('should not be able to create multiple users with same email.', function (done) {
             User.createUser({
-                username: 'Tobi',
+                email: 'tobi@example.com',
                 password: 'i am secret'
             }, function (err, user) {
                 expect(err).to.not.be.null;
-                expect(err.message).to.equal('Username not available');
+                expect(err.message).to.equal('An account with that email already exists.');
                 expect(user).to.be.undefined;
                 done();
             });
         });
     });
 
-    describe('findByName', function () {
+    describe('findByEmail', function () {
 
         before(function (done) {
             User.createUser({
-                username: 'bob',
-                password: 'something',
-                email: 'bob@example.com'
+                email: 'bob@example.com',
+                password: 'something'
             }, done);
         });
 
-        it('should be able to find user with matching username', function (done) {
-            User.findByName('bob', function (err, user) {
+        it('should be able to find user with matching email', function (done) {
+            User.findByEmail('bob@example.com', function (err, user) {
                 expect(err).to.be.null;
                 expect(user).to.exist;
-                expect(user.username).to.equal('bob');
                 expect(user.email).to.equal('bob@example.com');
                 done();
             });
         });
 
-        it("should not return anyone for a username that doesn't correspond to an actual user", function (done) {
-            User.findByName('fred', function (err, user) {
+        it("should not return anyone for an email that doesn't correspond to an actual user", function (done) {
+            User.findByEmail('fred@example.com', function (err, user) {
                 expect(err).to.be.null;
                 expect(user).to.not.exist;
                 done();
@@ -82,7 +80,7 @@ describe('userDb', function () {
 
         before(function (done) {
             User.createUser({
-                username: 'albert',
+                email: 'albert@example.com',
                 password: 'letmein'
             }, function (err, user) {
                 if (err) throw err;
@@ -119,7 +117,9 @@ describe('userDb', function () {
         before(function (done) {
 
             // Create test users
-            var users = _.map(['stephanie', 'barbara'], function (username) { return { username: username, password: 'test' }; });
+            var users = _.map(['stephanie@example.com', 'barbara@example.com'],
+                function (email) { return { email: email, password: 'test' };
+            });
             async.map(users, User.createUser.bind(User), function (err, results) {
                 if (err) throw err;
                 stephanie = results[0];
