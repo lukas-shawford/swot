@@ -13,7 +13,7 @@ block content
             .form-group
                 label.control-label(for="quiz-name") Quiz Name:
                 .row.controls
-                    .col-xs-6: input#quiz-name.form-control(type="text", name="name", ng-model="name", placeholder="Name")
+                    .col-xs-6: input#quiz-name.form-control(type="text", name="name", ng-model="quiz.name", placeholder="Name")
                     .col-xs-6
                         .btn-group.pull-right(ng-hide="isNew()")
                             button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown")
@@ -29,8 +29,8 @@ block content
 
             label.control-label Questions:
             .question-list-container
-                ul.sortable-list-container(ui-sortable="sortableOptions", ng-model="questions", ng-show="questions.length > 0")
-                    li.question-container.sortable-list-item(ng-repeat="question in questions")
+                ul.sortable-list-container(ui-sortable="sortableOptions", ng-model="quiz.questions", ng-show="quiz.questions.length > 0")
+                    li.question-container.sortable-list-item(ng-repeat="question in quiz.questions")
                         .question-header.clearfix
                             span.question-number {{$index + 1}}.
                             .pull-right

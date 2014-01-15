@@ -57,7 +57,7 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
      */
     this.save = function (quiz, success, error) {
         $http.post('/save',
-            quiz
+            { quiz: quiz }
         ).success(function (response) {
             if (response.success) { success(); }
             else { error(response.message); }

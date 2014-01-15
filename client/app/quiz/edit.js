@@ -1,7 +1,9 @@
 angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeout, focus, $debounce) {
-    $scope._id = _quizId || null;
-    $scope.name = "";
-    $scope.questions = [{}];
+    $scope.quiz = {
+        _id: _quizId || null,
+        name: "",
+        questions: {}
+    };
     $scope.alerts = [];
     $scope.saveStatus = "";
     $scope.saveMessage = "";
@@ -9,25 +11,12 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     $scope.addQuestionTooltipsRemaining = 2;    // Stop showing the tooltip after adding a couple questions.
     
     $scope.isNew = function () {
-        return $scope._id === null;
+        return $scope.quiz._id === null;
     }
 
-    $scope.serialize = function () {
-        return {
-            _id: $scope._id,
-            name: $scope.name,
-            questions: $scope.questions
-        };
-    };
-
-    $scope.deserialize = function (data) {
-        $scope.name = data.name;
-        $scope.questions = data.questions;
-    };
-
     $scope.load = function () {
-        quiz.load($scope._id, function (response) {
-            $scope.deserialize(response.quiz);
+        quiz.load($scope.quiz._id, function (response) {
+            $scope.quiz = response.quiz;
         }, function (error) {
             $scope.showError('An error occurred while loading the quiz: \n' + error);
         });
@@ -58,12 +47,12 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         };
 
         if ($scope.isNew()) {
-            quiz.create($scope.serialize(), function (id) {
-                $scope._id = id;
+            quiz.create($scope.quiz, function (id) {
+                $scope.quiz._id = id;
                 onSaveFinished();
             }, onError);
         } else {
-            quiz.save($scope.serialize(), onSaveFinished, onError);
+            quiz.save($scope.quiz, onSaveFinished, onError);
         }
     };
 
@@ -76,7 +65,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     $scope.deleteQuiz = function () {
         $scope.closeAllAlerts();
 
-        quiz.deleteQuiz($scope._id, function () {
+        quiz.deleteQuiz($scope.quiz._id, function () {
             bootbox.alert("The quiz has been deleted successfully.", function () {
                 window.location.href = "/quizzes";
             });
@@ -86,7 +75,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     };
 
     $scope.addQuestion = function () {
-        $scope.questions.push({});
+        $scope.quiz.questions.push({});
 
         // Focus on the first input field for the newly-added question
         focus('newQuestionAdded');
@@ -97,13 +86,13 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         // Stop showing the tooltip on the Add Question button after adding a couple questions
         // Note that tooltip is now shown where there are no questions, so adding the first question
         // should not decrement the count.
-        if ($scope.questions.length > 1) {
+        if ($scope.quiz.questions.length > 1) {
             $scope.addQuestionTooltipsRemaining--;
         }
     };
 
     $scope.removeQuestion = function (index) {
-        $scope.questions.splice(index, 1);
+        $scope.quiz.questions.splice(index, 1);
         $scope.editQuizForm.$setDirty();
     };
 
@@ -112,7 +101,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             if (confirmed) {
                 $scope.save(function (success) {
                     if (success) {
-                        location.href = '/export?id=' + $scope._id;
+                        location.href = '/export?id=' + $scope.quiz._id;
                     }
                 });
             }
@@ -129,7 +118,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     };
 
     $scope.addQuestionTooltip = function () {
-        if ($scope.addQuestionTooltipsRemaining <= 0 || $scope.questions.length == 0) {
+        if ($scope.addQuestionTooltipsRemaining <= 0 || $scope.quiz.questions.length == 0) {
             return "";
         }
 
@@ -170,7 +159,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
 
     $scope.answerKeypress = function ($index, $event) {
         // Add new question when hitting TAB on the last input
-        if ($index === $scope.questions.length - 1) {
+        if ($index === $scope.quiz.questions.length - 1) {
             if ($event.keyCode === 9 &&  !$event.ctrlKey && !$event.metaKey && !$event.altKey && !$event.shiftKey) {
                 $scope.addQuestion();
             }
@@ -181,7 +170,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     // Initialization
     // --------------
 
-    if ($scope._id) { $scope.load(); }
+    if ($scope.quiz._id) { $scope.load(); }
 
-    $scope.$watch('questions', $debounce($scope.autosave, 1000), true);
+    $scope.$watch('quiz', $debounce($scope.autosave, 1000), true);
 });

@@ -167,11 +167,9 @@ exports.load = function (req, res, next) {
 };
 
 exports.save = function (req, res, next) {
-    var data = req.body;
-    var quizId = data._id;
-    delete data._id;
+    var quiz = req.body.quiz;
 
-    if (!quizId) {
+    if (!quiz._id) {
         return res.json({
             success: false,
             message: "Quiz ID is missing."
@@ -179,14 +177,17 @@ exports.save = function (req, res, next) {
     }
 
     // Validate that quiz is owned by user
-    if (!req.user.ownsQuiz(quizId)) {
+    if (!req.user.ownsQuiz(quiz._id)) {
         return res.json({
             success: false,
             message: "Invalid Quiz ID."
         });
     }
 
-    Quiz.update({ _id: quizId }, data, function (err, quiz) {
+    var quizId = quiz._id;
+    delete quiz._id;
+    
+    Quiz.update({ _id: quizId }, quiz, function (err, quiz) {
         if (err) {
             return res.json({
                 success: false,
