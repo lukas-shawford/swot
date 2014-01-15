@@ -27,6 +27,9 @@ var app = express();
 var MONGODB_URL = process.env.MONGODB_URL || 'localhost:27017/swot';
 mongoose.connect(MONGODB_URL);
 
+// Secrets
+var secret = process.env.SECRET || 'TFVtSsdIekQ7VwjCzgng';
+
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
@@ -37,7 +40,7 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(express.bodyParser());
-app.use(express.cookieParser('TFVtSsdIekQ7VwjCzgng'));
+app.use(express.cookieParser(secret));
 app.use(express.session());
 app.use(flash());
 app.use(passport.initialize());
