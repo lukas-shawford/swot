@@ -2,7 +2,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     $scope.quiz = {
         _id: _quizId || null,
         name: "",
-        questions: {}
+        questions: [{}]
     };
     $scope.alerts = [];
     $scope.saveStatus = "";
