@@ -7,6 +7,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     $scope.alerts = [];
     $scope.saveStatus = "";
     $scope.saveMessage = "";
+    $scope.isSaving = false;
     $scope.savedSuccessfully = true;
     $scope.addQuestionTooltipsRemaining = 2;    // Stop showing the tooltip after adding a couple questions.
     
@@ -24,10 +25,12 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
 
     $scope.save = function (callback) {
         $scope.closeAllAlerts();
+        $scope.isSaving = true;
 
         var onSaveFinished = function () {
             $scope.saveStatus = "Saved";
             $scope.savedSuccessfully = true;
+            $scope.isSaving = false;
             $timeout(function () {
                 $scope.saveStatus = "";
             }, 2000);
@@ -41,6 +44,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             $scope.saveStatus = "";
             $scope.saveMessage = 'An error occurred while saving the quiz: ' + error;
             $scope.savedSuccessfully = false;
+            $scope.isSaving = false;
             if (typeof (callback) === 'function') {
                 callback(false);
             };

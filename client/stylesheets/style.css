@@ -104,6 +104,51 @@ a {
  
 .btn.btn-icon .glyphicon { margin-right: 0; }
 
+
+/**
+ * Simple CSS Spinner
+ * http://www.designcouch.com/home/why/2013/05/23/dead-simple-pure-css-loading-spinner/
+ */
+
+.spinner {
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+    vertical-align: middle;
+    margin: 0px auto;
+    position: relative;
+    -webkit-animation: rotation .8s infinite linear;
+    -moz-animation: rotation .8s infinite linear;
+    -o-animation: rotation .8s infinite linear;
+    animation: rotation .8s infinite linear;
+    border-left: 4px solid rgba(120, 120, 120, 0.15);
+    border-right: 4px solid rgba(120, 120, 120, 0.15);
+    border-bottom: 4px solid rgba(120, 120, 120, 0.15);
+    border-top: 4px solid rgba(110, 110, 110, 0.8);
+    border-radius: 100%;
+}
+
+@-webkit-keyframes rotation {
+    from {-webkit-transform: rotate(0deg);}
+    to {-webkit-transform: rotate(359deg);}
+}
+
+@-moz-keyframes rotation {
+    from {-moz-transform: rotate(0deg);}
+    to {-moz-transform: rotate(359deg);}
+}
+
+@-o-keyframes rotation {
+    from {-o-transform: rotate(0deg);}
+    to {-o-transform: rotate(359deg);}
+}
+
+@keyframes rotation {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(359deg);}
+}
+
+
 /*
  * Signin / Registration
  * --------------------- */
@@ -386,10 +431,11 @@ a {
 
 .question-header { margin-bottom: .5em; }
 
+.edit-quiz .save { margin-left: 1em; }
+
 .save-message {
     color: #aaa;
     font-style: italic;
-    margin-right: 1em;
     padding: 4px;
     background-color: white;
 }

@@ -45,13 +45,13 @@ block content
                 | Add Question
 
             .pull-right.ng-cloak
-                span.save-message(class="{{savedSuccessfully ? '' : 'error'}}", ng-show="saveStatus") {{saveStatus}}
-                button.btn.btn-success(type="button", ng-click="save()")
+                span.save-message(class="{{savedSuccessfully ? '' : 'error'}}", ng-show="!isSaving && saveStatus") {{saveStatus}}
+                .spinner.ng-cloak(ng-show="isSaving")
+                button.save.btn.btn-success(type="button", ng-click="save()", ng-disabled="isSaving")
                     span.glyphicon.glyphicon-floppy-disk
                     | Save
 
-            .save-error.alert.alert-danger.alert-dismissable.ng-cloak(ng-show="!savedSuccessfully && saveMessage")
-                button.close(type="button", data-dismiss="alert", aria-hidden="true") &times;
+            .save-error.alert.alert-danger.alert-dismissable.ng-cloak(ng-show="!isSaving && !savedSuccessfully && saveMessage")
                 | {{saveMessage}}
 
             // Delete Quiz
