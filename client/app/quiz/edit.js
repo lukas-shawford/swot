@@ -110,6 +110,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
 
     $scope.sortableOptions = {
         update: function(e, ui) { },
+        change: function(e, ui) { $scope.editQuizForm.$setDirty(); },
         placeholder: 'sortable-list-placeholder',
         forcePlaceholderSize: true,
         start: function (e, ui) {
