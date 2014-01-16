@@ -8,14 +8,14 @@ block content
             if (message != '')
                 div.alert.alert-danger
                     p !{message}
-            alert(ng-repeat="alert in alerts", type="alert.type", close="closeAlert($index)") {{alert.msg}}
+            alert.ng-cloak(ng-repeat="alert in alerts", type="alert.type", close="closeAlert($index)") {{alert.msg}}
 
             .form-group
                 label.control-label(for="quiz-name") Quiz Name:
                 .row.controls
                     .col-xs-6: input#quiz-name.form-control(type="text", name="name", ng-model="quiz.name", placeholder="Name")
                     .col-xs-6
-                        .btn-group.pull-right(ng-hide="isNew()")
+                        .btn-group.pull-right.ng-cloak(ng-hide="isNew()")
                             button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown")
                                 span.glyphicon.glyphicon-cog
                                 span.caret
@@ -32,7 +32,7 @@ block content
                 ul.sortable-list-container(ui-sortable="sortableOptions", ng-model="quiz.questions", ng-show="quiz.questions.length > 0")
                     li.question-container.sortable-list-item(ng-repeat="question in quiz.questions")
                         .question-header.clearfix
-                            span.question-number {{$index + 1}}.
+                            span.question-number.ng-cloak {{$index + 1}}.
                             .pull-right
                                     button.btn.btn-xs.btn-default(type="button", ng-click="removeQuestion($index)", tabindex="-1")
                                         span.glyphicon.glyphicon-trash
@@ -44,7 +44,7 @@ block content
                 span.glyphicon.glyphicon-plus
                 | Add Question
 
-            .pull-right
+            .pull-right.ng-cloak
                 span.save-message(class="{{savedSuccessfully ? '' : 'error'}}", ng-show="saveStatus") {{saveStatus}}
                 button.btn.btn-success(type="button", ng-click="save()")
                     span.glyphicon.glyphicon-floppy-disk
