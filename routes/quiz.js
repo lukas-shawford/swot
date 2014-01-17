@@ -119,6 +119,7 @@ exports.createForm = function (req, res) {
 exports.create = function (req, res, next) {
     var data = req.body;
     delete data._id;
+    if (!data.name) { data.name = "New Quiz"; }
 
     Quiz.createQuiz(data.name, data.questions, req.user, function (err, quiz) {
         if (err) {

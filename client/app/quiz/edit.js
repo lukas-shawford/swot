@@ -61,9 +61,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     };
 
     $scope.autosave = function () {
-        if (!$scope.isNew() && $scope.editQuizForm.$dirty) {
-            $scope.save();
-        }
+        if ($scope.editQuizForm.$dirty) { $scope.save(); }
     };
 
     $scope.deleteQuiz = function () {
