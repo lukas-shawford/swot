@@ -412,7 +412,6 @@ a {
 
     font-size: 1.1em;
     font-weight: bold;
-    cursor: move;
 }
 
 .edit-quiz .sortable-list-placeholder {
@@ -430,6 +429,10 @@ a {
 }
 
 .question-header { margin-bottom: .5em; }
+
+.edit-quiz .drag-handle { cursor: move; }
+
+.question-header-buttons .btn { margin-left: 0.5em; }
 
 .edit-quiz .save { margin-left: 1em; }
 

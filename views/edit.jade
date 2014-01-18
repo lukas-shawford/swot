@@ -33,9 +33,11 @@ block content
                     li.question-container.sortable-list-item(ng-repeat="question in quiz.questions")
                         .question-header.clearfix
                             span.question-number.ng-cloak {{$index + 1}}.
-                            .pull-right
-                                    button.btn.btn-xs.btn-default(type="button", ng-click="removeQuestion($index)", tabindex="-1")
-                                        span.glyphicon.glyphicon-trash
+                            .question-header-buttons.pull-right
+                                span.drag-handle.btn.btn-xs.btn-default
+                                    span.glyphicon.glyphicon-move
+                                button.btn.btn-xs.btn-default(type="button", ng-click="removeQuestion($index)", tabindex="-1")
+                                    span.glyphicon.glyphicon-trash
                         input.form-control(type="text", name="question", ng-model="question.questionText", placeholder="Question", focus-on="newQuestionAdded")
                         input.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer", ng-keydown="answerKeypress($index, $event)")
                 .no-questions.ng-cloak(ng-show="questions.length === 0") Nothing here yet! Click on "Add Question" below to start adding questions.
