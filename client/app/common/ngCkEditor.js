@@ -55,6 +55,7 @@ angular.module('swot').directive('ckedit', function ($parse) {
             };
             //options.extraPlugins = 'sourcedialog';
             //options.removePlugins = 'sourcearea';
+            options.title = false;
             var editorangular = CKEDITOR.inline(element[0], options); //invoke
  
             scope.$watch(attrs.ckedit, function (value) {
