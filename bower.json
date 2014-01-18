@@ -26,6 +26,7 @@
     "bootstrap-css": "~3.0.0",
     "bootstrap-javascript": "~2.3.2",
     "angular-ui-utils": "~0.1.0",
-    "jquery-ui": "~1.10.3"
+    "jquery-ui": "~1.10.3",
+    "ckeditor": "#stable/standard"
   }
 }
