@@ -38,7 +38,7 @@ block content
                                     span.glyphicon.glyphicon-move
                                 button.btn.btn-xs.btn-default(type="button", ng-click="removeQuestion($index)", tabindex="-1")
                                     span.glyphicon.glyphicon-trash
-                        input.form-control(type="text", name="question", ng-model="question.questionText", placeholder="Question", focus-on="newQuestionAdded")
+                        div(ckedit="question.questionText", focus-on="newQuestionAdded")
                         input.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer", ng-keydown="answerKeypress($index, $event)")
                 .no-questions.ng-cloak(ng-show="questions.length === 0") Nothing here yet! Click on "Add Question" below to start adding questions.
 
@@ -71,5 +71,7 @@ block content
 block scripts
     script.
         var _quizId = '!{quizId}';
+    script(src="/vendor/ckeditor/ckeditor.js")
+    script(src="/app/common/ngCkEditor.js")
     script(src="/app/quiz/quiz.js")
     script(src="/app/quiz/edit.js")

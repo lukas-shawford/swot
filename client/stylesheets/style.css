@@ -409,9 +409,6 @@ a {
     border: 1px dotted #aaa;
     border-radius: 5px;
     background-color: hsl(230, 32%, 97%);
-
-    font-size: 1.1em;
-    font-weight: bold;
 }
 
 .edit-quiz .sortable-list-placeholder {
@@ -426,6 +423,8 @@ a {
 
 .edit-quiz .question-number {
     margin: 0 0 .2em .8em;
+    font-size: 1.1em;
+    font-weight: bold;
 }
 
 .question-header { margin-bottom: .5em; }
