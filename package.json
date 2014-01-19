@@ -19,15 +19,15 @@
     "async": "~0.2.9",
     "moment": "~2.5.0",
     "bower": "~1.2.8",
-    "connect-mongo": "~0.4.0"
+    "connect-mongo": "~0.4.0",
+    "fs-extra": "~0.8.1",
+    "execSync": "~1.0.1-pre"
   },
   "devDependencies": {
     "chai": "~1.8.1",
     "mocha": "~1.16.1",
     "sinon": "~1.7.3",
-    "sinon-chai": "~2.4.0",
-    "fs-extra": "~0.8.1",
-    "execSync": "~1.0.1-pre"
+    "sinon-chai": "~2.4.0"
   },
   "engines": {
     "node": "0.10.x"
