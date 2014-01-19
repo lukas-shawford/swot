@@ -1,4 +1,4 @@
-angular.module('swot').controller('ViewQuizCtrl', function (quiz, $scope, focus) {
+angular.module('swot').controller('ViewQuizCtrl', [ '$scope', '$sce', 'quiz', 'focus', function ($scope, $sce, quiz, focus) {
     $scope._id = _quizId || null;
     $scope.questions = [{}];
     $scope.alerts = [];
@@ -63,6 +63,10 @@ angular.module('swot').controller('ViewQuizCtrl', function (quiz, $scope, focus)
         });
 
         $scope.jumpToQuestion(0);
+    };
+
+    $scope.trusted = function (html) {
+        return $sce.trustAsHtml(html);
     };
 
     $scope.currentQuestion = function () {
@@ -164,4 +168,4 @@ angular.module('swot').controller('ViewQuizCtrl', function (quiz, $scope, focus)
     else {
         $scope.showError('An error occurred while initializing the quiz: Quiz ID is missing.');
     }
-});
+}]);
