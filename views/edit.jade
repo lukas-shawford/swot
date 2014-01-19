@@ -43,7 +43,7 @@ block content
                                 .question-editor(ckedit="", ng-model="question.questionText", focus-on="newQuestionAdded")
                             .answer
                                 label.control-label Answer:
-                                .answer-editor(ckedit="", ng-model="question.answer", ng-keydown="answerKeypress($index, $event)")
+                                input.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer", ng-keydown="answerKeypress($index, $event)")
                 .no-questions.ng-cloak(ng-show="questions.length === 0") Nothing here yet! Click on "Add Question" below to start adding questions.
 
             button.btn.btn-success(type="button", ng-click="addQuestion()", tooltip-trigger="mouseenter", tooltip-placement="bottom", tooltip="{{addQuestionTooltip()}}")
