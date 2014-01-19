@@ -7,8 +7,9 @@ angular.module('swot').directive('ckedit', function ($parse) {
  
     return {
         restrict: 'A',
-        link: function (scope, element, attrs, controller) {
-            var getter = $parse(attrs.ckedit),
+        require: 'ngModel',
+        link: function (scope, element, attrs, ctrl) {
+            var getter = $parse(attrs.ngModel),
                 setter = getter.assign;
  
             attrs.$set('contenteditable', true); // inline ckeditor needs this
@@ -23,6 +24,7 @@ angular.module('swot').directive('ckedit', function ($parse) {
                     var ckValue = e.editor.getData();
                     scope.$apply(function () {
                         setter(scope, ckValue);
+                        ctrl.$setViewValue(ckValue);
                     });
                     ckValue = null;
                     e.editor.resetDirty();
@@ -63,7 +65,7 @@ angular.module('swot').directive('ckedit', function ($parse) {
             options.title = false;
             var editorangular = CKEDITOR.inline(element[0], options); //invoke
  
-            scope.$watch(attrs.ckedit, function (value) {
+            scope.$watch(attrs.ngModel, function (value) {
                 if (editorangular.getData() !== value) {
                     editorangular.setData(value);
                 }
