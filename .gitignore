@@ -2,6 +2,7 @@ node_modules/
 client/vendor/
 .bower-cache/
 .bower-registry/
+.bower-tmp/
 .idea/
 *.sublime-project
 *.sublime-workspace
