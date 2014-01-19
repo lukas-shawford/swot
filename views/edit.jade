@@ -44,7 +44,7 @@ block content
                             .answer.form-group
                                 label.control-label.col-xs-2 Answer:
                                 .col-xs-10
-                                    input.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer", ng-keydown="answerKeypress($index, $event)")
+                                    input.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer", ng-keydown="answerKeypress($index, $event)", auto-grow, max-width="443")
                 .no-questions.ng-cloak(ng-show="questions.length === 0") Nothing here yet! Click on "Add Question" below to start adding questions.
 
             button.btn.btn-success(type="button", ng-click="addQuestion()", tooltip-trigger="mouseenter", tooltip-placement="bottom", tooltip="{{addQuestionTooltip()}}")
@@ -78,5 +78,6 @@ block scripts
         var _quizId = '!{quizId}';
     script(src="/vendor/ckeditor/ckeditor.js")
     script(src="/app/common/ngCkEditor.js")
+    script(src="/app/common/autoGrowInput.js")
     script(src="/app/quiz/quiz.js")
     script(src="/app/quiz/edit.js")
