@@ -1,7 +1,16 @@
+// ngDebounce
+// ----------
+//
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
 // N milliseconds. If `immediate` is passed, trigger the function on the
 // leading edge, instead of the trailing.
+//
+// Borrowed from:
+// http://adamalbrecht.com/2013/10/30/auto-save-your-model-in-angular-js-with-watch-and-debounce/
+//
+// Used for: Periodically auto-saving the quiz in the quiz editor.
+//
 angular.module('ngDebounce', []).factory('$debounce', function($timeout, $q) {
   return function(func, wait, immediate) {
     var timeout;
