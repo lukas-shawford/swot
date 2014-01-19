@@ -77,7 +77,8 @@ a {
     margin: 0 auto;
     line-height: 50px;
     display: inline-block;
-    max-width: 300px;
+    max-width: 600px;
+    white-space: nowrap;
     overflow: visible;
 }
 
