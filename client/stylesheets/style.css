@@ -405,8 +405,8 @@ a {
 .edit-quiz .question-container {
     width: 100%;
     margin: 8px 0;
-    padding: 1em;
-    border: 1px dotted #aaa;
+    padding: 1em 2em;
+    border: 1px solid #ccc;
     border-radius: 5px;
     background-color: hsl(230, 32%, 97%);
 }
@@ -422,9 +422,19 @@ a {
 }
 
 .edit-quiz .question-number {
-    margin: 0 0 .2em .8em;
     font-size: 1.1em;
     font-weight: bold;
+}
+
+.edit-quiz .question { margin: 1em 0; }
+
+.edit-quiz .question-editor,
+.edit-quiz .answer-editor {
+    background-color: white;
+    border: 1px solid hsl(235, 60%, 85%);
+    border-radius: 4px;
+    padding: .6em 1em 0;
+    min-height: 36px;
 }
 
 .question-header { margin-bottom: .5em; }
