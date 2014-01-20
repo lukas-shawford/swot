@@ -13,7 +13,7 @@ block content
             .form-group
                 label.control-label(for="quiz-name") Quiz Name:
                 .row.controls
-                    .col-xs-6: input#quiz-name.form-control(type="text", name="name", ng-model="quiz.name", placeholder="Name")
+                    .col-xs-6: input#quiz-name.form-control(type="text", name="name", ng-model="quiz.name", placeholder="Name", autofocus)
                     .col-xs-6
                         .btn-group.pull-right.ng-cloak(ng-hide="isNew()")
                             button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown")
