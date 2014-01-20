@@ -44,7 +44,7 @@ block content
                             .question-header-buttons.pull-right
                                 span.drag-handle.btn.btn-xs.btn-default
                                     span.glyphicon.glyphicon-move
-                                button.btn.btn-xs.btn-default(type="button", ng-click="removeQuestion($index)", tabindex="-1")
+                                button.delete-question.btn.btn-xs.btn-default(type="button", confirm-button="removeQuestion($index)", message="Are you sure you want to remove this question?", tabindex="-1")
                                     span.glyphicon.glyphicon-trash
                         .question-body.form-horizontal
                             .question.form-group
@@ -75,6 +75,7 @@ block scripts
     script.
         var _quizId = '!{quizId}';
     script(src="/vendor/ckeditor/ckeditor.js")
+    script(src="/app/common/confirmButton.js")
     script(src="/app/common/ngCkEditor.js")
     script(src="/app/common/autoGrowInput.js")
     script(src="/app/quiz/quiz.js")
