@@ -16,6 +16,7 @@
  *     - title="Confirm": Changes the title text on the popover
  *     - yes="Yep": Changes the text of the "Yes" button
  *     - no="Nope": Changes the text of the "No" button
+ *     - classes="mypopover warning": CSS classes to apply to the popover (separated by space)
  *
  * This was borrowed and slightly modified from here:
  * http://wegnerdesign.com/blog/angular-js-directive-tutorial-on-attribute-bootstrap-confirm-button/
@@ -24,7 +25,7 @@ angular.module('swot').directive('confirmButton', function ($document, $parse) {
     return {
         restrict: 'A',
         link: function (scope, element, attrs) {
-            var buttonId, html, message, nope, title, yep;
+            var buttonId, html, message, nope, title, yep, classes;
       
             buttonId = Math.floor(Math.random() * 10000000000);
 
@@ -34,8 +35,9 @@ angular.module('swot').directive('confirmButton', function ($document, $parse) {
             yep = attrs.yes || "Yes";
             nope = attrs.no || "No";
             title = attrs.title || "Confirm";
+            classes = attrs.classes || "";
       
-            html = "<div id=\"button-" + buttonId + "\">" +
+            html = "<div id=\"button-" + buttonId + "\" class=\"" + classes + "\">" +
                         "<p class=\"confirmbutton-msg\">" + message + "</p>" +
                         "<button class=\"confirmbutton-yes btn btn-danger\">" + yep + "</button>" +
                         "<button class=\"confirmbutton-no btn\">" + nope + "</button>" +

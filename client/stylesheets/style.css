@@ -195,6 +195,9 @@ a {
     -o-text-overflow: ellipsis;  // for Opera 9 & 10
 }
 
+/* Confirmation popover */
+.confirm-popover { width: 20em; }
+
 /*
  * My Quizzes
  * ---------- */
