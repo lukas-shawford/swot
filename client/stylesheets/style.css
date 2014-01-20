@@ -372,7 +372,7 @@ a {
 
 .edit-quiz {
     width: 50em;
-    margin: 1em auto 2em;
+    margin: 1em auto 5em;
 }
 
 .edit-quiz .header-container .btn {
@@ -384,14 +384,7 @@ a {
     text-align: center;
 }
 
-.edit-quiz .question-list-container {
-    margin-bottom: 1em;
-    padding-right: 2em;
-    max-height: 68vh;
-    overflow-y: auto;
-    border-bottom: 1px solid #999;
-    border-top: 1px solid #999;
-}
+.edit-quiz .question-list-container { margin-bottom: 1em; }
 
 .edit-quiz .question-list-container .sortable-list-container {
     padding: 0;
