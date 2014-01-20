@@ -55,15 +55,40 @@ angular.module('swot').directive('ckedit', function ($parse) {
                     editor.ui.addButton('Save', { label: 'Save', command: 'save', toolbar: 'document' });
                 }
             };
-            var options = {};
-            options.on = {
+            var config = {};
+            config.on = {
                 blur: updateModel,
                 change: updateModel
             };
-            //options.extraPlugins = 'sourcedialog';
-            //options.removePlugins = 'sourcearea';
-            options.title = false;
-            var editorangular = CKEDITOR.inline(element[0], options); //invoke
+            //config.extraPlugins = 'sourcedialog';
+            //config.removePlugins = 'sourcearea';
+
+            config.toolbar = [
+                { name:  'lists_and_indentation',
+                  items: [  'NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Blockquote',
+                            '-',
+                            'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock',
+                            '-',
+                            'Link', 'Unlink', '-' ] },
+
+                { name:  'tables_and_images',
+                  items: [  'Image', 'Table', 'HorizontalRule', 'SpecialChar' ] },
+
+                '/',
+
+                { name:  'formatting',
+                  items: [  'Bold', 'Italic', 'Underline',
+                            '-',
+                            'TextColor', 'BGColor',
+                            '-',
+                            'Superscript', 'Subscript', 'Strike',
+                            '-',
+                            'RemoveFormat' , 'Font', 'FontSize'
+                            ] },
+            ];
+
+            config.title = false;
+            var editorangular = CKEDITOR.inline(element[0], config); //invoke
  
             scope.$watch(attrs.ngModel, function (value) {
                 if (editorangular.getData() !== value) {
