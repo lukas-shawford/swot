@@ -40,7 +40,7 @@ block content
                                     span.glyphicon.glyphicon-trash
                         .question-body.form-horizontal
                             .question.form-group
-                                .question-editor(ckedit="", ng-model="question.questionHtml", focus-on="newQuestionAdded")
+                                .question-editor(ckedit="{{ckEditorConfig}}", ng-model="question.questionHtml", focus-on="newQuestionAdded")
                             .answer.form-group
                                 label.control-label.col-xs-2 Answer:
                                 .col-xs-10

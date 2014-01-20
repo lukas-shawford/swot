@@ -55,39 +55,20 @@ angular.module('swot').directive('ckedit', function ($parse) {
                     editor.ui.addButton('Save', { label: 'Save', command: 'save', toolbar: 'document' });
                 }
             };
+
+            // Load the config from the ckedit attribute
             var config = {};
+            if (attrs.ckedit) {
+                config = angular.fromJson(attrs.ckedit);
+            }
+
+            // Set defaults and internal config options
             config.on = {
                 blur: updateModel,
                 change: updateModel
             };
-            //config.extraPlugins = 'sourcedialog';
-            //config.removePlugins = 'sourcearea';
 
-            config.toolbar = [
-                { name:  'lists_and_indentation',
-                  items: [  'NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Blockquote',
-                            '-',
-                            'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock',
-                            '-',
-                            'Link', 'Unlink', '-' ] },
-
-                { name:  'tables_and_images',
-                  items: [  'Image', 'Table', 'HorizontalRule', 'SpecialChar' ] },
-
-                '/',
-
-                { name:  'formatting',
-                  items: [  'Bold', 'Italic', 'Underline',
-                            '-',
-                            'TextColor', 'BGColor',
-                            '-',
-                            'Superscript', 'Subscript', 'Strike',
-                            '-',
-                            'RemoveFormat' , 'Font', 'FontSize'
-                            ] },
-            ];
-
-            config.title = false;
+            config.title = false;   // Remove the useless tooltip
             var editorangular = CKEDITOR.inline(element[0], config); //invoke
  
             scope.$watch(attrs.ngModel, function (value) {
