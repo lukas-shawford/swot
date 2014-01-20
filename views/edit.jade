@@ -10,22 +10,30 @@ block content
                     p !{message}
             alert.ng-cloak(ng-repeat="alert in alerts", type="alert.type", close="closeAlert($index)") {{alert.msg}}
 
-            .form-group
+            .header-container.form-group
                 label.control-label(for="quiz-name") Quiz Name:
                 .row.controls
                     .col-xs-6: input#quiz-name.form-control(type="text", name="name", ng-model="quiz.name", placeholder="Name", autofocus)
                     .col-xs-6
-                        .btn-group.pull-right.ng-cloak(ng-hide="isNew()")
-                            button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown")
-                                span.glyphicon.glyphicon-cog
-                                span.caret
-                            ul.dropdown-menu(role="menu")
-                                li: a(href="#", ng-click="exportJson()")
-                                    i.glyphicon.glyphicon-menu.glyphicon-cloud-download
-                                    | Export as JSON
-                                li: a(data-toggle="modal", href="#deleteDialog", ng-hide="isNew()")
-                                    i.glyphicon.glyphicon-menu.glyphicon-remove
-                                    | Delete
+                        .pull-right
+                            span.save-message(class="{{savedSuccessfully ? '' : 'error'}}", ng-show="!isSaving && saveStatus") {{saveStatus}}
+                            .spinner.ng-cloak(ng-show="isSaving")
+                            button.save.btn.btn-success(type="button", ng-click="save()", ng-disabled="isSaving")
+                                span.glyphicon.glyphicon-floppy-disk
+                                | Save
+                            .btn-group.ng-cloak(ng-hide="isNew()")
+                                button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown")
+                                    span.glyphicon.glyphicon-cog
+                                    span.caret
+                                ul.dropdown-menu(role="menu")
+                                    li: a(href="#", ng-click="exportJson()")
+                                        i.glyphicon.glyphicon-menu.glyphicon-cloud-download
+                                        | Export as JSON
+                                    li: a(data-toggle="modal", href="#deleteDialog", ng-hide="isNew()")
+                                        i.glyphicon.glyphicon-menu.glyphicon-remove
+                                        | Delete
+                .save-error.alert.alert-danger.alert-dismissable.ng-cloak(ng-show="!isSaving && !savedSuccessfully && saveMessage")
+                    | {{saveMessage}}
 
             label.control-label Questions:
             .question-list-container
@@ -50,16 +58,6 @@ block content
             button.btn.btn-success(type="button", ng-click="addQuestion()", tooltip-trigger="mouseenter", tooltip-placement="bottom", tooltip="{{addQuestionTooltip()}}")
                 span.glyphicon.glyphicon-plus
                 | Add Question
-
-            .pull-right.ng-cloak
-                span.save-message(class="{{savedSuccessfully ? '' : 'error'}}", ng-show="!isSaving && saveStatus") {{saveStatus}}
-                .spinner.ng-cloak(ng-show="isSaving")
-                button.save.btn.btn-success(type="button", ng-click="save()", ng-disabled="isSaving")
-                    span.glyphicon.glyphicon-floppy-disk
-                    | Save
-
-            .save-error.alert.alert-danger.alert-dismissable.ng-cloak(ng-show="!isSaving && !savedSuccessfully && saveMessage")
-                | {{saveMessage}}
 
             // Delete Quiz
             div#deleteDialog.modal.fade(tabindex="-1", role="dialog", aria-hidden="true")

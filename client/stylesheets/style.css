@@ -375,14 +375,8 @@ a {
     margin: 1em auto 2em;
 }
 
-.edit-quiz .header-container {
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-.edit-quiz .header-container h2 {
-    float: left;
-    margin: 0;
+.edit-quiz .header-container .btn {
+    margin-left: .4em;
 }
 
 .edit-quiz .no-questions {
