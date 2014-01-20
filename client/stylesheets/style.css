@@ -169,7 +169,18 @@ a {
  * Sortable Lists
  * -------------- */
 
-.sortable-list-container { list-style: none outside none; }
+.sortable-list-container, .shadow-list { list-style: none outside none; }
+
+.sortable-list-container li {
+    float: left;
+    position: relative;
+    z-index: 5;
+}
+
+.shadow-list li {
+    position: absolute;
+    z-index: 1;
+}
 
 
 /*

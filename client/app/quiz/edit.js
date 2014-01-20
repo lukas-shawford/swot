@@ -112,12 +112,101 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
 
     $scope.sortableOptions = {
         update: function(e, ui) { },
-        change: function(e, ui) { $scope.editQuizForm.$setDirty(); },
         placeholder: 'sortable-list-placeholder',
         handle: '.drag-handle',
         forcePlaceholderSize: true,
         start: function (e, ui) {
             ui.placeholder.height(ui.item.outerHeight());
+
+            var $list = $(ui.item).closest('.ui-sortable');
+
+            // Clear any previous shadow lists
+            $('.shadow-list').remove();
+
+            // Create a shadow list by cloning the original
+            var $shadow = $('<ul></ul>', {
+                'class': 'shadow-list'
+            });
+            $list.after($shadow);
+
+            // Loop over the original list items...
+            $list.children("li").each(function() {
+
+                // clone the original items to make their
+                // absolute-positioned counterparts...
+                var item = $(this);
+                var item_clone = item.clone();
+                
+                // 'store' the clone for later use...
+                item.data("clone", item_clone);
+
+                // set the initial position/size of the clone
+                var position = item.position();
+                item_clone.css("left", position.left);
+                item_clone.css("top", position.top);
+                item_clone.width(item.outerWidth());
+
+                // append the clone...
+                $shadow.append(item_clone);
+            });
+
+            // loop through the items, except the one we're
+            // currently dragging, and hide it...
+            ui.helper.addClass("exclude-me");
+            $list.children("li:not(.exclude-me)").css("visibility", "hidden");
+
+            // get the clone that's under it and hide it...
+            ui.helper.data("clone").hide();
+        },
+        change: function(e, ui) {
+            $scope.editQuizForm.$setDirty();
+
+            var $list = $(ui.item).closest('.ui-sortable');
+
+            // get all invisible items that are also not placeholders
+            // and process them when ordering changes...
+            $list.find("li:not(.exclude-me, .ui-sortable-placeholder)").each(function() {
+                var item = jQuery(this);
+                var clone = item.data("clone");
+
+                // stop current clone animations...
+                clone.stop(true, false);
+
+                // get the invisible item, which has snapped to a new
+                // location, get its position, and animate the visible
+                // clone to it...
+                var position = item.position();
+                clone.animate( { left: position.left, top:position.top }, 500);
+            });
+        },
+        stop: function (e, ui) {
+            var $list = $(ui.item).closest('.ui-sortable');
+
+            // get the item we were just dragging, and
+            // its clone, and adjust accordingly...
+            $list.children("li.exclude-me").each(function(){
+                var item = $(this);
+                var clone = item.data("clone");
+                var position = item.position();
+
+                // move the clone under the item we've just dropped...
+                clone.css("left", position.left);
+                clone.css("top", position.top);
+                clone.show();
+
+                // remove unnecessary class...
+                item.removeClass("exclude-me");
+
+                // Remove the "position: relative;" style that was added to the item - otherwise,
+                // this item will look wrong when reordering things a second time.
+                item.css("position", "");
+            });
+
+            // make sure all our original items are visible again...
+            $list.children("li").css("visibility", "visible");
+
+            // Remove the shadow list
+            $('.shadow-list').remove();
         }
     };
 
