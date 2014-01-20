@@ -6,6 +6,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     };
     $scope.alerts = [];
     $scope.saveStatus = "";
+    $scope.saveStatusTimeout = null;
     $scope.saveMessage = "";
     $scope.isSaving = false;
     $scope.savedSuccessfully = true;
@@ -27,11 +28,15 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         $scope.closeAllAlerts();
         $scope.isSaving = true;
 
+        if ($scope.saveStatusTimeout !== null) {
+            $timeout.cancel($scope.saveStatusTimeout);
+        }
+
         var onSaveFinished = function () {
             $scope.saveStatus = "Saved";
             $scope.savedSuccessfully = true;
             $scope.isSaving = false;
-            $timeout(function () {
+            $scope.saveStatusTimeout = $timeout(function () {
                 $scope.saveStatus = "";
             }, 2000);
             if (typeof (callback) === 'function') {
@@ -136,7 +141,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
                 // absolute-positioned counterparts...
                 var item = $(this);
                 var item_clone = item.clone();
-                
+
                 // 'store' the clone for later use...
                 item.data("clone", item_clone);
 
