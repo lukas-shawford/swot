@@ -87,15 +87,15 @@ describe('quiz', function () {
         before(function (done) {
             var questions = [
                 {
-                    questionText: "What is the capital of North Dakota?",
+                    questionHtml: "What is the capital of North Dakota?",
                     answer: "Bismarck"
                 },
                 {
-                    questionText: "What is the default squawk code for VFR aircraft in the United States?",
+                    questionHtml: "What is the default squawk code for VFR aircraft in the United States?",
                     answer: "1200"
                 },
                 {
-                    questionText: "You are a senior executive at a Pharmacy Benefit Management (PBM) firm. After a recent acquisition of another PBM, your firm is now able to offer clients a wider range of sophisticated administrative and clinically-based services. Does this represent a strength or an opportunity according to SWOT analysis?",
+                    questionHtml: "You are a senior executive at a Pharmacy Benefit Management (PBM) firm. After a recent acquisition of another PBM, your firm is now able to offer clients a wider range of sophisticated administrative and clinically-based services. Does this represent a strength or an opportunity according to SWOT analysis?",
                     answer: "strength"
                 }
             ];
@@ -115,11 +115,11 @@ describe('quiz', function () {
 
                 // Ensure questions got saved
                 expect(quiz.questions).to.have.length(3);
-                expect(quiz.questions[0].questionText).to.equal("What is the capital of North Dakota?");
+                expect(quiz.questions[0].questionHtml).to.equal("What is the capital of North Dakota?");
                 expect(quiz.questions[0].answer).to.equal("Bismarck");
-                expect(quiz.questions[1].questionText).to.equal("What is the default squawk code for VFR aircraft in the United States?");
+                expect(quiz.questions[1].questionHtml).to.equal("What is the default squawk code for VFR aircraft in the United States?");
                 expect(quiz.questions[1].answer).to.equal("1200");
-                expect(quiz.questions[2].questionText).to.equal("You are a senior executive at a Pharmacy Benefit Management (PBM) firm. After a recent acquisition of another PBM, your firm is now able to offer clients a wider range of sophisticated administrative and clinically-based services. Does this represent a strength or an opportunity according to SWOT analysis?");
+                expect(quiz.questions[2].questionHtml).to.equal("You are a senior executive at a Pharmacy Benefit Management (PBM) firm. After a recent acquisition of another PBM, your firm is now able to offer clients a wider range of sophisticated administrative and clinically-based services. Does this represent a strength or an opportunity according to SWOT analysis?");
                 expect(quiz.questions[2].answer).to.equal("strength");
 
                 // Ensure quiz is associated with the user

@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node app.js",
     "test": "mocha",
-    "postinstall": "./node_modules/bower/bin/bower install"
+    "prepublish": "node prepublish.js"
   },
   "dependencies": {
     "express": "3.4.5",
@@ -19,7 +19,9 @@
     "async": "~0.2.9",
     "moment": "~2.5.0",
     "bower": "~1.2.8",
-    "connect-mongo": "~0.4.0"
+    "connect-mongo": "~0.4.0",
+    "fs-extra": "~0.8.1",
+    "execSync": "~1.0.1-pre"
   },
   "devDependencies": {
     "chai": "~1.8.1",

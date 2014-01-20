@@ -22,8 +22,7 @@ block content
 
             .question-container(ng-hide="showingSummary")
 
-                .question.ng-cloak
-                    {{currentQuestion().question}}
+                .question.ng-cloak(ng-bind-html="trusted(currentQuestion().question)")
 
                 .submission
                     input.form-control(type="text", ng-model="currentQuestion().submission", focus-on="switchedQuestion"
@@ -62,7 +61,7 @@ block content
         #quiz-sidebar(ng-if="questions.length > 0")
             .list-group(ng-model="questions")
                 a.list-group-item(href="#", ng-repeat="question in questions", ng-click="jumpToQuestion($index)", ng-class="{active: (!showingSummary && $index === currentQuestionIndex)}")
-                    span.question.ellipsis {{$index+1}}. {{question.question}}
+                    span.question.ellipsis {{$index+1}}. {{question.question | htmlToPlainText}}
                     span.status.ng-cloak
                         span.glyphicon.correct.glyphicon-ok-sign(ng-if="question.submitted && question.isCorrect")
                         span.glyphicon.incorrect.glyphicon-remove-sign(ng-if="question.submitted && !question.isCorrect")
@@ -78,5 +77,6 @@ block content
 block scripts
     script.
         var _quizId = '!{quizId}';
+    script(src="/app/common/htmlToPlainText.js")
     script(src="/app/quiz/quiz.js")
     script(src="/app/quiz/view.js")

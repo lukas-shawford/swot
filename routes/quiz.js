@@ -68,7 +68,7 @@ exports.questions = function(req, res, next) {
         }
 
         // Load the questions only (not the answers)
-        var questions = _.map(quiz.questions, function(question) { return question.questionText });
+        var questions = _.map(quiz.questions, function(question) { return question.questionHtml });
 
         res.json({ success: true, questions: questions });
     });

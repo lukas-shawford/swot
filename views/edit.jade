@@ -13,7 +13,7 @@ block content
             .form-group
                 label.control-label(for="quiz-name") Quiz Name:
                 .row.controls
-                    .col-xs-6: input#quiz-name.form-control(type="text", name="name", ng-model="quiz.name", placeholder="Name")
+                    .col-xs-6: input#quiz-name.form-control(type="text", name="name", ng-model="quiz.name", placeholder="Name", autofocus)
                     .col-xs-6
                         .btn-group.pull-right.ng-cloak(ng-hide="isNew()")
                             button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown")
@@ -38,8 +38,13 @@ block content
                                     span.glyphicon.glyphicon-move
                                 button.btn.btn-xs.btn-default(type="button", ng-click="removeQuestion($index)", tabindex="-1")
                                     span.glyphicon.glyphicon-trash
-                        input.form-control(type="text", name="question", ng-model="question.questionText", placeholder="Question", focus-on="newQuestionAdded")
-                        input.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer", ng-keydown="answerKeypress($index, $event)")
+                        .question-body.form-horizontal
+                            .question.form-group
+                                .question-editor(ckedit="{{ckEditorConfig}}", ng-model="question.questionHtml", focus-on="newQuestionAdded")
+                            .answer.form-group
+                                label.control-label.col-xs-2 Answer:
+                                .col-xs-10
+                                    input.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer", ng-keydown="answerKeypress($index, $event)", auto-grow, max-width="443")
                 .no-questions.ng-cloak(ng-show="questions.length === 0") Nothing here yet! Click on "Add Question" below to start adding questions.
 
             button.btn.btn-success(type="button", ng-click="addQuestion()", tooltip-trigger="mouseenter", tooltip-placement="bottom", tooltip="{{addQuestionTooltip()}}")
@@ -71,5 +76,8 @@ block content
 block scripts
     script.
         var _quizId = '!{quizId}';
+    script(src="/vendor/ckeditor/ckeditor.js")
+    script(src="/app/common/ngCkEditor.js")
+    script(src="/app/common/autoGrowInput.js")
     script(src="/app/quiz/quiz.js")
     script(src="/app/quiz/edit.js")

@@ -121,6 +121,32 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         }
     };
 
+    $scope.ckEditorConfig = {
+        toolbar : [
+            { name:  'lists_and_indentation',
+              items: [  'NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Blockquote',
+                        '-',
+                        'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock',
+                        '-',
+                        'Link', 'Unlink', '-' ] },
+
+            { name:  'tables_and_images',
+              items: [  'Image', 'Table', 'HorizontalRule', 'SpecialChar' ] },
+
+            '/',
+
+            { name:  'formatting',
+              items: [  'Bold', 'Italic', 'Underline',
+                        '-',
+                        'TextColor', 'BGColor',
+                        '-',
+                        'Superscript', 'Subscript', 'Strike',
+                        '-',
+                        'RemoveFormat' , 'Font', 'FontSize'
+                        ] },
+        ]
+    };
+
     $scope.addQuestionTooltip = function () {
         if ($scope.addQuestionTooltipsRemaining <= 0 || $scope.quiz.questions.length == 0) {
             return "";
