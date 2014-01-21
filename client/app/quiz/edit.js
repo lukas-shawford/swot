@@ -25,6 +25,8 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     };
 
     $scope.save = function (callback) {
+        if ($scope.isSaving) { return; }
+
         $scope.closeAllAlerts();
         $scope.isSaving = true;
 
@@ -38,6 +40,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             $scope.isSaving = false;
             $scope.saveStatusTimeout = $timeout(function () {
                 $scope.saveStatus = "";
+                $scope.saveStatusTimeout = null;
             }, 2000);
             if (typeof (callback) === 'function') {
                 callback(true);
