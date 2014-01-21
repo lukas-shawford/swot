@@ -65,7 +65,10 @@ angular.module('swot').directive('ckedit', function ($parse) {
             // Set defaults and internal config options
             config.on = {
                 blur: updateModel,
-                change: updateModel
+                change: updateModel,
+                instanceReady: function () {
+                    scope.$emit('editorReady');
+                }
             };
 
             config.title = false;   // Remove the useless tooltip

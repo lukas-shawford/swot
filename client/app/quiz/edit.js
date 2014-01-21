@@ -10,7 +10,14 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     $scope.saveMessage = "";
     $scope.isSaving = false;
     $scope.savedSuccessfully = true;
-    $scope.addQuestionTooltipsRemaining = 2;    // Stop showing the tooltip after adding a couple questions.
+
+    // Stop showing the tooltip after adding a couple questions.
+    $scope.addQuestionTooltipsRemaining = 2;
+    
+    // Keep track of when a new question is being added. This is flipped to true when user clicks on
+    // Add Question (or adds a question by hitting TAB), and stays true until the question editor
+    // has finished loading.
+    $scope.addingNewQuestion = false;
     
     $scope.isNew = function () {
         return $scope.quiz._id === null;
@@ -87,8 +94,11 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     $scope.addQuestion = function () {
         $scope.quiz.questions.push({});
 
-        // Focus on the first input field for the newly-added question
-        focus('newQuestionAdded');
+        // Flip this to true to denote that we're currently initializing a new question editor
+        // instance. Below, we're listening for the "editorReady" event (fired by ckedit directive,
+        // defined in ngCkEditor.js) which signifies that CKEditor has finished loading, at which
+        // point we set focus to the newly added question and flip this back to false.
+        $scope.addingNewQuestion = true;
 
         // Mark the form as dirty
         $scope.editQuizForm.$setDirty();
@@ -100,6 +110,14 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             $scope.addQuestionTooltipsRemaining--;
         }
     };
+
+    $scope.$on('editorReady', function (event, args) {
+        // Set focus to the question editor field for the newly-added question.
+        if ($scope.addingNewQuestion) {
+            focus('newQuestionAdded');
+            $scope.addingNewQuestion = false;
+        }
+    });
 
     $scope.removeQuestion = function (index) {
         $scope.quiz.questions.splice(index, 1);
