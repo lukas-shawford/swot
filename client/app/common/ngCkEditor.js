@@ -76,6 +76,10 @@ angular.module('swot').directive('ckedit', function ($parse) {
                     editorangular.setData(value);
                 }
             });
+
+            scope.$on('blurEditor', function (event, args) {
+                $(editorangular.element).blur();
+            });
         }
     }
  

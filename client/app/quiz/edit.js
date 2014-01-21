@@ -99,6 +99,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     };
 
     $scope.removeQuestion = function (index) {
+        $scope.$broadcast('blurEditor');
         $scope.quiz.questions.splice(index, 1);
         $scope.editQuizForm.$setDirty();
     };
