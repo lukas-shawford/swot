@@ -5,6 +5,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         questions: [{}]
     };
     $scope.alerts = [];
+    $scope.finishedLoading = false;
     $scope.saveStatus = "";
     $scope.saveStatusTimeout = null;
     $scope.saveMessage = "";
@@ -26,6 +27,14 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     $scope.load = function () {
         quiz.load($scope.quiz._id, function (response) {
             $scope.quiz = response.quiz;
+
+            // Use a timeout as a hacky way to prevent the add question animations from running on
+            // all the questions in the quiz upon initial load. We just want the animations to run
+            // on newly-added questions.
+            $timeout(function () {
+                $scope.finishedLoading = true;
+            }, 1);
+            
         }, function (error) {
             $scope.showError('An error occurred while loading the quiz: \n' + error);
         });
@@ -112,10 +121,16 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     };
 
     $scope.$on('editorReady', function (event, args) {
-        // Set focus to the question editor field for the newly-added question.
+        // Set focus to the question editor field for the newly-added question once the editor has
+        // finished loading. An additional 500ms delay is added so the new question animation can
+        // finish playing (slide the question in from the left, expand it vertically, and fade it
+        // in). The delay is important because the ckeditor toolbar will not be lined up with the
+        // field otherwise.
         if ($scope.addingNewQuestion) {
-            focus('newQuestionAdded');
-            $scope.addingNewQuestion = false;
+            $timeout(function () {
+                focus('newQuestionAdded');
+                $scope.addingNewQuestion = false;
+            }, 500);
         }
     });
 

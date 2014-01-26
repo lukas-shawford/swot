@@ -38,7 +38,7 @@ block content
             label.control-label Questions:
             .question-list-container
                 ul.sortable-list-container(ui-sortable="sortableOptions", ng-model="quiz.questions", ng-show="quiz.questions.length > 0")
-                    li.question-container.sortable-list-item(ng-repeat="question in quiz.questions")
+                    li.question-container.sortable-list-item(ng-repeat="question in quiz.questions", ng-class="{'animate-list-item': finishedLoading}")
                         .question-header.clearfix
                             span.question-number.ng-cloak {{$index + 1}}.
                             .question-header-buttons.pull-right
@@ -79,5 +79,6 @@ block scripts
     script(src="/app/common/confirmButton.js")
     script(src="/app/common/ngCkEditor.js")
     script(src="/app/common/autoGrowInput.js")
+    script(src="/app/common/animations.js")
     script(src="/app/quiz/quiz.js")
     script(src="/app/quiz/edit.js")

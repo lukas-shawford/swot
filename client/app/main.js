@@ -4,5 +4,6 @@ angular.module('swot', [
     'ui.sortable',
     'focus',
     'confirmExit',
-    'ngDebounce'
+    'ngDebounce',
+    'ngAnimate'
 ]);
