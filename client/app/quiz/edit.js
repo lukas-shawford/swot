@@ -109,6 +109,12 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         // point we set focus to the newly added question and flip this back to false.
         $scope.addingNewQuestion = true;
 
+        // Initially set focus to the Add Question button rather than the question editor. We should
+        // only set focus to the question editor after CKEditor has finished loading and the new
+        // question animation has finished playing; otherwise, we'll encounter issues with the
+        // CKEditor toolbar jittering, and the document scrolling in the wrong direction.
+        focus('beginAddNewQuestion');
+
         // Mark the form as dirty
         $scope.editQuizForm.$setDirty();
 
@@ -128,7 +134,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         // field otherwise.
         if ($scope.addingNewQuestion) {
             $timeout(function () {
-                focus('newQuestionAdded');
+                focus('newQuestionReady');
                 $scope.addingNewQuestion = false;
             }, 500);
         }

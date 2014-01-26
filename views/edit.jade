@@ -49,14 +49,14 @@ block content
                                     span.glyphicon.glyphicon-trash
                         .question-body.form-horizontal
                             .question.form-group
-                                .question-editor(ckedit="{{ckEditorConfig}}", ng-model="question.questionHtml", focus-on="newQuestionAdded")
+                                .question-editor(ckedit="{{ckEditorConfig}}", ng-model="question.questionHtml", focus-on="newQuestionReady")
                             .answer.form-group
                                 label.control-label.col-xs-2 Answer:
                                 .col-xs-10
                                     input.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer", ng-keydown="answerKeypress($index, $event)", auto-grow, max-width="443")
                 .no-questions.ng-cloak(ng-show="questions.length === 0") Nothing here yet! Click on "Add Question" below to start adding questions.
 
-            button.btn.btn-success(type="button", ng-click="addQuestion()", tooltip-trigger="mouseenter", tooltip-placement="bottom", tooltip="{{addQuestionTooltip()}}")
+            button.btn.btn-success(type="button", ng-click="addQuestion()", tooltip-trigger="mouseenter", tooltip-placement="bottom", tooltip="{{addQuestionTooltip()}}", focus-on="beginAddNewQuestion")
                 span.glyphicon.glyphicon-plus
                 | Add Question
 
