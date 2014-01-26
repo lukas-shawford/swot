@@ -163,7 +163,20 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         handle: '.drag-handle',
         forcePlaceholderSize: true,
         start: function (e, ui) {
+
+            // Save a snapshot of the questions array. We'll compare it to see if it changed when
+            // the user has finished reordering, and only mark the form as dirty if the order has
+            // actually changed.
+            $scope.questionsCopyOnStartReorder = $scope.quiz.questions.slice(0);
+
+            // Set the placeholder height to match the question's actual (outer) height.
             ui.placeholder.height(ui.item.outerHeight());
+
+            // Everything below here is used for the reordering animations (smoothly move the
+            // questions around, instead of having them snap into their new positions). Only the
+            // brave should venture here.
+            // REFERENCE: http://stackoverflow.com/questions/5060357/jquery-sortable-with-animation/13416536#13416536
+            // --------------------------
 
             var $list = $(ui.item).closest('.ui-sortable');
 
@@ -206,7 +219,9 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             ui.helper.data("clone").hide();
         },
         change: function(e, ui) {
-            $scope.editQuizForm.$setDirty();
+            
+            // More code related to animating the transitions when reordering...
+            // --------------------------
 
             var $list = $(ui.item).closest('.ui-sortable');
 
@@ -227,6 +242,15 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             });
         },
         stop: function (e, ui) {
+
+            // Mark the quiz as dirty, but only if the order of questions has actually changed.
+            if (!_.isEqual($scope.questionsCopyOnStartReorder, $scope.quiz.questions)) {
+                $scope.editQuizForm.$setDirty();
+            }
+
+            // More code related to animating the transitions when reordering...
+            // --------------------------
+
             var $list = $(ui.item).closest('.ui-sortable');
 
             // get the item we were just dragging, and
