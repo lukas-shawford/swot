@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "test": "mocha",
+    "test": "mocha test/unit",
     "prepublish": "node prepublish.js"
   },
   "dependencies": {

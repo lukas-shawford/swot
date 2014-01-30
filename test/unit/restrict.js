@@ -1,4 +1,4 @@
-var restrict = require('../lib/middleware/restrict');
+var restrict = require('../../lib/middleware/restrict');
 var chai = require('chai');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');

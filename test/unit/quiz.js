@@ -2,8 +2,8 @@ var expect = require('chai').expect;
 var mongoose = require('mongoose');
 var async = require('async');
 var _ = require('underscore');
-var User = require('../lib/user');
-var Quiz = require('../lib/quiz');
+var User = require('../../lib/user');
+var Quiz = require('../../lib/quiz');
 
 var MONGODB_URL = process.env.MONGODB_TEST_URL || 'localhost:27017/swot_test';
 

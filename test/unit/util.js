@@ -1,4 +1,4 @@
-var util = require('../lib/util');
+var util = require('../../lib/util');
 var expect = require('chai').expect;
 
 describe('util', function () {
