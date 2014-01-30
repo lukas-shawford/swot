@@ -27,7 +27,8 @@
     "chai": "~1.8.1",
     "mocha": "~1.16.1",
     "sinon": "~1.7.3",
-    "sinon-chai": "~2.4.0"
+    "sinon-chai": "~2.4.0",
+    "protractor": "~0.17.0"
   },
   "engines": {
     "node": "0.10.x"
