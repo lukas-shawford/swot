@@ -29,5 +29,5 @@ exports.config = {
    * You can specify a file containing code to run by setting onPrepare to
    * the filename string.
    */
-  onPrepare: 'test/e2e/onPrepare.js'
+  onPrepare: 'test/e2e/login.js'
 };

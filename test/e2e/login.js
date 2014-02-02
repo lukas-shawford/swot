@@ -1,6 +1,6 @@
 /**
- * onPrepare.js
- * ------------
+ * login.js
+ * --------
  *
  * Preparation script for end-to-end tests using Protractor. This script gets run once, after
  * Protractor has finished loading, but before any of the actual tests are run. The purpose of this
