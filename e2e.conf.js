@@ -5,7 +5,7 @@ exports.config = {
   seleniumAddress: 'http://localhost:4444/wd/hub',
 
   // The base URL of the app we're testing
-  baseUrl: 'http://localhost:3000/',
+  baseUrl: 'http://localhost:' + (process.env.PORT || '3033') + '/',
 
   // Capabilities to be passed to the webdriver instance.
   capabilities: {
