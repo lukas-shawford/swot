@@ -14,7 +14,7 @@ exports.config = {
 
   // Spec patterns are relative to the current working directly when
   // protractor is called.
-  specs: ['test/e2e/**/*.js'],
+  specs: ['test/e2e/*/**/*.js'],
 
   // Options to be passed to Jasmine-node.
   jasmineNodeOpts: {
@@ -29,5 +29,5 @@ exports.config = {
    * You can specify a file containing code to run by setting onPrepare to
    * the filename string.
    */
-  onPrepare: 'test/e2e/login.js'
+  onPrepare: 'test/e2e/prepare.js'
 };
