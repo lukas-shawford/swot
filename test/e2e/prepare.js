@@ -40,7 +40,6 @@ mongoose.connect(MONGODB_URL, function () {
             if (err) throw err;
 
             console.log('Finished.');
-            process.exit();
         });
     });
 });
