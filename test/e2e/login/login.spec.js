@@ -21,4 +21,16 @@ describe('Login page', function () {
                 });
         });
     });
+
+    it('should show error message for an invalid login', function () {
+        loginPage.enterEmail('test@example.com');
+        loginPage.enterPassword('wrongpassword');
+        loginPage.clickLogin().then(function () {
+            ptor.getCurrentUrl()
+                .then(function (url) {
+                    expect(url).toBe(ptor.baseUrl + 'login');
+                    expect(loginPage.alert.getText()).toMatch(/Invalid email or password/);
+                });
+        });
+    });
 });

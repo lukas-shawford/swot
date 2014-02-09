@@ -6,6 +6,7 @@ var LoginPage = function () {
     this.emailInput = element(by.name('email'));
     this.passwordInput = element(by.name('password'));
     this.loginButton = element(by.xpath("//button[@type='submit']"));
+    this.alert = element(by.css('form>.alert'));
 
     this.get = function () {
         driver.get(ptor.baseUrl + 'login');
