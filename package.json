@@ -30,7 +30,7 @@
     "sinon-chai": "~2.4.0",
     "protractor": "~0.17.0",
     "grunt": "~0.4.2",
-    "grunt-shell-spawn": "~0.3.0",
+    "grunt-shell-spawn": "sergkr/grunt-shell-spawn#master",
     "grunt-env": "~0.4.1"
   },
   "engines": {
