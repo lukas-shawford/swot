@@ -18,7 +18,7 @@ block content
                         .pull-right
                             span.save-message(class="{{savedSuccessfully ? '' : 'error'}}", ng-show="!isSaving && saveStatus") {{saveStatus}}
                             .spinner.ng-cloak(ng-show="isSaving")
-                            button.save.btn.btn-success(type="button", ng-click="save()", ng-disabled="isSaving")
+                            button#save.save.btn.btn-success(type="button", ng-click="save()", ng-disabled="isSaving")
                                 span.glyphicon.glyphicon-floppy-disk
                                 | Save
                             .btn-group.ng-cloak(ng-hide="isNew()")

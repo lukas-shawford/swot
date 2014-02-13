@@ -7,7 +7,7 @@ block content
                     p !{message.msg}
 
         if quizzes.length > 0
-            .list-group.quizzes
+            #quizzes.list-group.quizzes
                 each quiz in quizzes
                     .list-group-item
                         .quiz-header-container
@@ -26,6 +26,6 @@ block content
         else
             p
                 | You currently have no quizzes.
-        div: a.btn.btn-success(href="/create")
+        div: a#create.btn.btn-success(href="/create")
             span.glyphicon.glyphicon-plus
             | Create a Quiz

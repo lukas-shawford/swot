@@ -23,6 +23,13 @@ var LoginPage = function () {
     this.clickLogin = function () {
         return this.loginButton.click();
     };
+
+    this.loginAsTestUser = function () {
+        this.get();
+        this.enterEmail('test@example.com');
+        this.enterPassword('tester');
+        return this.clickLogin();
+    };
 };
 
 module.exports = LoginPage;
