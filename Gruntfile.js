@@ -66,6 +66,21 @@ module.exports = function(grunt) {
                 }
             },
 
+            // Hacky workaround for killing the test app and stopping selenium server, if for some
+            // reason they remain running after executing the tests. Just run this command a couple
+            // times: grunt shell:cleanup
+            cleanup: {
+                command: [
+                    // If the app is running as an orphaned process, just trying to connect to it
+                    // should be enough to make it crash, thereby stopping it.
+                    'curl localhost:3033',
+
+                    // If selenium is still running, this command tells it to shut down. It will
+                    // respond with "OKOK" if it was running.
+                    'curl localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer'
+                ].join('&')
+            },
+
             options: {
                 stdout: true,
                 stderr: true,
@@ -119,7 +134,7 @@ module.exports = function(grunt) {
             'env:test',
             'shell:app-background',
             'shell:webdriver-manager',
-            'wait:3',                   // Wait for selenium server to start before proceeding
+            'wait:4',                   // Wait for selenium server to start before proceeding
             'shell:protractor',
 
             // Cleanup
