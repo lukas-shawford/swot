@@ -8,7 +8,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     $scope.finishedLoading = false;
     $scope.saveStatus = "";
     $scope.saveStatusTimeout = null;
-    $scope.saveMessage = "";
+    $scope.saveError = "";
     $scope.isSaving = false;
     $scope.savedSuccessfully = true;
 
@@ -22,7 +22,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     
     $scope.isNew = function () {
         return $scope.quiz._id === null;
-    }
+    };
 
     $scope.load = function () {
         quiz.load($scope.quiz._id, function (response) {
@@ -60,18 +60,18 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             }, 2000);
             if (typeof (callback) === 'function') {
                 callback(true);
-            };
+            }
             $scope.editQuizForm.$setPristine();
         };
 
         var onError = function (error) {
             $scope.saveStatus = "";
-            $scope.saveMessage = 'An error occurred while saving the quiz: ' + error;
+            $scope.saveError = 'An error occurred while saving the quiz: ' + error;
             $scope.savedSuccessfully = false;
             $scope.isSaving = false;
             if (typeof (callback) === 'function') {
                 callback(false);
-            };
+            }
         };
 
         if ($scope.isNew()) {
@@ -308,12 +308,12 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     };
 
     $scope.addQuestionTooltip = function () {
-        if ($scope.addQuestionTooltipsRemaining <= 0 || $scope.quiz.questions.length == 0) {
+        if ($scope.addQuestionTooltipsRemaining <= 0 || $scope.quiz.questions.length === 0) {
             return "";
         }
 
         return "You can also add a question by hitting the TAB key after typing in the last answer.";
-    }
+    };
 
 
     // Alerts
@@ -354,13 +354,14 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
                 $scope.addQuestion();
             }
         }
-    }
+    };
 
 
     // Initialization
     // --------------
 
     if ($scope.quiz._id) { $scope.load(); }
+    else { $scope.finishedLoading = true; }
 
     $scope.$watch('quiz', $debounce($scope.autosave, 1000), true);
 });

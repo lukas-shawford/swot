@@ -16,8 +16,9 @@ block content
                     .col-xs-6: input#quiz-name.form-control(type="text", name="name", ng-model="quiz.name", placeholder="Name", autofocus)
                     .col-xs-6
                         .pull-right
-                            span.save-message(class="{{savedSuccessfully ? '' : 'error'}}", ng-show="!isSaving && saveStatus") {{saveStatus}}
-                            .spinner.ng-cloak(ng-show="isSaving")
+                            span#save-message.quiz-xhr-message.ng-cloak(ng-class="{error : !savedSuccessfully}", ng-show="!isSaving && saveStatus") {{saveStatus}}
+                            span#load-message.quiz-xhr-message(ng-show="!finishedLoading") Loading...
+                            .spinner(ng-show="isSaving || !finishedLoading")
                             button#save.save.btn.btn-success(type="button", ng-click="save()", ng-disabled="isSaving")
                                 span.glyphicon.glyphicon-floppy-disk
                                 | Save

@@ -452,14 +452,14 @@ a {
 
 .edit-quiz .save { margin-left: 1em; }
 
-.save-message {
+.quiz-xhr-message {
     color: #aaa;
     font-style: italic;
     padding: 4px;
     background-color: white;
 }
 
-.save-message.error { color: #b94a48; background-color: #f2dede; }
+.quiz-xhr-message.error { color: #b94a48; background-color: #f2dede; }
 
 .save-error {
     margin: 1em 0;
