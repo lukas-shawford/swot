@@ -9,7 +9,7 @@ block content
         if quizzes.length > 0
             #quizzes.list-group.quizzes
                 each quiz in quizzes
-                    .list-group-item
+                    .quiz.list-group-item
                         .quiz-header-container
                             .quiz-header.list-group-item-heading
                                 h4.quiz-name= quiz.name
@@ -19,7 +19,7 @@ block content
                                         a.btn.btn-primary(href="/quiz/" + quiz._id)
                                             span.glyphicon.glyphicon-circle-arrow-right
                                             | Take the Quiz
-                                    a.btn.btn-info(href="/edit/" + quiz._id)
+                                    a.btn.btn-info.edit-quiz-btn(href="/edit/" + quiz._id)
                                         span.glyphicon.glyphicon-pencil
                                         | Edit
                         p.list-group-item-text Created #{quiz.dateCreated}
