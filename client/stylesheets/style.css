@@ -347,7 +347,7 @@ a {
     color: black;
 }
 
-#quiz-sidebar .status .correct { color: #468847;}
+#quiz-sidebar .status .correct { color: #468847; }
 #quiz-sidebar .status .incorrect { color: #b94a48; }
 
 #quiz-sidebar .progress-container {

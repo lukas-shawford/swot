@@ -44,7 +44,9 @@ var QuizEditorPage = function () {
     this.save = function () {
         var saveStatus = this.saveStatus;
         var saveError = this.saveError;
-        return this.saveButton.click().then(function () {
+        return ptor.executeScript('window.scrollTo(0,0);').then(function () {
+            return page.saveButton.click();
+        }).then(function () {
             return page.waitForSaveConfirmation();
         });
     };
@@ -84,6 +86,23 @@ var QuizEditorPage = function () {
             questionField.sendKeys(question);
             return page.getAnswerField(last);
         }).then(function (answerField) {
+            answerField.sendKeys(answer);
+        });
+    };
+
+    /**
+     * Sets the contents of the given question number to the given question and answer. Will erase
+     * whatever is present.
+     */
+    this.setQuestion = function (number, question, answer) {
+        page.getQuestionField(number).then(function (questionField) {
+            questionField.sendKeys(protractor.Key.chord(protractor.Key.CONTROL, 'a'));
+            questionField.sendKeys(protractor.Key.BACK_SPACE);
+            questionField.sendKeys(question);
+            return page.getAnswerField(number);
+        }).then(function (answerField) {
+            answerField.sendKeys(protractor.Key.chord(protractor.Key.CONTROL, 'a'));
+            answerField.sendKeys(protractor.Key.BACK_SPACE);
             answerField.sendKeys(answer);
         });
     };

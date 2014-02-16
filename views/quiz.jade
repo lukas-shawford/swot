@@ -22,23 +22,23 @@ block content
 
             .question-container(ng-hide="showingSummary")
 
-                .question.ng-cloak(ng-bind-html="trusted(currentQuestion().question)")
+                #question.question.ng-cloak(ng-bind-html="trusted(currentQuestion().question)")
 
                 .submission
-                    input.form-control(type="text", ng-model="currentQuestion().submission", focus-on="switchedQuestion"
+                    input#submission.form-control(type="text", ng-model="currentQuestion().submission", focus-on="switchedQuestion"
                         ui-keypress="{ 'enter': 'handleEnter($event)' }", ng-readonly="currentQuestion().submitted")
-                    button.submit.btn.btn-success(type="button", ng-click="submit()", ng-disabled="!currentQuestion().submission", ng-hide="currentQuestion().submitted") Submit
+                    button#submit.submit.btn.btn-success(type="button", ng-click="submit()", ng-disabled="!currentQuestion().submission", ng-hide="currentQuestion().submitted") Submit
                     button.next.btn.btn-primary.ng-cloak(type="button", ng-click="next()", ng-show="currentQuestion().submitted && !(isLastQuestion() && !isFinished())")
                         | {{ isLastQuestion() ? 'Finish' : 'Next' }}
                         span.glyphicon.glyphicon-circle-arrow-right
 
                     .result-container
                         .result.ng-cloak(ng-show="currentQuestion().submitted")
-                            .alert.alert-success(ng-show="currentQuestion().isCorrect")
+                            #correct.alert.alert-success(ng-show="currentQuestion().isCorrect")
                                 span.glyphicon.glyphicon-ok-sign
                                 strong Correct!
 
-                            .alert.alert-danger(ng-show="!currentQuestion().isCorrect")
+                            #incorrect.alert.alert-danger(ng-show="!currentQuestion().isCorrect")
                                 strong.incorrect
                                     span.glyphicon.glyphicon-remove-sign
                                     | Incorrect!
