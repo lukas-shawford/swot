@@ -31,10 +31,10 @@ describe('Quiz Editor', function () {
         quizEditorPage.quizNameField.sendKeys('My Test Quiz');
 
         quizEditorPage.getQuestion(1).then(function (question) {
-            question.sendKeys('What is the default squawk code of VFR aircraft in the United States?');
+            question.sendKeys('What is the capital of North Dakota?');
             return quizEditorPage.getAnswer(1);
         }).then(function (answer) {
-            answer.sendKeys('1200');
+            answer.sendKeys('Bismarck');
             quizEditorPage.save().then(function () {
                 myQuizzesPage.get();
                 myQuizzesPage.getQuizzes().then(function (quizzes) {
@@ -53,10 +53,48 @@ describe('Quiz Editor', function () {
         expect(quizEditorPage.quizNameField.getAttribute('value')).toBe('My Test Quiz');
 
         quizEditorPage.getQuestion(1).then(function (question) {
-            expect(question.getText()).toBe('What is the default squawk code of VFR aircraft in the United States?');
+            expect(question.getText()).toBe('What is the capital of North Dakota?');
             return quizEditorPage.getAnswer(1);
         }).then(function (answer) {
-            expect(answer.getAttribute('value')).toBe('1200');
+            expect(answer.getAttribute('value')).toBe('Bismarck');
+        });
+    });
+
+    it('should be able to add a question', function () {
+        quizEditorPage.edit(testQuizId);
+        quizEditorPage.addQuestion().then(function () {
+            return quizEditorPage.getQuestion(2);
+        }).then(function (question2) {
+            question2.sendKeys('What is the default squawk code of VFR aircraft in the United States?');
+            return quizEditorPage.getAnswer(2);
+        }).then(function (answer2) {
+            answer2.sendKeys('1200');
+
+            // Save the quiz
+            return quizEditorPage.save();
+
+        }).then(function () {
+            // Navigate to a different page
+            myQuizzesPage.get();
+
+            // Reopen the quiz
+            quizEditorPage.edit(testQuizId);
+
+            // Check the first question is still the same
+            return quizEditorPage.getQuestion(1);
+        }).then(function (question1) {
+            expect(question1.getText()).toBe('What is the capital of North Dakota?');
+            return quizEditorPage.getAnswer(1);
+        }).then(function (answer1) {
+            expect(answer1.getAttribute('value')).toBe('Bismarck');
+
+            // Check the new question was saved successfully.
+            return quizEditorPage.getQuestion(2);
+        }).then(function (question2) {
+            expect(question2.getText()).toBe('What is the default squawk code of VFR aircraft in the United States?');
+            return quizEditorPage.getAnswer(2);
+        }).then(function (answer2) {
+            expect(answer2.getAttribute('value')).toBe('1200');
         });
     });
 });

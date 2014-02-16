@@ -1,12 +1,14 @@
 // Page Object for the quiz editor page
 var QuizEditorPage = function () {
     var ptor = protractor.getInstance();
-    
+    var page = this;
+
     this.quizNameField = element(by.model('quiz.name'));
     this.saveButton = element(by.id('save'));
     this.loadMessage = element(by.id('load-message'));
     this.saveStatus = element(by.id('save-message'));
     this.saveError = element(by.binding('{{saveError}}'));
+    this.addQuestionButton = element(by.id('add-question'));
 
     /**
      * Loads the quiz editor for a new quiz.
@@ -63,6 +65,29 @@ var QuizEditorPage = function () {
      */
     this.getAnswer = function (number) {
         return element(by.repeater('question in quiz.questions').row(number - 1)).findElement(by.css('.answer-editor'));
+    };
+
+    /**
+     * Gets the number of questions currently in the quiz (returns a promise)
+     */
+    this.getNumQuestions = function () {
+        //return element(by.repeater('question in quiz.questions')).count();
+        return ptor.findElements(by.repeater('question in quiz.questions')).then(function (arr) {
+            return arr.length;
+        });
+    };
+
+    /**
+     * Clicks the "Add Question" button and waits for the animation to finish playing. Moves the mouse
+     * away from the button so the tooltip disappears.
+     */
+    this.addQuestion = function () {
+        return this.addQuestionButton.click().then(function () {
+            return page.getNumQuestions();
+        }).then(function (last) {
+            browser.actions().mouseMove(page.getQuestion(last)).perform();
+            ptor.sleep(800);
+        });
     };
 };
 
