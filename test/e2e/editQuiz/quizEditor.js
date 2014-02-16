@@ -14,7 +14,7 @@ var QuizEditorPage = function () {
      * Loads the quiz editor for a new quiz.
      */
     this.create = function () {
-        browser.get(ptor.baseUrl + 'create').then(function () {
+        return browser.get(ptor.baseUrl + 'create').then(function () {
             ptor.waitForAngular();
         });
     };
@@ -24,7 +24,7 @@ var QuizEditorPage = function () {
      */
     this.edit = function (id) {
         var self = this;
-        browser.get(ptor.baseUrl + 'edit/' + id).then(function () {
+        return browser.get(ptor.baseUrl + 'edit/' + id).then(function () {
             ptor.waitForAngular();
             // Wait for the quiz to finish loading (as indicated by the "Loading..." message being
             // hidden).
@@ -51,20 +51,42 @@ var QuizEditorPage = function () {
     };
 
     /**
-     * Retrieves the question editor field for the given question number (questions start at number
-     * one, not zero). Note that this returns a promise object, not the field itself.
+     * Returns both the question and the answer for the given question number (questions start at
+     * number one, not zero). Returns a promise.
      */
     this.getQuestion = function (number) {
-        return element(by.repeater('question in quiz.questions').row(number - 1))
-                .findElement(by.css('.question-editor'));
+        var question = {};
+
+        return page.getQuestionField(number).then(function (questionField) {
+            return questionField.getText();
+        }).then(function (text) {
+            question.question = text;
+            return page.getAnswerField(number);
+        }).then(function (answerField) {
+            return answerField.getAttribute('value');
+        }).then(function (text) {
+            question.answer = text;
+            return question;
+        });
     };
 
     /**
-     * Retrieves the answer field for the given question number (questions start at number one, not
-     * zero). Returns a promise.
+     * Clicks the Add Question button and types in the given question and answer.
      */
-    this.getAnswer = function (number) {
-        return element(by.repeater('question in quiz.questions').row(number - 1)).findElement(by.css('.answer-editor'));
+    this.addQuestion = function (question, answer) {
+        var last;
+
+        return page.clickAddQuestion().then(function () {
+            return page.getNumQuestions();
+        }).then(function (lastQuestion) {
+            last = lastQuestion;
+            return page.getQuestionField(last);
+        }).then(function (questionField) {
+            questionField.sendKeys(question);
+            return page.getAnswerField(last);
+        }).then(function (answerField) {
+            answerField.sendKeys(answer);
+        });
     };
 
     /**
@@ -78,15 +100,32 @@ var QuizEditorPage = function () {
     };
 
     /**
+     * Retrieves the question editor field for the given question number (questions start at number
+     * one, not zero). Note that this returns a promise object, not the field itself.
+     */
+    this.getQuestionField = function (number) {
+        return element(by.repeater('question in quiz.questions').row(number - 1))
+                .findElement(by.css('.question-editor'));
+    };
+
+    /**
+     * Retrieves the answer field for the given question number (questions start at number one, not
+     * zero). Returns a promise.
+     */
+    this.getAnswerField = function (number) {
+        return element(by.repeater('question in quiz.questions').row(number - 1)).findElement(by.css('.answer-editor'));
+    };
+
+    /**
      * Clicks the "Add Question" button and waits for the animation to finish playing. Moves the mouse
      * away from the button so the tooltip disappears.
      */
-    this.addQuestion = function () {
+    this.clickAddQuestion = function () {
         return this.addQuestionButton.click().then(function () {
             return page.getNumQuestions();
         }).then(function (last) {
-            browser.actions().mouseMove(page.getQuestion(last)).perform();
-            ptor.sleep(800);
+            browser.actions().mouseMove(page.getQuestionField(last)).perform();
+            ptor.sleep(800);        // wait for animation
         });
     };
 
@@ -102,7 +141,7 @@ var QuizEditorPage = function () {
      * Reorders questions by dragging and dropping.
      */
     this.moveQuestion = function (questionToMove, positionToMoveTo) {
-        return page.getQuestion(positionToMoveTo).then(function (dest) {
+        return page.getQuestionField(positionToMoveTo).then(function (dest) {
             page.getDragHandle(questionToMove).then(function (dragHandle) {
                 ptor.actions().dragAndDrop(dragHandle, dest).perform();
                 ptor.sleep(800);    // wait for animation

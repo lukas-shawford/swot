@@ -30,9 +30,9 @@ describe('Quiz Editor', function () {
         
         quizEditorPage.quizNameField.sendKeys('My Test Quiz');
 
-        quizEditorPage.getQuestion(1).then(function (question) {
+        quizEditorPage.getQuestionField(1).then(function (question) {
             question.sendKeys('What is the capital of North Dakota?');
-            return quizEditorPage.getAnswer(1);
+            return quizEditorPage.getAnswerField(1);
         }).then(function (answer) {
             answer.sendKeys('Bismarck');
             quizEditorPage.save().then(function () {
@@ -52,9 +52,9 @@ describe('Quiz Editor', function () {
         quizEditorPage.edit(testQuizId);
         expect(quizEditorPage.quizNameField.getAttribute('value')).toBe('My Test Quiz');
 
-        quizEditorPage.getQuestion(1).then(function (question) {
+        quizEditorPage.getQuestionField(1).then(function (question) {
             expect(question.getText()).toBe('What is the capital of North Dakota?');
-            return quizEditorPage.getAnswer(1);
+            return quizEditorPage.getAnswerField(1);
         }).then(function (answer) {
             expect(answer.getAttribute('value')).toBe('Bismarck');
         });
@@ -62,46 +62,37 @@ describe('Quiz Editor', function () {
 
     it('should be able to add a question', function () {
         quizEditorPage.edit(testQuizId);
-        quizEditorPage.addQuestion().then(function () {
-            return quizEditorPage.getQuestion(2);
-        }).then(function (question2) {
-            question2.sendKeys('What is the default squawk code of VFR aircraft in the United States?');
-            return quizEditorPage.getAnswer(2);
-        }).then(function (answer2) {
-            answer2.sendKeys('1200');
+        quizEditorPage
+            .addQuestion('What is the default squawk code of VFR aircraft in the United States?', '1200')
+            .then(function () {
+                // Save the quiz
+                return quizEditorPage.save();
 
-            // Save the quiz
-            return quizEditorPage.save();
+            }).then(function () {
+                // Navigate to a different page
+                myQuizzesPage.get();
 
-        }).then(function () {
-            // Navigate to a different page
-            myQuizzesPage.get();
+                // Reopen the quiz
+                quizEditorPage.edit(testQuizId);
 
-            // Reopen the quiz
-            quizEditorPage.edit(testQuizId);
+                // Check the first question is still the same
+                return quizEditorPage.getQuestion(1);
+            }).then(function (question1) {
+                expect(question1.question).toBe('What is the capital of North Dakota?');
+                expect(question1.answer).toBe('Bismarck');
 
-            // Check the first question is still the same
-            return quizEditorPage.getQuestion(1);
-        }).then(function (question1) {
-            expect(question1.getText()).toBe('What is the capital of North Dakota?');
-            return quizEditorPage.getAnswer(1);
-        }).then(function (answer1) {
-            expect(answer1.getAttribute('value')).toBe('Bismarck');
-
-            // Check the new question was saved successfully.
-            return quizEditorPage.getQuestion(2);
-        }).then(function (question2) {
-            expect(question2.getText()).toBe('What is the default squawk code of VFR aircraft in the United States?');
-            return quizEditorPage.getAnswer(2);
-        }).then(function (answer2) {
-            expect(answer2.getAttribute('value')).toBe('1200');
-        });
+                // Check the new question was saved successfully.                
+                return quizEditorPage.getQuestion(2);
+            }).then(function (question2) {
+                expect(question2.question).toBe('What is the default squawk code of VFR aircraft in the United States?');
+                expect(question2.answer).toBe('1200');
+            });
     });
 
     it('should be able to reorder questions', function () {
         quizEditorPage.edit(testQuizId);
         quizEditorPage.moveQuestion(2, 1).then(function () {
-            quizEditorPage.getQuestion(1).then(function (question) {
+            quizEditorPage.getQuestionField(1).then(function (question) {
                 expect(question.getText()).toBe('What is the default squawk code of VFR aircraft in the United States?');
             });
         });
