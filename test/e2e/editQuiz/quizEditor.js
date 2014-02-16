@@ -128,6 +128,21 @@ var QuizEditorPage = function () {
     };
 
     /**
+     * Deletes a question
+     */
+    this.deleteQuestion = function (number) {
+        return element(by.repeater('question in quiz.questions').row(number - 1))
+            .findElement(by.css('.delete-question'))
+            .then(function (deleteButton) {
+                return deleteButton.click();
+            }).then(function () {
+                ptor.sleep(800);
+                element(by.css('.confirm-popover .confirmbutton-yes')).click();
+                ptor.sleep(800);
+            });
+    };
+
+    /**
      * Gets the drag handle for a question (which allows reordering questions using drag and drop).
      */
     this.getDragHandle = function (number) {

@@ -119,4 +119,40 @@ describe('Quiz Editor', function () {
             expect(question1.question).toMatch(/\(Updated\)$/);
         });
     });
+
+    it('should be able to add a question by hitting TAB', function () {
+        var initialNumberOfQuestions;
+
+        quizEditorPage.edit(testQuizId);
+        quizEditorPage.getNumQuestions().then(function (last) {
+            initialNumberOfQuestions = last;
+            return quizEditorPage.getAnswerField(last);
+        }).then(function (lastAnswerField) {
+            lastAnswerField.sendKeys(protractor.Key.TAB);
+            ptor.sleep(1000);
+            return quizEditorPage.getNumQuestions();
+        }).then(function (newNumberOfQuestions) {
+            expect(newNumberOfQuestions).toBe(initialNumberOfQuestions + 1);
+            quizEditorPage.save();
+        });
+    });
+
+    it('should be able to delete a question', function () {
+        var initialNumberOfQuestions;
+
+        quizEditorPage.edit(testQuizId).then(function () {
+            return quizEditorPage.getNumQuestions();
+        }).then(function (last) {
+            initialNumberOfQuestions = last;
+            return quizEditorPage.deleteQuestion(last);
+        }).then(function () {
+            return quizEditorPage.save();
+        }).then(function () {
+            return quizEditorPage.edit(testQuizId);
+        }).then(function () {
+            return quizEditorPage.getNumQuestions();
+        }).then(function (newNumberOfQuestions) {
+            expect(newNumberOfQuestions).toBe(initialNumberOfQuestions - 1);
+        });
+    });
 });
