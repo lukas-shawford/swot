@@ -153,4 +153,32 @@ describe('Quiz Editor', function () {
             expect(newNumberOfQuestions).toBe(initialNumberOfQuestions - 1);
         });
     });
+
+    it('should not be able to delete a quiz that has not been saved yet', function () {
+        quizEditorPage.create().then(function () {
+            expect(quizEditorPage.quizSettingsButton.isDisplayed()).toBeFalsy();
+
+            // Save the quiz so we can test deleting it later.
+            quizEditorPage.quizNameField.sendKeys('Delete Me');
+            return quizEditorPage.save();
+        }).then(function () {
+            // The settings dropdown should be visible now that the quiz has been saved
+            expect(quizEditorPage.quizSettingsButton.isDisplayed()).toBeTruthy();
+        });
+    });
+
+    it('should be able to delete a quiz', function () {
+        myQuizzesPage.get();
+        myQuizzesPage.getQuizzes().then(function (quizzes) {
+            var quizId = _.findWhere(quizzes, {name: 'Delete Me'}).id;
+            return quizEditorPage.edit(quizId);
+        }).then(function () {
+            return quizEditorPage.deleteQuiz();
+        }).then(function () {
+            myQuizzesPage.get();
+            myQuizzesPage.getQuizzes().then(function (quizzes) {
+                expect(_.pluck(quizzes, 'name')).not.toContain('Delete Me');
+            });
+        });
+    });
 });

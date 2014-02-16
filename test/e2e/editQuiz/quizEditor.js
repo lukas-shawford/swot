@@ -9,6 +9,7 @@ var QuizEditorPage = function () {
     this.saveStatus = element(by.id('save-message'));
     this.saveError = element(by.binding('{{saveError}}'));
     this.addQuestionButton = element(by.id('add-question'));
+    this.quizSettingsButton = element(by.id('quiz-settings-button'));
 
     /**
      * Loads the quiz editor for a new quiz.
@@ -140,6 +141,18 @@ var QuizEditorPage = function () {
                 element(by.css('.confirm-popover .confirmbutton-yes')).click();
                 ptor.sleep(800);
             });
+    };
+
+    /**
+     * Deletes the whole quiz
+     */
+    this.deleteQuiz = function () {
+        return page.quizSettingsButton.click().then(function () {
+            return element(by.id('delete-quiz')).click();
+        }).then(function () {
+            ptor.sleep(800);     // wait for animation
+            return element(by.id('confirm-delete-quiz')).click();
+        });
     };
 
     /**

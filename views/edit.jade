@@ -23,14 +23,14 @@ block content
                                 span.glyphicon.glyphicon-floppy-disk
                                 | Save
                             .btn-group.ng-cloak(ng-hide="isNew()")
-                                button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown")
+                                button#quiz-settings-button.btn.btn-default.dropdown-toggle(type="button", data-toggle="dropdown")
                                     span.glyphicon.glyphicon-cog
                                     span.caret
                                 ul.dropdown-menu(role="menu")
                                     li: a(href="#", ng-click="exportJson()")
                                         i.glyphicon.glyphicon-menu.glyphicon-cloud-download
                                         | Export as JSON
-                                    li: a(data-toggle="modal", href="#deleteDialog", ng-hide="isNew()")
+                                    li: a#delete-quiz(data-toggle="modal", href="#deleteDialog", ng-hide="isNew()")
                                         i.glyphicon.glyphicon-menu.glyphicon-remove
                                         | Delete
                 .save-error.alert.alert-danger.alert-dismissable.ng-cloak(ng-show="!isSaving && !savedSuccessfully && saveMessage")
@@ -72,7 +72,7 @@ block content
                         .modal-body Are you sure you want to delete the quiz?
                         .modal-footer
                             button.btn.btn-default(type="button", data-dismiss="modal") Cancel
-                            button.btn.btn-primary.btn-danger(type="button", ng-click="deleteQuiz()", data-dismiss="modal") Delete
+                            button#confirm-delete-quiz.btn.btn-primary.btn-danger(type="button", ng-click="deleteQuiz()", data-dismiss="modal") Delete
 
 block scripts
     script.
