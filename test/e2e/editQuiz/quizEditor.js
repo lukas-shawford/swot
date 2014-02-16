@@ -44,9 +44,7 @@ var QuizEditorPage = function () {
         var saveStatus = this.saveStatus;
         var saveError = this.saveError;
         return this.saveButton.click().then(function () {
-            return ptor.wait(function () {
-                return (saveStatus.getText() || saveError.getText());
-            });
+            return page.waitForSaveConfirmation();
         });
     };
 
@@ -145,6 +143,28 @@ var QuizEditorPage = function () {
             page.getDragHandle(questionToMove).then(function (dragHandle) {
                 ptor.actions().dragAndDrop(dragHandle, dest).perform();
                 ptor.sleep(800);    // wait for animation
+            });
+        });
+    };
+
+    /**
+     * Waits for the "Saved" message to become visible.
+     */
+    this.waitForSaveConfirmation = function () {
+        var saveStatus = this.saveStatus;
+        var saveError = this.saveError;
+
+        var timeoutId = setTimeout(function () {
+            throw new Error('Timed out while waiting for autosave.');
+        }, 3000);
+
+        ptor.wait(function () {
+            return page.saveStatus.isDisplayed().then(function (v) {
+                if (v) {
+                    clearTimeout(timeoutId);
+                    return true;
+                }
+                return false;
             });
         });
     };

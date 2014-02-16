@@ -92,9 +92,31 @@ describe('Quiz Editor', function () {
     it('should be able to reorder questions', function () {
         quizEditorPage.edit(testQuizId);
         quizEditorPage.moveQuestion(2, 1).then(function () {
+            return quizEditorPage.save();
+        }).then(function () {
+            return quizEditorPage.edit(testQuizId);
+        }).then(function () {
             quizEditorPage.getQuestionField(1).then(function (question) {
                 expect(question.getText()).toBe('What is the default squawk code of VFR aircraft in the United States?');
             });
+        });
+    });
+    
+    it('should autosave', function () {
+        quizEditorPage.edit(testQuizId);
+        quizEditorPage.getQuestionField(1).then(function (field) {
+
+            // Update the first question and wait for it to autosave
+            field.sendKeys(protractor.Key.chord(protractor.Key.CONTROL, protractor.Key.END));
+            field.sendKeys(' (Updated)');
+            quizEditorPage.waitForSaveConfirmation();
+            
+            // Do NOT click the save button - just reload the quiz and make sure the question got
+            // updated
+            quizEditorPage.edit(testQuizId);
+            return quizEditorPage.getQuestion(1);
+        }).then(function (question1) {
+            expect(question1.question).toMatch(/\(Updated\)$/);
         });
     });
 });
