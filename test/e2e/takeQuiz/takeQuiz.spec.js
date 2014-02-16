@@ -80,4 +80,32 @@ describe('Take Quiz', function () {
         expect(quizPage.correctAlert.isDisplayed()).toBe(false);
         expect(quizPage.incorrectAlert.isDisplayed()).toBe(true);
     });
+
+    it('should show question submission status in the sidebar', function () {
+        quizPage.get(testQuizId);
+        var isFalse = function (v) { return !v; };
+
+        // Initially, all questions should be pending (neither correct nor incorrect)
+        quizPage.getSidebar().then(function (sidebar) {
+            expect(_.every(_.pluck(sidebar, 'correct'), isFalse)).toBe(true);
+            expect(_.every(_.pluck(sidebar, 'incorrect'), isFalse)).toBe(true);
+        });
+
+        // Submit question 1 and verify that it got marked correct
+        quizPage.submissionField.sendKeys('Bismarck');
+        quizPage.submitButton.click();
+        quizPage.getSidebar().then(function (sidebar) {
+            expect(_.pluck(sidebar, 'correct')).toEqual([true, false, false, false, false]);
+            expect(_.every(_.pluck(sidebar, 'incorrect'), isFalse)).toBe(true);
+        });
+
+        // Submit question 3 and verify that it got marked incorrect
+        quizPage.jumpToQuestion(3);
+        quizPage.submissionField.sendKeys('7700');
+        quizPage.submitButton.click();
+        quizPage.getSidebar().then(function (sidebar) {
+            expect(_.pluck(sidebar, 'correct')).toEqual(  [true, false, false, false, false]);
+            expect(_.pluck(sidebar, 'incorrect')).toEqual([false, false, true, false, false]);
+        });
+    });
 });

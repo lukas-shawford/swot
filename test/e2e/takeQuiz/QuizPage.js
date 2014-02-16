@@ -28,7 +28,7 @@ var QuizPage = function () {
      * Gets the quiz navigation sidebar and parses it into a more meaningful format.
      */
     this.getSidebar = function () {
-        return element.all(by.css('#quiz-sidebar .list-group-item')).map(function (item) {
+        return element.all(by.css('#quiz-sidebar .sidebar-question')).map(function (item) {
             return {
                 question: item.findElement(by.css('.question')).getText(),
                 correct: item.findElement(by.css('.status .correct')).isDisplayed(),
