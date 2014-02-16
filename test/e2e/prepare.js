@@ -8,13 +8,11 @@
  * This script performs the following functions:
  *
  *     - Performs setup on the 'swot_test' database to put it in a known state (including setting up
- *       a user account for the test user).
- *
- *     - [NOT FINISHED] Sets up environment variables and launches the application using the testing configuration
- *       (separate port so it doesn't conflict with the actual app, and with the test database URL).
+ *       a user account for the test user, and a test quiz).
  *
  */
 
+var Q = require('q');
 var mongoose = require('mongoose');
 var User = require('../../lib/user');
 
@@ -27,19 +25,21 @@ console.log('-----------------------------------\n');
 // Database Setup
 // --------------
 console.log('Connecting to database', MONGODB_URL, '...');
-mongoose.connect(MONGODB_URL, function () {
-
+Q.ninvoke(mongoose, 'connect', MONGODB_URL)
+.then(function () {
     console.log('Wiping database...');
-    mongoose.connection.db.dropDatabase(function () {
-
-        console.log('Setting up test user...');
-        User.createUser({
-            email: 'test@example.com',
-            password: 'tester'
-        }, function (err, user) {
-            if (err) throw err;
-
-            console.log('Finished.');
-        });
+    return Q.ninvoke(mongoose.connection.db, 'dropDatabase');
+})
+.then(function () {
+    console.log('Setting up test user...');
+    return Q.ninvoke(User, 'createUser', {
+        email: 'test@example.com',
+        password: 'tester'
     });
+})
+.then(function (user) {
+    console.log('Finished');
+})
+.catch(function (err) {
+    console.error('Error occurred during setup:', err);
 });

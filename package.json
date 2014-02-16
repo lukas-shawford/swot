@@ -21,7 +21,8 @@
     "bower": "~1.2.8",
     "connect-mongo": "~0.4.0",
     "fs-extra": "~0.8.1",
-    "execSync": "~1.0.1-pre"
+    "execSync": "~1.0.1-pre",
+    "q": "~1.0.0"
   },
   "devDependencies": {
     "chai": "~1.8.1",
