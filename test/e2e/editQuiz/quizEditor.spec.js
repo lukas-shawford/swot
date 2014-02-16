@@ -97,4 +97,13 @@ describe('Quiz Editor', function () {
             expect(answer2.getAttribute('value')).toBe('1200');
         });
     });
+
+    it('should be able to reorder questions', function () {
+        quizEditorPage.edit(testQuizId);
+        quizEditorPage.moveQuestion(2, 1).then(function () {
+            quizEditorPage.getQuestion(1).then(function (question) {
+                expect(question.getText()).toBe('What is the default squawk code of VFR aircraft in the United States?');
+            });
+        });
+    });
 });

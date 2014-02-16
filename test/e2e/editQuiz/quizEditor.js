@@ -89,6 +89,26 @@ var QuizEditorPage = function () {
             ptor.sleep(800);
         });
     };
+
+    /**
+     * Gets the drag handle for a question (which allows reordering questions using drag and drop).
+     */
+    this.getDragHandle = function (number) {
+        return element(by.repeater('question in quiz.questions').row(number - 1))
+                .findElement(by.css('.drag-handle'));
+    };
+
+    /**
+     * Reorders questions by dragging and dropping.
+     */
+    this.moveQuestion = function (questionToMove, positionToMoveTo) {
+        return page.getQuestion(positionToMoveTo).then(function (dest) {
+            page.getDragHandle(questionToMove).then(function (dragHandle) {
+                ptor.actions().dragAndDrop(dragHandle, dest).perform();
+                ptor.sleep(800);    // wait for animation
+            });
+        });
+    };
 };
 
 module.exports = QuizEditorPage;
