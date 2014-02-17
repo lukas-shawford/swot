@@ -47,7 +47,7 @@ angular.module('swot').directive('confirmButton', function ($document, $parse) {
                 content: html,
                 html: true,
                 trigger: "manual",
-                title: "Confirm"
+                title: title
             });
 
             element.bind('click', function(e) {
