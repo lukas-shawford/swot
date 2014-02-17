@@ -11,12 +11,12 @@ block content
         .quiz-body-container
             .header.ng-cloak(ng-hide="showingSummary")
                 .prev
-                    a(href="#", ng-click="prev()", ng-class="{disabled: currentQuestionIndex < 1}")
+                    a#prev(href="#", ng-click="prev()", ng-class="{disabled: currentQuestionIndex < 1}")
                         span.glyphicon.glyphicon-circle-arrow-left
                         | Previous
                 span.current Question {{currentQuestionIndex+1}} of {{questions.length}}
                 .next
-                    a(href="#", ng-click="next()", ng-class="{disabled: currentQuestionIndex >= questions.length - 1}")
+                    a#next(href="#", ng-click="next()", ng-class="{disabled: currentQuestionIndex >= questions.length - 1}")
                         | Next
                         span.glyphicon.glyphicon-circle-arrow-right
 
@@ -28,7 +28,7 @@ block content
                     input#submission.form-control(type="text", ng-model="currentQuestion().submission", focus-on="switchedQuestion"
                         ui-keypress="{ 'enter': 'handleEnter($event)' }", ng-readonly="currentQuestion().submitted")
                     button#submit.submit.btn.btn-success(type="button", ng-click="submit()", ng-disabled="!currentQuestion().submission", ng-hide="currentQuestion().submitted") Submit
-                    button.next.btn.btn-primary.ng-cloak(type="button", ng-click="next()", ng-show="currentQuestion().submitted && !(isLastQuestion() && !isFinished())")
+                    button#next-button.next.btn.btn-primary.ng-cloak(type="button", ng-click="next()", ng-show="currentQuestion().submitted && !(isLastQuestion() && !isFinished())")
                         | {{ isLastQuestion() ? 'Finish' : 'Next' }}
                         span.glyphicon.glyphicon-circle-arrow-right
 

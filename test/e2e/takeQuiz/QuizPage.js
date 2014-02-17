@@ -9,6 +9,15 @@ var QuizPage = function () {
     this.correctAlert = element(by.id('correct'));
     this.incorrectAlert = element(by.id('incorrect'));
     this.currentQuestion = element(by.id('question'));
+    this.nextLink = element(by.id('next'));
+    this.prevLink = element(by.id('prev'));
+    this.nextButton = element(by.id('next-button'));
+    this.currentQuestionHeader = element(by.css('.header .current'));
+    this.quizProgressBar = element(by.css('.progress-container'));
+    this.quizScoreTooltip = element(by.css('.score-tooltip'));
+    this.summaryContainer = element(by.css('.summary-container'));
+    this.summaryScore = element(by.css('.summary-container .score'));
+    this.summaryScorePercent = element(by.css('.summary-container .score-percent'));
 
     /**
      * Loads the "Take Quiz" page for the given quiz ID
@@ -43,6 +52,17 @@ var QuizPage = function () {
      */
     this.jumpToQuestion = function (number) {
         element(by.repeater('question in questions').row(number-1).column('question')).click();
+    };
+
+    /**
+     * Hovers over the quiz progress bar to trigger the tooltip containing the user's current score.
+     * Returns a promise that resolves to the HTML content of the tooltip.
+     */
+    this.getScoreTooltip = function () {
+        ptor.actions()
+            .mouseMove(page.quizProgressBar.find())
+            .perform();
+        return page.quizScoreTooltip.getText();
     };
 };
 
