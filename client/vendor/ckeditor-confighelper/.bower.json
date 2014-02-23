@@ -1,0 +1,13 @@
+{
+  "name": "confighelper",
+  "homepage": "https://github.com/AlfonsoML/confighelper",
+  "_release": "3f48b9c049",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "3f48b9c04918a76dc331b68fa9cf1ca2d8db1af7"
+  },
+  "_source": "https://github.com/AlfonsoML/confighelper.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/AlfonsoML/confighelper.git"
+}
