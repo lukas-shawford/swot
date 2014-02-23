@@ -7,6 +7,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 var MongoStore = require('connect-mongo')(express);
+var less = require('less-middleware');
 
 // Project libraries/middleware
 var user = require('./lib/middleware/user');
@@ -51,6 +52,7 @@ app.use(express.session({
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(require('less-middleware')({ src: path.join(__dirname, 'client') }));
 app.use(express.static(path.join(__dirname, 'client')));
 app.use(user);
 app.use(restrict({

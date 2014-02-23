@@ -6,3 +6,4 @@ client/vendor/
 .idea/
 *.sublime-project
 *.sublime-workspace
+/client/styles/*.css
