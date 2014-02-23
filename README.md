@@ -16,7 +16,13 @@ In addition to Node, swot requires [bower](http://bower.io/) to be installed glo
 npm install -g bower
 ```
 
-Finally, [MongoDB](http://www.mongodb.org/) should be installed and running. By default, it is assumed that MongoDB is listening on port 27017 (though this may be changed by setting the `MONGODB_URL` environment variable before launching the app - the default if the environment variable is missing is `localhost:27017/swot`).
+Also, [MongoDB](http://www.mongodb.org/) should be installed and running. By default, it is assumed that MongoDB is listening on port 27017 (though this may be changed by setting the `MONGODB_URL` environment variable before launching the app - the default if the environment variable is missing is `localhost:27017/swot`).
+
+And finally, you must also have [grunt](http://gruntjs.com/) installed globally:
+
+```
+npm install -g grunt-cli
+```
 
 Once these prerequisites are met, building and launching swot should be fairly simple. After cloning the repo, switch to the directory in the terminal or command line and run the following commands:
 
