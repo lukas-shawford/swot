@@ -8,6 +8,22 @@ block content
                 p !{message}
         alert.ng-cloak(ng-repeat="alert in alerts", type="alert.type", close="closeAlert($index)") {{alert.msg}}
 
+        #quiz-sidebar.sidebar(ng-if="questions.length > 0")
+            .list-group(ng-model="questions")
+                a.sidebar-question.list-group-item(href="#", ng-repeat="question in questions"
+                    ng-click="jumpToQuestion($index)", ng-class="{active: (!showingSummary && $index === currentQuestionIndex)}")
+                    span.question.ellipsis {{$index+1}}. {{question.question | htmlToPlainText}}
+                    span.status.ng-cloak
+                        span.glyphicon.correct.glyphicon-ok-sign(ng-show="question.submitted && question.isCorrect")
+                        span.glyphicon.incorrect.glyphicon-remove-sign(ng-show="question.submitted && !question.isCorrect")
+
+                a.summary.list-group-item(href="#", ng-show="isFinished()", ng-click="finish()", ng-class="{active: showingSummary}") Summary
+
+                .list-group-item.progress-container(tooltip-html-unsafe="{{getScoreTooltip()}}", tooltip-placement="bottom")
+                    progress
+                        bar(type="success", value="numCorrect()/questions.length*100")
+                        bar(type="danger", value="numIncorrect()/questions.length*100")
+
         .quiz-body-container
             .header.ng-cloak(ng-hide="showingSummary")
                 .prev
@@ -57,22 +73,6 @@ block content
                     button.retake.btn.btn-primary(type="button", ng-click="restart()")
                         span.glyphicon.glyphicon-refresh
                         | Retake
-
-        #quiz-sidebar(ng-if="questions.length > 0")
-            .list-group(ng-model="questions")
-                a.sidebar-question.list-group-item(href="#", ng-repeat="question in questions"
-                    ng-click="jumpToQuestion($index)", ng-class="{active: (!showingSummary && $index === currentQuestionIndex)}")
-                    span.question.ellipsis {{$index+1}}. {{question.question | htmlToPlainText}}
-                    span.status.ng-cloak
-                        span.glyphicon.correct.glyphicon-ok-sign(ng-show="question.submitted && question.isCorrect")
-                        span.glyphicon.incorrect.glyphicon-remove-sign(ng-show="question.submitted && !question.isCorrect")
-
-                a.summary.list-group-item(href="#", ng-show="isFinished()", ng-click="finish()", ng-class="{active: showingSummary}") Summary
-
-                .list-group-item.progress-container(tooltip-html-unsafe="{{getScoreTooltip()}}", tooltip-placement="bottom")
-                    progress
-                        bar(type="success", value="numCorrect()/questions.length*100")
-                        bar(type="danger", value="numIncorrect()/questions.length*100")
 
 
 block scripts
