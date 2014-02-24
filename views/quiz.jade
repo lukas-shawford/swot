@@ -1,14 +1,14 @@
 extends layout
 
 block content
-    .quiz(ng-app="swot", ng-controller="ViewQuizCtrl")
+    .quiz-container(ng-app="swot", ng-controller="ViewQuizCtrl")
         
         if (message != '')
             div.alert.alert-danger
                 p !{message}
         alert.ng-cloak(ng-repeat="alert in alerts", type="alert.type", close="closeAlert($index)") {{alert.msg}}
 
-        #quiz-sidebar.sidebar(ng-if="questions.length > 0")
+        #quiz-sidebar.sidebar.hidden-xs.hidden-sm(ng-if="questions.length > 0")
             .list-group(ng-model="questions")
                 a.sidebar-question.list-group-item(href="#", ng-repeat="question in questions"
                     ng-click="jumpToQuestion($index)", ng-class="{active: (!showingSummary && $index === currentQuestionIndex)}")
@@ -17,63 +17,64 @@ block content
                         span.glyphicon.correct.glyphicon-ok-sign(ng-show="question.submitted && question.isCorrect")
                         span.glyphicon.incorrect.glyphicon-remove-sign(ng-show="question.submitted && !question.isCorrect")
 
-                a.summary.list-group-item(href="#", ng-show="isFinished()", ng-click="finish()", ng-class="{active: showingSummary}") Summary
+                a.sidebar-summary-row.list-group-item(href="#", ng-show="isFinished()", ng-click="finish()", ng-class="{active: showingSummary}")
+                    span.summary Summary
 
                 .list-group-item.progress-container(tooltip-html-unsafe="{{getScoreTooltip()}}", tooltip-placement="bottom")
                     progress
                         bar(type="success", value="numCorrect()/questions.length*100")
                         bar(type="danger", value="numIncorrect()/questions.length*100")
 
-        .quiz-body-container
-            .header.ng-cloak(ng-hide="showingSummary")
-                .prev
-                    a#prev(href="#", ng-click="prev()", ng-class="{disabled: currentQuestionIndex < 1}")
-                        span.glyphicon.glyphicon-circle-arrow-left
-                        | Previous
-                span.current Question {{currentQuestionIndex+1}} of {{questions.length}}
-                .next
-                    a#next(href="#", ng-click="next()", ng-class="{disabled: currentQuestionIndex >= questions.length - 1}")
-                        | Next
-                        span.glyphicon.glyphicon-circle-arrow-right
+        .main
+            .quiz-body
+                .header.ng-cloak(ng-hide="showingSummary")
+                    .prev
+                        a#prev(href="#", ng-click="prev()", ng-class="{disabled: currentQuestionIndex < 1}")
+                            span.glyphicon.glyphicon-circle-arrow-left
+                            | Previous
+                    span.current Question {{currentQuestionIndex+1}} of {{questions.length}}
+                    .next
+                        a#next(href="#", ng-click="next()", ng-class="{disabled: currentQuestionIndex >= questions.length - 1}")
+                            | Next
+                            span.glyphicon.glyphicon-circle-arrow-right
 
-            .question-container(ng-hide="showingSummary")
+                .question-container(ng-hide="showingSummary")
 
-                #question.question.ng-cloak(ng-bind-html="trusted(currentQuestion().question)")
+                    #question.question.ng-cloak(ng-bind-html="trusted(currentQuestion().question)")
 
-                .submission
-                    input#submission.form-control(type="text", ng-model="currentQuestion().submission", focus-on="switchedQuestion"
-                        ui-keypress="{ 'enter': 'handleEnter($event)' }", ng-readonly="currentQuestion().submitted")
-                    button#submit.submit.btn.btn-success(type="button", ng-click="submit()", ng-disabled="!currentQuestion().submission", ng-hide="currentQuestion().submitted") Submit
-                    button#next-button.next.btn.btn-primary.ng-cloak(type="button", ng-click="next()", ng-show="currentQuestion().submitted && !(isLastQuestion() && !isFinished())")
-                        | {{ isLastQuestion() ? 'Finish' : 'Next' }}
-                        span.glyphicon.glyphicon-circle-arrow-right
+                    .submission
+                        input#submission.form-control(type="text", ng-model="currentQuestion().submission", focus-on="switchedQuestion"
+                            ui-keypress="{ 'enter': 'handleEnter($event)' }", ng-readonly="currentQuestion().submitted")
+                        button#submit.submit.btn.btn-success(type="button", ng-click="submit()", ng-disabled="!currentQuestion().submission", ng-hide="currentQuestion().submitted") Submit
+                        button#next-button.next.btn.btn-primary.ng-cloak(type="button", ng-click="next()", ng-show="currentQuestion().submitted && !(isLastQuestion() && !isFinished())")
+                            | {{ isLastQuestion() ? 'Finish' : 'Next' }}
+                            span.glyphicon.glyphicon-circle-arrow-right
 
-                    .result-container
-                        .result.ng-cloak(ng-show="currentQuestion().submitted")
-                            #correct.alert.alert-success(ng-show="currentQuestion().isCorrect")
-                                span.glyphicon.glyphicon-ok-sign
-                                strong Correct!
+                        .result-container
+                            .result.ng-cloak(ng-show="currentQuestion().submitted")
+                                #correct.alert.alert-success(ng-show="currentQuestion().isCorrect")
+                                    span.glyphicon.glyphicon-ok-sign
+                                    strong Correct!
 
-                            #incorrect.alert.alert-danger(ng-show="!currentQuestion().isCorrect")
-                                strong.incorrect
-                                    span.glyphicon.glyphicon-remove-sign
-                                    | Incorrect!
-                                | The correct answer is:&nbsp;
-                                strong {{currentQuestion().correctAnswer}}
+                                #incorrect.alert.alert-danger(ng-show="!currentQuestion().isCorrect")
+                                    strong.incorrect
+                                        span.glyphicon.glyphicon-remove-sign
+                                        | Incorrect!
+                                    | The correct answer is:&nbsp;
+                                    strong {{currentQuestion().correctAnswer}}
 
-            .summary-container.ng-cloak(ng-show="showingSummary")
-                h3 Summary
-                span Your Score:&nbsp;
-                span.score {{numCorrect()}} / {{questions.length}}
-                span.score-percent ({{score()}}%)
-                .summary-actions
-                    button.back-to-quizzes.btn.btn-success(type="button", ng-click="exit()")
-                        span.glyphicon.glyphicon-circle-arrow-left
-                        | Back to Quizzes
-                    button.retake.btn.btn-primary(type="button", ng-click="restart()")
-                        span.glyphicon.glyphicon-refresh
-                        | Retake
-
+                .summary-container.ng-cloak(ng-show="showingSummary")
+                    h3 Summary
+                    span Your Score:&nbsp;
+                    span.score {{numCorrect()}} / {{questions.length}}
+                    span.score-percent ({{score()}}%)
+                    .summary-actions
+                        button.back-to-quizzes.btn.btn-success(type="button", ng-click="exit()")
+                            span.glyphicon.glyphicon-circle-arrow-left
+                            | Back to Quizzes
+                        button.retake.btn.btn-primary(type="button", ng-click="restart()")
+                            span.glyphicon.glyphicon-refresh
+                            | Retake
 
 block scripts
     script.
