@@ -1,13 +1,13 @@
 nav(role="navigation").navbar.navbar-fixed-top.navbar-inverse
     .navbar-header
-        button(type="button", data-toggle="collapse", data-target="#navbar-collapse-1").navbar-toggle
+        button.navbar-toggle(type="button", data-toggle="collapse", data-target="#navbar-collapse-1")
             span.sr-only Toggle navigation
             span.icon-bar
             span.icon-bar
             span.icon-bar
-        a(href="/").navbar-brand swot
+        a.navbar-brand(href="/") swot
 
-    .collapse.navbar-collapse#navbar-collapse-1
+    #navbar-collapse-1.collapse.navbar-collapse
         ul.nav.navbar-nav
             if email
                 li: a(href="/quizzes") My Quizzes
@@ -16,7 +16,7 @@ nav(role="navigation").navbar.navbar-fixed-top.navbar-inverse
         ul.nav.navbar-nav.navbar-right
             if email
                 li.dropdown
-                    a(href="#", data-toggle="dropdown").dropdown-toggle #{email}
+                    a.dropdown-toggle(href="#", data-toggle="dropdown") #{email}
                         b.caret
                     ul.dropdown-menu
                         li: a(href="/logout") Log out
