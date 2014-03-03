@@ -77,9 +77,13 @@ a {
     margin: 0 auto;
     line-height: 50px;
     display: inline-block;
-    max-width: 600px;
+    max-width: 400px;
     white-space: nowrap;
     overflow: visible;
+
+    @media(min-width:768px){
+        max-width: 600px;
+    }
 }
 
 .navbar .nav-center h1,
@@ -96,6 +100,7 @@ a {
     color: #eee;
 }
 
+.navbar-toggle { z-index: 5; }
 .navbar-nav li { z-index: 5; }
 
 /*
