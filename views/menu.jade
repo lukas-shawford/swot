@@ -7,12 +7,13 @@ nav(role="navigation").navbar.navbar-fixed-top.navbar-inverse
             span.icon-bar
         a.navbar-brand(href="/") swot
 
+    .nav.navbar-text.nav-center
+        h2#title= title
+
     #navbar-collapse-1.collapse.navbar-collapse
         ul.nav.navbar-nav
             if email
                 li: a(href="/quizzes") My Quizzes
-        .nav.navbar-text.nav-center
-            h2#title= title
         ul.nav.navbar-nav.navbar-right
             if email
                 li.dropdown
