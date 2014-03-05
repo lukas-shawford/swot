@@ -7,8 +7,6 @@
 .quiz-container {
     .make-row();
 
-    margin-top: 1.5em;
-
     .sidebar {
         .make-md-column(3);
         .make-lg-column(2);
@@ -21,6 +19,7 @@
 
     .quiz-body {
 
+        position: relative;
         border: 1px solid #ddd;
         border-radius: 4px;
         padding: 0 1em;
@@ -72,6 +71,12 @@
         .make-row();
 
         max-width: @max-question-width;
+
+        // Make room for the sidebar toggle button
+        @media(max-width:610px){
+            max-width: @max-question-width - 4;
+        }
+
         margin: 1em auto;
         border-bottom: 1px dotted #ccc;
         padding-bottom: 1em;
@@ -125,7 +130,28 @@
     }
 }
 
+#toggle-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 24px;
+    color: #6C729D;
+    padding: 6px;
+    border-radius: 0 0 4px 0;
+    width: 46px;
+    height: 46px;
+}
+
+#toggle-sidebar:focus {
+    outline: 0;     // Focus outline looks bad on Chrome
+}
+
 #quiz-sidebar {
+
+    @media(max-width:991px){
+        padding-left: 25px;
+        padding-right: 25px;
+    }
 
     .sidebar-question {
         .make-row();

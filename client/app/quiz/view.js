@@ -84,6 +84,12 @@ angular.module('swot').controller('ViewQuizCtrl', [ '$scope', '$sce', 'quiz', 'f
             $scope.showingSummary = false;
             $scope.currentQuestionIndex = index;
             focus('switchedQuestion');
+
+            // On small screens, the sidebar is offcanvas. When selecting a question from the
+            // sidebar, we should scroll the selected question into view. This breaks the golden
+            // rule of never doing DOM manipulation in the controller. However, the offcanvas
+            // sidebar is currently not implemented as an Angular directive, so...
+            $('.row-offcanvas').removeClass('active');
         }
     };
 
