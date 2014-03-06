@@ -42,11 +42,11 @@ block content
                         .prev
                             a#prev(href="#", ng-click="prev()", ng-class="{disabled: currentQuestionIndex < 1}")
                                 span.glyphicon.glyphicon-circle-arrow-left
-                                | Previous
+                                span.hidden-xxs Previous
                         span.current Question {{currentQuestionIndex+1}} of {{questions.length}}
                         .next
                             a#next(href="#", ng-click="next()", ng-class="{disabled: currentQuestionIndex >= questions.length - 1}")
-                                | Next
+                                span.hidden-xxs Next
                                 span.glyphicon.glyphicon-circle-arrow-right
 
                     .question-container(ng-hide="showingSummary")

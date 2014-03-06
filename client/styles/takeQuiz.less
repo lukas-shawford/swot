@@ -4,6 +4,12 @@
 
 @max-question-width: 30em;
 
+.hidden-xxs {
+    @media (max-width: 540px) {
+        .responsive-invisibility();
+    }
+}
+
 .quiz-container {
     .make-row();
 
@@ -37,23 +43,18 @@
 
         .submission {
             input {
-                display: inline;
-                width: 250px;
+                margin: 6px 6px 6px 0;
+
+                @media(min-width:450px) {
+                    display: inline;
+                    width: 250px;
+                }
             }
 
             input[readonly] { cursor: default; }
 
-            .submit, .next {
-                margin: 0 6px;
-            }
-
             .result-container {
                 margin-top: 1em;
-            }
-
-            .result {
-                display: inline-block;
-                min-width: 330px;
             }
 
             .result .incorrect {
@@ -82,14 +83,25 @@
         padding-bottom: 1em;
 
         .prev,
-        .current,
         .next {
-            .make-xs-column(4; @gutter: 0);
+            .make-xs-column(3; @gutter: 0);
+            .make-sm-column(4; @gutter: 0);
         }
 
-        .prev { text-align: left; }
+        .current {
+            .make-xs-column(6; @gutter: 0);
+            .make-sm-column(4; @gutter: 0);
+        }
+
+        .prev {
+            text-align: left;
+            @media(max-width:540px){ text-align: right; }
+        }
         .current { text-align: center; font-weight: bold; }
-        .next { text-align: right; }
+        .next {
+            text-align: right;
+            @media(max-width:540px){ text-align: left; }
+        }
 
         a.disabled { color: #999; }
         a.disabled:hover {
@@ -140,6 +152,7 @@
     border-radius: 0 0 4px 0;
     width: 46px;
     height: 46px;
+    z-index: 2;
 }
 
 #toggle-sidebar:focus {
