@@ -39,15 +39,16 @@ block content
                         span.glyphicon.correct.glyphicon-th-list
 
                     .header.ng-cloak(ng-hide="showingSummary")
-                        .prev
-                            a#prev(href="#", ng-click="prev()", ng-class="{disabled: currentQuestionIndex < 1}")
-                                span.glyphicon.glyphicon-circle-arrow-left
-                                span.hidden-xxs Previous
-                        span.current Question {{currentQuestionIndex+1}} of {{questions.length}}
-                        .next
-                            a#next(href="#", ng-click="next()", ng-class="{disabled: currentQuestionIndex >= questions.length - 1}")
-                                span.hidden-xxs Next
-                                span.glyphicon.glyphicon-circle-arrow-right
+                        .header-row
+                            .prev
+                                a#prev(href="#", ng-click="prev()", ng-class="{disabled: currentQuestionIndex < 1}")
+                                    span.glyphicon.glyphicon-circle-arrow-left
+                                    span.hidden-xxs Previous
+                            span.current Question {{currentQuestionIndex+1}} of {{questions.length}}
+                            .next
+                                a#next(href="#", ng-click="next()", ng-class="{disabled: currentQuestionIndex >= questions.length - 1}")
+                                    span.hidden-xxs Next
+                                    span.glyphicon.glyphicon-circle-arrow-right
 
                     .question-container(ng-hide="showingSummary")
 
@@ -75,7 +76,8 @@ block content
                                         strong {{currentQuestion().correctAnswer}}
 
                     .summary-container.ng-cloak(ng-show="showingSummary")
-                        h3 Summary
+                        .header
+                            h3 Summary
                         span Your Score:&nbsp;
                         span.score {{numCorrect()}} / {{questions.length}}
                         span.score-percent ({{score()}}%)

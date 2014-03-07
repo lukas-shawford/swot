@@ -3,9 +3,10 @@
  * ---------------- */
 
 @max-question-width: 30em;
+@xxs-breakpoint: 570px;
 
 .hidden-xxs {
-    @media (max-width: 540px) {
+    @media (max-width: @xxs-breakpoint) {
         .responsive-invisibility();
     }
 }
@@ -70,55 +71,55 @@
     }
 
     .header {
-        .make-row();
-
         max-width: @max-question-width;
-
-        // Make room for the sidebar toggle button
-        @media(max-width:610px){
-            max-width: @max-question-width - 4;
-        }
-
         margin: 1em auto;
         border-bottom: 1px dotted #ccc;
-        padding-bottom: 1em;
-
-        .prev,
-        .next {
-            .make-xs-column(3; @gutter: 0);
-            .make-sm-column(4; @gutter: 0);
-        }
-
-        .current {
-            .make-xs-column(6; @gutter: 0);
-            .make-sm-column(4; @gutter: 0);
-        }
-
-        .prev {
-            text-align: left;
-            @media(max-width:540px){ text-align: right; }
-        }
-        .current { text-align: center; font-weight: bold; }
-        .next {
-            text-align: right;
-            @media(max-width:540px){ text-align: left; }
-        }
 
         a.disabled { color: #999; }
         a.disabled:hover {
             cursor: default;
             text-decoration: none;
         }
+
+        // Make room for the sidebar toggle button
+        @media(max-width:@xxs-breakpoint){
+            padding-left:  50px;
+            padding-right: 50px;
+        }
+
+        .header-row {
+            .make-row();
+            padding-bottom: 1em;
+
+            .prev,
+            .next {
+                .make-xs-column(3);
+                .make-sm-column(4);
+            }
+
+            .current {
+                .make-xs-column(6);
+                .make-sm-column(4);
+            }
+
+            .prev {
+                text-align: left;
+                @media(max-width:@xxs-breakpoint){ text-align: right; }
+            }
+            .current { text-align: center; font-weight: bold; }
+            .next {
+                text-align: right;
+                @media(max-width:@xxs-breakpoint){ text-align: left; }
+            }
+        }
     }
 
     .question-container,
     .summary-container {
         max-width: @max-question-width;
-        margin: 3em auto 5.5em;
-    }
+        margin: 0 auto 1em;
 
-    .summary-container {
-        h3 { margin: 1em 0; }
+        .header h3 { margin: 5px 0; }
     }
 
     .summary-actions {
@@ -127,6 +128,7 @@
 
     .summary-actions button:not(:last-of-type) {
         margin-right: .25em;
+        margin-bottom: .25em;
     }
 
     .score {
