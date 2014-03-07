@@ -14,6 +14,9 @@
 .quiz-container {
     .make-row();
 
+    // Move the entire container up a bit on mobile
+    @media(max-width:767px) { margin-top: -50px; }
+
     .sidebar {
         @media(min-width:992px) {
             .make-md-column(3);
