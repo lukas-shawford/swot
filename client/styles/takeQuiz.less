@@ -15,8 +15,10 @@
     .make-row();
 
     .sidebar {
-        .make-md-column(3);
-        .make-lg-column(2);
+        @media(min-width:992px) {
+            .make-md-column(3);
+            .make-lg-column(2);
+        }        
     }
 
     .main {
