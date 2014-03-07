@@ -3,19 +3,40 @@
  * ---------- */
 
 .my-quizzes.container {
-    width: 40em;
+    max-width: 40em;
     margin: 2em auto;
 }
 
 .quizzes {
-    max-width: 500px;
-}
+    .quiz-name {
+        display: inline;
+        margin-right: 6px;
+    }
 
-.quizzes .quiz-name {
-    display: inline;
-}
+    .num-questions {
+        @media(max-width:450px) { display: block; }
+    }
 
-.quizzes .quiz-actions a {
-    margin: 0 4px;
+    .quiz-actions {
+        a {
+            margin: 2px 4px 4px 0;
 
+            @media(max-width:767px) {
+                display: block;
+                max-width: 200px;
+            }
+        }
+
+        @media(min-width:768px) { text-align: right; }
+    }
+
+    .quiz-header {
+        .make-row();
+        .quiz-name-container {
+            .make-sm-column(6);
+        }
+        .quiz-actions {
+            .make-sm-column(6);
+        }
+    }
 }
