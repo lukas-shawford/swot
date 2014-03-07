@@ -10,20 +10,18 @@ block content
             #quizzes.quizzes.list-group
                 each quiz in quizzes
                     .quiz.list-group-item
-                        .quiz-header-container
-                            .quiz-header.list-group-item-heading
-                                .quiz-name-container
-                                    h4.quiz-name= quiz.name
-                                    span.num-questions (#{quiz.questions.length} question#{quiz.questions.length === 1 ? '' : 's'})
-                                    p.list-group-item-text Created #{quiz.dateCreated}
-                                .quiz-actions
-                                    if quiz.questions.length > 0
-                                        a.btn.btn-primary(href="/quiz/" + quiz._id)
-                                            span.glyphicon.glyphicon-circle-arrow-right
-                                            | Take the Quiz
-                                    a.btn.btn-info.edit-quiz-btn(href="/edit/" + quiz._id)
-                                        span.glyphicon.glyphicon-pencil
-                                        | Edit
+                        .quiz-header.list-group-item-heading
+                            h4.quiz-name= quiz.name
+                            span.num-questions (#{quiz.questions.length} question#{quiz.questions.length === 1 ? '' : 's'})
+                            p.list-group-item-text Created #{quiz.dateCreated}
+                        .quiz-actions
+                            if quiz.questions.length > 0
+                                a.btn.btn-primary(href="/quiz/" + quiz._id)
+                                    span.glyphicon.glyphicon-circle-arrow-right
+                                    | Take the Quiz
+                            a.btn.btn-info.edit-quiz-btn(href="/edit/" + quiz._id)
+                                span.glyphicon.glyphicon-pencil
+                                | Edit
         else
             p
                 | You currently have no quizzes.

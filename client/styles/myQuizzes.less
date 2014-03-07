@@ -8,6 +8,17 @@
 }
 
 .quizzes {
+
+    .quiz {
+        .make-row();
+        .quiz-header {
+            .make-sm-column(6);
+        }
+        .quiz-actions {
+            .make-sm-column(6);
+        }
+    }
+
     .quiz-name {
         display: inline;
         margin-right: 6px;
@@ -28,15 +39,5 @@
         }
 
         @media(min-width:768px) { text-align: right; }
-    }
-
-    .quiz-header {
-        .make-row();
-        .quiz-name-container {
-            .make-sm-column(6);
-        }
-        .quiz-actions {
-            .make-sm-column(6);
-        }
     }
 }
