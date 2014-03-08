@@ -2,7 +2,7 @@
 
 Quiz maker written using the MEAN stack (MongoDB, Express, AngularJS, and Node.js). This is a learning project that is still in the early stages of development.
 
-The primary goal of swot is to create an advanced quiz editor that is capable of more than just simple flashcard style questions, which keeping the UI simple and easy to use.
+The primary goal of swot is to create an advanced quiz editor that is capable of more than just simple flashcard style questions, while keeping the UI simple and easy to use.
 
 Current capabilities are fairly basic at this point, but include the ability to create and save quizzes with rich formatting in the questions (courtesy of [ckeditor](http://ckeditor.com/)), as well as to take quizzes (with automatic score keeping). Currently, only short-answer style questions are supported - other question types including fill-in, multiple choice, and self-graded long response questions are coming soon.
 
