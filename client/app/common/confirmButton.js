@@ -17,6 +17,7 @@
  *     - yes="Yep": Changes the text of the "Yes" button
  *     - no="Nope": Changes the text of the "No" button
  *     - classes="mypopover warning": CSS classes to apply to the popover (separated by space)
+ *     - placement="bottom": Changes the popover placement
  *
  * This was borrowed and slightly modified from here:
  * http://wegnerdesign.com/blog/angular-js-directive-tutorial-on-attribute-bootstrap-confirm-button/
@@ -25,29 +26,26 @@ angular.module('swot').directive('confirmButton', function ($document, $parse) {
     return {
         restrict: 'A',
         link: function (scope, element, attrs) {
-            var buttonId, html, message, nope, title, yep, classes;
-      
-            buttonId = Math.floor(Math.random() * 10000000000);
+            var buttonId = Math.floor(Math.random() * 10000000000),
+                message = attrs.message || "Are you sure?",
+                yep = attrs.yes || "Yes",
+                nope = attrs.no || "No",
+                title = attrs.title || "Confirm",
+                classes = attrs.classes || "",
+                placement = attrs.placement || "bottom";
 
-            attrs.buttonId = buttonId;
-
-            message = attrs.message || "Are you sure?";
-            yep = attrs.yes || "Yes";
-            nope = attrs.no || "No";
-            title = attrs.title || "Confirm";
-            classes = attrs.classes || "";
-      
-            html = "<div id=\"button-" + buttonId + "\" class=\"" + classes + "\">" +
-                        "<p class=\"confirmbutton-msg\">" + message + "</p>" +
-                        "<button class=\"confirmbutton-yes btn btn-danger\">" + yep + "</button>" +
-                        "<button class=\"confirmbutton-no btn\">" + nope + "</button>" +
-                    "</div>";
+            var html = "<div id=\"button-" + buttonId + "\" class=\"" + classes + "\">" +
+                            "<p class=\"confirmbutton-msg\">" + message + "</p>" +
+                            "<button class=\"confirmbutton-yes btn btn-danger\">" + yep + "</button>" +
+                            "<button class=\"confirmbutton-no btn\">" + nope + "</button>" +
+                        "</div>";
 
             element.popover({
                 content: html,
                 html: true,
                 trigger: "manual",
-                title: title
+                title: title,
+                placement: placement
             });
 
             element.bind('click', function(e) {
