@@ -106,7 +106,11 @@
                 }
             }
 
-            .answer input { width: 40%; }
+            .answer input {
+                @media(max-width:@screen-xs) { margin-top: 6px; }
+                @media(min-width:@screen-xs) { width: 40%; }
+                @media(min-width:@screen-xs) and (max-width:@screen-sm) { margin-left: 1em; }
+            }
         }
     }
 
