@@ -18,6 +18,16 @@
  *     - no="Nope": Changes the text of the "No" button
  *     - classes="mypopover warning": CSS classes to apply to the popover (separated by space)
  *     - placement="bottom": Changes the popover placement
+ *     - placement-callback="getPopoverPlacement()": A more flexible method for determining the
+ *          placement of the popover. getPopoverPlacement should be a function that returns a
+ *          function, which in turn returns a string (one of either "left", "top", "right", or
+ *          "bottom"). This can be used to, for example, have the popover appear to the left
+ *          on small screens, and to the right on big screens:
+ *              $scope.popoverPlacementCallback = function () {
+ *                  return function () {
+ *                      return ($(window).width() > 1024) ? "right" : "left";
+ *                  };
+ *              };
  *
  * This was borrowed and slightly modified from here:
  * http://wegnerdesign.com/blog/angular-js-directive-tutorial-on-attribute-bootstrap-confirm-button/
@@ -25,6 +35,7 @@
 angular.module('swot').directive('confirmButton', function ($document, $parse) {
     return {
         restrict: 'A',
+        scope: { placementCallback: '&placementCallback' },
         link: function (scope, element, attrs) {
             var buttonId = Math.floor(Math.random() * 10000000000),
                 message = attrs.message || "Are you sure?",
@@ -45,7 +56,7 @@ angular.module('swot').directive('confirmButton', function ($document, $parse) {
                 html: true,
                 trigger: "manual",
                 title: title,
-                placement: placement
+                placement: (angular.isDefined(attrs.placementCallback) ? scope.placementCallback() : placement)
             });
 
             element.bind('click', function(e) {

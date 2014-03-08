@@ -156,4 +156,7 @@ a {
 }
 
 /* Confirmation popover */
-.confirm-popover { width: 20em; }
+.confirm-popover {
+    @media(min-width:@screen-sm) { width: 15em; }
+    @media(min-width:@screen-md) { width: 20em; }
+}
