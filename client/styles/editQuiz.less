@@ -2,6 +2,10 @@
  * Edit Quiz
  * --------- */
 
+// Screen width at which to display the quiz name and actions (save, etc.) on separate rows,
+// instead of on the same row.
+@header-breakpoint: 570px;
+
 .sortable-list-placeholder {
     width: 100%;
     margin: 8px 0;    
@@ -16,11 +20,53 @@
     max-width: 50em;
     margin: 1em auto 5em;
 
-    .header-container .btn {
-        margin-left: .4em;
-    }
+    .header-container {
+        .quiz-name-container {
+            .make-xs-column(6);
 
-    .save { margin-left: 1em; }
+            @media(max-width:@header-breakpoint) {
+                float: none;
+                width: 100%;
+            }
+        }
+        .quiz-actions {
+            .make-xs-column(6);
+
+            @media(max-width:@header-breakpoint) {
+                float: none;
+                width: 100%;
+                margin-top: 1em;
+                text-align: left;
+            }
+
+            text-align: right;
+
+            .action:not(.last) { margin-right: .4em; }
+
+            .messages {
+                display: inline-block;
+                line-height: 34px;
+
+                @media(max-width:@header-breakpoint) {
+                    float: right;
+                    margin-top: 4px;
+                }
+
+                .quiz-xhr-message {
+                    color: #aaa;
+                    font-style: italic;
+                    padding: 4px;
+                    background-color: white;
+
+                    // On really tiny screens, the "Saved" and "Loading" messages simply
+                    // won't fit. They're not that important, so don't show them.
+                    @media(max-width:400px) { display: none; }
+                }
+                .quiz-xhr-message, #save-spinner { margin-right: 1em; }
+                .quiz-xhr-message.error { color: #b94a48; background-color: #f2dede; }
+            }
+        }
+    }
 
     .question-list-container {
         margin-bottom: 1em;
@@ -70,15 +116,6 @@
     }
 
     .delete-question:hover { background-color: rgb(255, 29, 29); }
-
-    .quiz-xhr-message {
-        color: #aaa;
-        font-style: italic;
-        padding: 4px;
-        background-color: white;
-    }
-
-    .quiz-xhr-message.error { color: #b94a48; background-color: #f2dede; }
 
     .save-error { margin: 1em 0; }
 }
