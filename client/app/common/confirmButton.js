@@ -35,7 +35,10 @@
 angular.module('swot').directive('confirmButton', function ($document, $parse) {
     return {
         restrict: 'A',
-        scope: { placementCallback: '&placementCallback' },
+        scope: {
+            confirmAction: '&confirmButton',
+            placementCallback: '&'
+        },
         link: function (scope, element, attrs) {
             var buttonId = Math.floor(Math.random() * 10000000000),
                 message = attrs.message || "Are you sure?",
@@ -44,6 +47,8 @@ angular.module('swot').directive('confirmButton', function ($document, $parse) {
                 title = attrs.title || "Confirm",
                 classes = attrs.classes || "",
                 placement = attrs.placement || "bottom";
+
+            attrs.buttonId = buttonId;
 
             var html = "<div id=\"button-" + buttonId + "\" class=\"" + classes + "\">" +
                             "<p class=\"confirmbutton-msg\">" + message + "</p>" +
@@ -75,10 +80,7 @@ angular.module('swot').directive('confirmButton', function ($document, $parse) {
 
                 pop.find('.confirmbutton-yes').click(function(e) {
                     dontBubble = false;
-                    var func = $parse(attrs.confirmButton);
-                    scope.$apply(function () {
-                        func(scope);
-                    });
+                    scope.$apply(scope.confirmAction);
                 });
 
                 pop.find('.confirmbutton-no').click(function(e) {
