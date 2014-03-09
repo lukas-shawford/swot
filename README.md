@@ -10,15 +10,9 @@ Current capabilities are fairly basic at this point, but include the ability to 
 
 swot requires [Node](http://nodejs.org/) and [npm](http://npmjs.org/) (which should be installed as part of Node), and can be built and launched on UNIX platforms as well as Windows.
 
-In addition to Node, swot requires [bower](http://bower.io/) to be installed globally:
+In addition, [MongoDB](http://www.mongodb.org/) should be installed and running.  swot assumes that MongoDB is listening on the default port, 27017, but this may be changed by setting the `MONGODB_URL` environment variable before launching the app (if the environment variable is not specified, it defaults to `localhost:27017/swot`).
 
-```
-npm install -g bower
-```
-
-Also, [MongoDB](http://www.mongodb.org/) should be installed and running. By default, it is assumed that MongoDB is listening on port 27017 (though this may be changed by setting the `MONGODB_URL` environment variable before launching the app - the default if the environment variable is missing is `localhost:27017/swot`).
-
-And finally, you must also have [grunt](http://gruntjs.com/) installed globally:
+Finally, you must also have [grunt](http://gruntjs.com/) installed globally:
 
 ```
 npm install -g grunt-cli
