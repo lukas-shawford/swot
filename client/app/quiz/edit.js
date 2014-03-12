@@ -134,7 +134,9 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         // field otherwise.
         if ($scope.addingNewQuestion) {
             $timeout(function () {
-                focus('newQuestionReady');
+                if (!Modernizr.touch) { // Don't autofocus on mobile (keyboard doesn't automatically show anyway)
+                    focus('newQuestionReady');
+                }
                 $scope.addingNewQuestion = false;
             }, 500);
         }
