@@ -325,6 +325,11 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     };
 
     $scope.addQuestionTooltip = function () {
+        if (Modernizr.touch) {
+            // Don't show tooltips on touch-based devices
+            return "";
+        }
+
         if ($scope.addQuestionTooltipsRemaining <= 0 || $scope.quiz.questions.length === 0) {
             return "";
         }
