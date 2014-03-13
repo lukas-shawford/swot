@@ -300,32 +300,6 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         }
     };
 
-    $scope.ckEditorConfig = {
-        toolbar : [
-            { name:  'lists_and_indentation',
-              items: [  'NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Blockquote',
-                        '-',
-                        'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock',
-                        '-',
-                        'Link', 'Unlink', '-' ] },
-
-            { name:  'tables_and_images',
-              items: [  'Image', 'Table', 'HorizontalRule', 'SpecialChar' ] },
-
-            '/',
-
-            { name:  'formatting',
-              items: [  'Bold', 'Italic', 'Underline',
-                        '-',
-                        'TextColor', 'BGColor',
-                        '-',
-                        'Superscript', 'Subscript', 'Strike',
-                        '-',
-                        'RemoveFormat' , 'Font', 'FontSize'
-                        ] },
-        ]
-    };
-
     $scope.addQuestionTooltip = function () {
         if (Modernizr.touch) {
             // Don't show tooltips on touch-based devices
@@ -337,6 +311,49 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         }
 
         return "You can also add a question by hitting the TAB key after typing in the last answer.";
+    };
+
+    // Question Editor (ckeditor)
+    // --------------------------
+
+    $scope.ckFullToolbar = [
+        { name:  'lists_and_indentation',
+          items: [  'NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Blockquote',
+                    '-',
+                    'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock',
+                    '-',
+                    'Link', 'Unlink', '-' ] },
+
+        { name:  'tables_and_images',
+          items: [  'Image', 'Table', 'HorizontalRule', 'SpecialChar' ] },
+
+        '/',
+
+        { name:  'formatting',
+          items: [  'Bold', 'Italic', 'Underline',
+                    '-',
+                    'TextColor', 'BGColor',
+                    '-',
+                    'Superscript', 'Subscript', 'Strike',
+                    '-',
+                    'RemoveFormat' , 'Font', 'FontSize'
+                    ] },
+    ];
+
+    // On smaller screens, show a stripped down version of the toolbar
+    // with only basic formatting options.
+    $scope.ckMobileToolbar = [
+        { name:  'formatting',
+          items: [  'Bold', 'Italic', 'Underline',
+                    '-',
+                    'TextColor', 'BGColor', 'FontSize',
+                    '-',
+                    'RemoveFormat'
+                    ] },
+    ];
+
+    $scope.ckEditorConfig = {
+        toolbar : ($(window).width() > 600 ? $scope.ckFullToolbar : $scope.ckMobileToolbar)
     };
 
 
