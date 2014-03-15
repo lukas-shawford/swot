@@ -1,0 +1,36 @@
+.view-question {
+
+    .question {
+        margin-bottom: 2em;
+        max-width: @max-question-width;
+        line-height: 1.6;
+        overflow: auto;
+    }
+
+    .submission {
+        input {
+            margin: 6px 6px 6px 0;
+
+            @media(min-width:450px) {
+                display: inline;
+                width: 250px;
+            }
+        }
+
+        input[readonly] { cursor: default; }
+
+        .result-container {
+            margin-top: 1em;
+        }
+
+        .result .result-header {
+            display: block;
+            margin-bottom: 0.5em;
+        }
+
+        .result .glyphicon {
+            margin-right: 4px;
+        }
+    }
+    
+}

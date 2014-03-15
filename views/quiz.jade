@@ -52,28 +52,9 @@ block content
 
                     .question-container(ng-hide="showingSummary")
 
-                        #question.question.ng-cloak(ng-bind-html="trusted(currentQuestion().question)")
-
-                        .submission
-                            input#submission.form-control(type="text", ng-model="currentQuestion().submission", focus-on="switchedQuestion"
-                                ui-keypress="{ 'enter': 'handleEnter($event)' }", ng-readonly="currentQuestion().submitted")
-                            button#submit.submit.btn.btn-success(type="button", ng-click="submit()", ng-disabled="!currentQuestion().submission", ng-hide="currentQuestion().submitted") Submit
-                            button#next-button.next.btn.btn-primary.ng-cloak(type="button", ng-click="next()", ng-show="currentQuestion().submitted && !(isLastQuestion() && !isFinished())")
-                                | {{ isLastQuestion() ? 'Finish' : 'Next' }}
-                                span.glyphicon.glyphicon-circle-arrow-right
-
-                            .result-container
-                                .result.ng-cloak(ng-show="currentQuestion().submitted")
-                                    #correct.alert.alert-success(ng-show="currentQuestion().isCorrect")
-                                        span.glyphicon.glyphicon-ok-sign
-                                        strong Correct!
-
-                                    #incorrect.alert.alert-danger(ng-show="!currentQuestion().isCorrect")
-                                        strong.incorrect
-                                            span.glyphicon.glyphicon-remove-sign
-                                            | Incorrect!
-                                        | The correct answer is:&nbsp;
-                                        strong {{currentQuestion().correctAnswer}}
+                        viewquestion#question(question="currentQuestion()", submit="submit()"
+                            show-next="!(isLastQuestion() && !isFinished())", next="next()"
+                            next-button-text="isLastQuestion() ? 'Finish' : 'Next'")
 
                     .summary-container.ng-cloak(ng-show="showingSummary")
                         .header
@@ -96,3 +77,4 @@ block scripts
     script(src="/js/offcanvas.js")
     script(src="/services/quiz.js")
     script(src="/controllers/takeQuiz.js")
+    script(src="/directives/viewQuestion.js")

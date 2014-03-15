@@ -1,0 +1,36 @@
+<div class="view-question">
+    <div class="question ng-cloak" ng-bind-html="trusted(question.question)"></div>
+
+    <div class="submission">
+        <input class="submission form-control" type="text" ng-model="question.submission"
+            focus-on="switchedQuestion" ui-keypress="{ 'enter': 'handleEnter($event)' }"
+            ng-readonly="question.submitted" />
+
+        <button class="submit btn btn-success" type="button" ng-click="submit()"
+            ng-disabled="!question.submission" ng-hide="question.submitted">
+            Submit
+        </button>
+
+        <button type="button" ng-click="next()" ng-show="showNext && question.submitted"
+            class="next btn btn-primary ng-cloak">
+            {{ nextButtonText }}
+            <span class="glyphicon glyphicon-circle-arrow-right"></span>
+        </button>
+
+        <div class="result-container">
+            <div ng-show="question.submitted" class="result ng-cloak">
+                <div ng-show="question.isCorrect" class="correct alert alert-success result-header">
+                    <span class="glyphicon glyphicon-ok-sign"></span>
+                    <strong>Correct!</strong>
+                </div>
+                <div ng-show="!question.isCorrect" class="incorrect alert alert-danger">
+                    <strong class="result-header">
+                        <span class="glyphicon glyphicon-remove-sign"></span>
+                        Incorrect!
+                    </strong>
+                    The correct answer is:&nbsp;<strong>{{question.correctAnswer}}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

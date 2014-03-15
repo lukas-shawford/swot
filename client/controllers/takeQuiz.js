@@ -1,4 +1,4 @@
-angular.module('swot').controller('ViewQuizCtrl', [ '$scope', '$sce', 'quiz', 'focus', function ($scope, $sce, quiz, focus) {
+angular.module('swot').controller('ViewQuizCtrl', [ '$scope', 'quiz', 'focus', function ($scope, quiz, focus) {
     $scope._id = _quizId || null;
     $scope.questions = [{}];
     $scope.alerts = [];
@@ -65,10 +65,6 @@ angular.module('swot').controller('ViewQuizCtrl', [ '$scope', '$sce', 'quiz', 'f
         $scope.jumpToQuestion(0);
     };
 
-    $scope.trusted = function (html) {
-        return $sce.trustAsHtml(html);
-    };
-
     $scope.currentQuestion = function () {
         var index = $scope.currentQuestionIndex;
         if (index < 0 || index >= $scope.questions.length) { return ""; }
@@ -90,16 +86,6 @@ angular.module('swot').controller('ViewQuizCtrl', [ '$scope', '$sce', 'quiz', 'f
             // rule of never doing DOM manipulation in the controller. However, the offcanvas
             // sidebar is currently not implemented as an Angular directive, so...
             $('.row-offcanvas').removeClass('active');
-        }
-    };
-
-    $scope.handleEnter = function ($event) {
-        var currentQuestion = $scope.currentQuestion();
-
-        if (currentQuestion.submitted) {            // Question has been submitted already.
-            $scope.next();
-        } else if (currentQuestion.submission) {    // Submit question, but only if the submission field is not empty.
-            $scope.submit();
         }
     };
 
