@@ -50,14 +50,9 @@ block content
                                 button.delete-question.btn.btn-xs.btn-default(type="button", confirm-button="removeQuestion($index)"
                                     message="Are you sure you want to remove this question?", classes="confirm-popover", placement-callback='popoverPlacementCallback()', tabindex="-1")
                                     span.glyphicon.glyphicon-trash
-                        .question-body.form-horizontal
-                            .question.form-group
-                                .question-editor(ckedit="{{ckEditorConfig}}", ng-model="question.questionHtml", focus-on="newQuestionReady")
-                            .answer.form-group
-                                label.control-label.col-ms-2.col-sm-2 Answer:
-                                .col-ms-10.col-sm-10
-                                    input.answer-editor.form-control(type="text", name="answer", ng-model="question.answer", placeholder="Answer"
-                                        ng-keydown="answerKeypress($index, $event)", auto-grow, max-width="443")
+
+                        editquestion.question-body(question="question", ck-editor-config="ckEditorConfig", answer-keypress="answerKeypress($event, question)")
+
                 .no-questions.ng-cloak(ng-show="questions.length === 0") Nothing here yet! Click on "Add Question" below to start adding questions.
 
             button#add-question.btn.btn-success(type="button", ng-click="addQuestion()", tooltip-trigger="mouseenter"
@@ -87,3 +82,4 @@ block scripts
     script(src="/animations/listItem.js")
     script(src="/services/quiz.js")
     script(src="/controllers/editQuiz.js")
+    script(src="/directives/editQuestion.js")

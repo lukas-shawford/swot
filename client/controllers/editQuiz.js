@@ -388,9 +388,10 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     // Events
     // ------
 
-    $scope.answerKeypress = function ($index, $event) {
+    $scope.answerKeypress = function ($event, question) {
         // Add new question when hitting TAB on the last input
-        if ($index === $scope.quiz.questions.length - 1) {
+        var index = $scope.quiz.questions.indexOf(question);
+        if (index === $scope.quiz.questions.length - 1) {
             if ($event.keyCode === 9 &&  !$event.ctrlKey && !$event.metaKey && !$event.altKey && !$event.shiftKey) {
                 $scope.addQuestion();
             }

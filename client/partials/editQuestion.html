@@ -1,0 +1,12 @@
+<div class="edit-question form-horizontal">
+    <div class="question form-group">
+        <div class="question-editor" ckedit="{{ckEditorConfig}}" ng-model="question.questionHtml" focus-on="newQuestionReady"></div>
+    </div>
+    <div class="answer form-group">
+        <label class="control-label col-ms-2 col-sm-2">Answer:</label>
+        <div class="col-ms-10 col-sm-10">
+            <input type="text" name="answer" ng-model="question.answer" class="answer-editor form-control"
+                placeholder="Answer" ng-keydown="handleAnswerKeypress($event)" auto-grow="auto-grow" max-width="443" >
+        </div>
+    </div>
+</div>
