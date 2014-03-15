@@ -31,12 +31,12 @@ module.exports = function(grunt) {
 
             // Launch the application
             app: {
-                command: "node app.js"
+                command: "node server.js"
             },
 
             // Launch the application in the background
             'app-background' : {
-                command: "node app.js",
+                command: "node server.js",
                 options: {
                     async: true
                 }
