@@ -3,6 +3,7 @@ var moment = require('moment');
 var mongoose = require('mongoose');
 var User = require('../lib/user');
 var Quiz = require('../lib/quiz');
+var Question = require('../lib/question').Question;
 
 var ObjectId = mongoose.Types.ObjectId;
 
@@ -121,14 +122,28 @@ exports.create = function (req, res, next) {
     delete data._id;
     if (!data.name) { data.name = "New Quiz"; }
 
-    Quiz.createQuiz(data.name, data.questions, req.user, function (err, quiz) {
+    Quiz.createQuiz(data.name, req.user, function (err, quiz) {
         if (err) {
             return res.json({
                 success: false,
                 message: err.toString()
             });
         }
-        res.json({ success: true, id: quiz._id });
+
+        _.each(data.questions, function (question) {
+            quiz.questions.push(new Question(question));
+        });
+
+        quiz.save(function (err) {
+            if (err) {
+                return res.json({
+                    success: false,
+                    message: err.toString()
+                });
+            }
+
+            res.json({ success: true, id: quiz._id });
+        });
     });
 };
 

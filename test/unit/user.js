@@ -126,7 +126,7 @@ describe('userDb', function () {
                 barbara = results[1];
 
                 // Create 2 test quizzes, one owned by stephanie, and the other by barbara
-                async.map([ stephanie, barbara ], Quiz.createQuiz.bind(Quiz, 'test quiz', []), function (err, results) {
+                async.map([ stephanie, barbara ], Quiz.createQuiz.bind(Quiz, 'test quiz'), function (err, results) {
                     if (err) throw err;
                     stephanieQuiz = results[0];
                     barbaraQuiz = results[1];
