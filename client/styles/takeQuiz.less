@@ -27,6 +27,11 @@
     .main {
         .make-md-column(9);
         .make-lg-column(8);
+
+        @media(min-width:1600px){
+            margin-left: 3em;
+            margin-right: 3em;
+        }
     }
 
     .quiz-body {
@@ -35,11 +40,6 @@
         border: 1px solid #ddd;
         border-radius: 4px;
         padding: 0 1em;
-
-        @media(min-width:1600px){
-            margin-left: 3em;
-            margin-right: 3em;
-        }
     }
 
     .header {

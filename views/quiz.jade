@@ -5,11 +5,6 @@ block head
 
 block content
     .quiz-container(ng-app="swot", ng-controller="ViewQuizCtrl")
-        
-        if (message != '')
-            div.alert.alert-danger
-                p !{message}
-        alert.ng-cloak(ng-repeat="alert in alerts", type="alert.type", close="closeAlert($index)") {{alert.msg}}
 
         .row.row-offcanvas.row-offcanvas-left
 
@@ -31,6 +26,11 @@ block content
                             bar(type="danger", value="numIncorrect()/questions.length*100")
 
             .main.col-xs-12
+
+                if (message != '')
+                    div.alert.alert-danger
+                        p !{message}
+                alert.ng-cloak(ng-repeat="alert in alerts", type="alert.type", close="closeAlert($index)") {{alert.msg}}
 
                 .quiz-body
 
