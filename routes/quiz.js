@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var User = require('../lib/user');
 var Quiz = require('../lib/quiz');
 var Question = require('../lib/question').Question;
+var FillInQuestion = require('../lib/questions/fillIn').FillInQuestion;
 
 var ObjectId = mongoose.Types.ObjectId;
 
@@ -131,7 +132,7 @@ exports.create = function (req, res, next) {
         }
 
         _.each(data.questions, function (question) {
-            quiz.questions.push(new Question(question));
+            quiz.questions.push(new FillInQuestion(question));
         });
 
         quiz.save(function (err) {
@@ -200,17 +201,37 @@ exports.save = function (req, res, next) {
         });
     }
 
+    // Don't include the _id field in the update
     var quizId = quiz._id;
     delete quiz._id;
+
+    // Empty out the question list - embedded document arrays need to be saved using push()
+    var questions = quiz.questions;
+    quiz.questions = [];
     
-    Quiz.update({ _id: quizId }, quiz, function (err, quiz) {
+    Quiz.findOneAndUpdate({ _id: quizId }, quiz, function (err, quiz) {
         if (err) {
             return res.json({
                 success: false,
                 message: err.toString()
             });
         }
-        res.json({ success: true });
+
+        // Save the questions
+        _.each(questions, function (question) {
+            quiz.questions.push(new FillInQuestion(question));
+        });
+
+        quiz.save(function (err) {
+            if (err) {
+                return res.json({
+                    success: false,
+                    message: err.toString()
+                });
+            }
+
+            res.json({ success: true });
+        });
     });
 };
 

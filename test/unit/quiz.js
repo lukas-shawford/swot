@@ -1,12 +1,15 @@
-var expect = require('chai').expect;
+var chai = require('chai');
+var expect = chai.expect;
 var mongoose = require('mongoose');
 var async = require('async');
 var _ = require('underscore');
 var User = require('../../lib/user');
 var Quiz = require('../../lib/quiz');
 var Question = require('../../lib/question').Question;
+var FillInQuestion = require('../../lib/questions/fillIn').FillInQuestion;
 
 var MONGODB_URL = process.env.MONGODB_TEST_URL || 'localhost:27017/swot_test';
+chai.Assertion.includeStack = true;
 
 describe('quiz', function () {
 
@@ -88,29 +91,36 @@ describe('quiz', function () {
 
     describe('quiz db (lib/quiz.js)', function () {
 
+        var quizId;
         var quiz;
 
         before(function (done) {
             Quiz.createQuiz('My Test Quiz', corey, function (err, result) {
                 expect(err).to.be.null;
-                quiz = result;
+                quizId = result._id;
 
                 // Save the questions
-                quiz.questions.push(new Question({
+                result.questions.push(new FillInQuestion({
                     questionHtml: "What is the capital of North Dakota?",
                     answer: "Bismarck"
                 }));
-                quiz.questions.push(new Question({
+                result.questions.push(new FillInQuestion({
                     questionHtml: "What is the default squawk code for VFR aircraft in the United States?",
                     answer: "1200"
                 }));
-                quiz.questions.push(new Question({
+                result.questions.push(new FillInQuestion({
                     questionHtml: "You are a senior executive at a Pharmacy Benefit Management (PBM) firm. After a recent acquisition of another PBM, your firm is now able to offer clients a wider range of sophisticated administrative and clinically-based services. Does this represent a strength or an opportunity according to SWOT analysis?",
                     answer: "strength"
                 }));
-                quiz.save(function (err) {
+                result.save(function (err) {
                     if (err) throw err;
-                    done();
+
+                    // Reload the quiz from the database and save a reference to it.
+                    Quiz.findOne({ _id: quizId }, function (err, result) {
+                        if (err) throw err;
+                        quiz = result;
+                        done();
+                    });
                 });
             });
         });
@@ -131,8 +141,8 @@ describe('quiz', function () {
                 expect(quiz.questions[2].answer).to.equal("strength");
 
                 // Ensure quiz is associated with the user
-                expect(quiz.createdBy).to.equal(corey._id);                     // Check quiz.createdBy
-                User.findOne({ _id: corey._id }, function (err, corey) {        // Check User.quizzes (need to reload document first because it's out of sync)
+                expect(quiz.createdBy.toString()).to.equal(corey._id.toString());  // Check quiz.createdBy
+                User.findOne({ _id: corey._id }, function (err, corey) {           // Check User.quizzes (need to reload document first because it's out of sync)
                     if (err) throw err;
                     expect(corey.quizzes).to.contain(quiz._id);
                     done();
