@@ -184,9 +184,7 @@ exports.load = function (req, res, next) {
 };
 
 exports.save = function (req, res, next) {
-    var quiz = req.body.quiz;
-
-    if (!quiz._id) {
+    if (!req.body.quiz._id) {
         return res.json({
             success: false,
             message: "Quiz ID is missing."
@@ -194,22 +192,14 @@ exports.save = function (req, res, next) {
     }
 
     // Validate that quiz is owned by user
-    if (!req.user.ownsQuiz(quiz._id)) {
+    if (!req.user.ownsQuiz(req.body.quiz._id)) {
         return res.json({
             success: false,
             message: "Invalid Quiz ID."
         });
     }
 
-    // Don't include the _id field in the update
-    var quizId = quiz._id;
-    delete quiz._id;
-
-    // Empty out the question list - embedded document arrays need to be saved using push()
-    var questions = quiz.questions;
-    quiz.questions = [];
-    
-    Quiz.findOneAndUpdate({ _id: quizId }, quiz, function (err, quiz) {
+    Quiz.findOne({ _id: req.body.quiz._id }, function (err, quiz) {
         if (err) {
             return res.json({
                 success: false,
@@ -217,20 +207,41 @@ exports.save = function (req, res, next) {
             });
         }
 
+        // Update quiz properties
+        quiz.name = req.body.quiz.name;
+
+        // Empty out the question list - embedded document arrays need to be saved using push()
+        quiz.questions = [];
+
         // Save the questions
-        _.each(questions, function (question) {
-            quiz.questions.push(new FillInQuestion(question));
-        });
+        _.each(req.body.quiz.questions, function (q) {
+            
+            // TODO: Need to pass in the question type from the UI and instantiate the appropriate
+            // question type, instead of always using fill-in.
+            var question = new FillInQuestion(q);
 
-        quiz.save(function (err) {
-            if (err) {
-                return res.json({
-                    success: false,
-                    message: err.toString()
+            question.validate(function (err) {
+                if (err) {
+                    return res.json({
+                        success: false,
+                        message: err.toString()
+                    });
+                }
+
+                quiz.questions.push(question);
+
+                // Save the quiz
+                quiz.save(function (err) {
+                    if (err) {
+                        return res.json({
+                            success: false,
+                            message: err.toString()
+                        });
+                    }
+
+                    res.json({ success: true });
                 });
-            }
-
-            res.json({ success: true });
+            });
         });
     });
 };

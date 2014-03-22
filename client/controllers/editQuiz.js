@@ -66,7 +66,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
 
         var onError = function (error) {
             $scope.saveStatus = "";
-            $scope.saveError = 'An error occurred while saving the quiz: ' + error;
+            $scope.showError('An error occurred while saving the quiz: ' + error);
             $scope.savedSuccessfully = false;
             $scope.isSaving = false;
             if (typeof (callback) === 'function') {

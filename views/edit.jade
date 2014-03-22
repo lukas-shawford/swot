@@ -5,11 +5,6 @@ block content
 
         form(ng-controller="EditQuizCtrl", name="editQuizForm", confirm-on-exit="There are unsaved changes to the quiz.")
 
-            if (message != '')
-                div.alert.alert-danger
-                    p !{message}
-            alert.ng-cloak(ng-repeat="alert in alerts", type="alert.type", close="closeAlert($index)") {{alert.msg}}
-
             .header-container.form-group
                 .row
                     label.control-label.col-xs-12(for="quiz-name") Quiz Name:
@@ -35,8 +30,13 @@ block content
                                 li: a#delete-quiz(data-toggle="modal", href="#deleteDialog", ng-hide="isNew()")
                                     i.glyphicon.glyphicon-menu.glyphicon-remove
                                     | Delete
-            .save-error.alert.alert-danger.alert-dismissable.ng-cloak(ng-show="!isSaving && !savedSuccessfully && saveMessage")
-                | {{saveMessage}}
+                // Alerts
+                .row
+                    .alerts.col-xs-12
+                        if (message != '')
+                            div.alert.alert-danger
+                                p !{message}
+                        alert.ng-cloak(ng-repeat="alert in alerts", type="alert.type", close="closeAlert($index)") {{alert.msg}}
 
             label.control-label Questions:
             .question-list-container
