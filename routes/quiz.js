@@ -70,7 +70,7 @@ exports.questions = function(req, res, next) {
         }
 
         // Load the questions only (not the answers)
-        var questions = _.map(quiz.questions, function(question) { return question.questionHtml });
+        var questions = _.map(quiz.questions, function(question) { return question.questionHtml; });
 
         res.json({ success: true, questions: questions });
     });
@@ -131,20 +131,7 @@ exports.create = function (req, res, next) {
             });
         }
 
-        _.each(data.questions, function (question) {
-            quiz.questions.push(new FillInQuestion(question));
-        });
-
-        quiz.save(function (err) {
-            if (err) {
-                return res.json({
-                    success: false,
-                    message: err.toString()
-                });
-            }
-
-            res.json({ success: true, id: quiz._id });
-        });
+        updateQuiz(quiz, req, res, true);
     });
 };
 
@@ -179,6 +166,12 @@ exports.load = function (req, res, next) {
             });
         }
 
+        quiz.questions = _.map(quiz.questions, function (question) {
+            question.type = question.__t;
+            delete question.__t;
+            return question;
+        });
+
         res.json({ success: true, quiz: quiz });
     });
 };
@@ -207,20 +200,36 @@ exports.save = function (req, res, next) {
             });
         }
 
-        // Update quiz properties
-        quiz.name = req.body.quiz.name;
+        updateQuiz(quiz, req, res);
+    });
+};
 
-        // Empty out the question list - embedded document arrays need to be saved using push()
-        quiz.questions = [];
+function updateQuiz(quiz, req, res, includeId) {
+    // Update quiz properties
+    quiz.name = req.body.quiz.name;
 
-        // Save the questions
-        _.each(req.body.quiz.questions, function (q) {
-            
-            // TODO: Need to pass in the question type from the UI and instantiate the appropriate
-            // question type, instead of always using fill-in.
-            var question = new FillInQuestion(q);
+    // Empty out the question list - embedded document arrays need to be saved using push()
+    quiz.questions = [];
 
-            question.validate(function (err) {
+    // Save the questions
+    _.each(req.body.quiz.questions, function (q) {
+        
+        // TODO: Need to pass in the question type from the UI and instantiate the appropriate
+        // question type, instead of always using fill-in.
+        var question = new FillInQuestion(q);
+
+        question.validate(function (err) {
+            if (err) {
+                return res.json({
+                    success: false,
+                    message: err.toString()
+                });
+            }
+
+            quiz.questions.push(question);
+
+            // Save the quiz
+            quiz.save(function (err) {
                 if (err) {
                     return res.json({
                         success: false,
@@ -228,23 +237,13 @@ exports.save = function (req, res, next) {
                     });
                 }
 
-                quiz.questions.push(question);
-
-                // Save the quiz
-                quiz.save(function (err) {
-                    if (err) {
-                        return res.json({
-                            success: false,
-                            message: err.toString()
-                        });
-                    }
-
-                    res.json({ success: true });
-                });
+                var response = { success: true };
+                if (includeId) { response.id = quiz._id; }
+                res.json(response);
             });
         });
     });
-};
+}
 
 exports.deleteQuiz = function (req, res, next) {
     var data = req.body;

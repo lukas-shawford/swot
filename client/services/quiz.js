@@ -11,7 +11,7 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
      */
     this.create = function (quiz, success, error) {
         $http.post('/create',
-            quiz
+            { quiz: quiz }
         ).success(function (response) {
             if (response.success) { success(response.id); }
             else { error(response.message); }
