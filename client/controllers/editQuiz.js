@@ -191,6 +191,9 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             // Set the placeholder height to match the question's actual (outer) height.
             ui.placeholder.height(ui.item.outerHeight());
 
+            // Change the cursor to a grabbing cursor
+            $(ui.item).find('.drag-handle').addClass('grabbing');
+
             // Everything below here is used for the reordering animations (smoothly move the
             // questions around, instead of having them snap into their new positions). Only the
             // brave should venture here.
@@ -266,6 +269,9 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             if (!_.isEqual($scope.questionsCopyOnStartReorder, $scope.quiz.questions)) {
                 $scope.editQuizForm.$setDirty();
             }
+
+            // Change the cursor to a regular cursor
+            $(ui.item).find('.drag-handle').removeClass('grabbing');
 
             // More code related to animating the transitions when reordering...
             // --------------------------

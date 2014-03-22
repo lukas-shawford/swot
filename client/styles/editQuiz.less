@@ -13,7 +13,6 @@
     border-radius: 5px;
     font-size: 1.1em;
     font-weight: bold;
-    cursor: move;
 }
 
 .edit-quiz {
@@ -93,8 +92,6 @@
                 }
 
                 .question-header-buttons .btn { margin-left: 0.5em; }
-
-                .drag-handle { cursor: move; }
             }
         }
     }
@@ -107,4 +104,23 @@
     .delete-question:hover { background-color: rgb(255, 29, 29); }
 
     .alerts { margin: 1em 0; }
+}
+
+.drag-handle {
+    cursor: hand;
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+.drag-handle.grabbing {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+// IE does not support the "grab" cursor, so use the "move" cursor instead
+body.ie {
+    .drag-handle { cursor: move; }
+    .drag-handle.grabbing { cursor: move; }
 }
