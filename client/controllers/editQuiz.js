@@ -147,23 +147,6 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         $scope.editQuizForm.$setDirty();
     };
 
-    // Returns a function that determines the placement of confirmation popovers based on screen
-    // size. This is for use with the confirmButton directive.
-    $scope.popoverPlacementCallback = function () {
-        return function () {
-            if ($(window).width() > 1280) {
-                // Large screen - show on the right
-                return "right";
-            } else if ($(window).width() > 1024) {
-                // Medium screen - show on the bottom
-                return "bottom";
-            } else {
-                // Small screen - show on the left
-                return "left";
-            }
-        };
-    };
-
     $scope.exportJson = function () {
         bootbox.confirm('The quiz will be saved before exporting. Continue?', function (confirmed) {
             if (confirmed) {

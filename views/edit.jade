@@ -42,16 +42,9 @@ block content
             .question-list-container
                 ul.sortable-list-container(ui-sortable="sortableOptions", ng-model="quiz.questions", ng-show="quiz.questions.length > 0")
                     li.question-container.sortable-list-item(ng-repeat="question in quiz.questions", ng-class="{'animate-list-item': finishedLoading}")
-                        .question-header.clearfix
-                            span.question-number.ng-cloak {{$index + 1}}.
-                            .question-header-buttons.pull-right
-                                span.drag-handle.btn.btn-xs.btn-default
-                                    span.glyphicon.glyphicon-move
-                                button.delete-question.btn.btn-xs.btn-default(type="button", confirm-button="removeQuestion($index)"
-                                    message="Are you sure you want to remove this question?", classes="confirm-popover", placement-callback='popoverPlacementCallback()', tabindex="-1")
-                                    span.glyphicon.glyphicon-trash
-
-                        editquestion.question-body(question="question", ck-editor-config="ckEditorConfig", answer-keypress="answerKeypress($event, question)")
+                        editquestion.question-body(question="question", question-number="$index+1"
+                            allow-reorder="true", allow-delete="true", on-delete="removeQuestion($index)"
+                            ck-editor-config="ckEditorConfig", answer-keypress="answerKeypress($event, question)")
 
                 .no-questions.ng-cloak(ng-show="questions.length === 0") Nothing here yet! Click on "Add Question" below to start adding questions.
 

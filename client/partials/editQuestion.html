@@ -1,4 +1,18 @@
 <div class="edit-question form-horizontal">
+    <div class="question-header">
+        <div class="question-number ng-cloak" ng-if="showQuestionNumber">{{questionNumber}}.</div>
+        <div class="question-actions">
+            <span class="drag-handle btn btn-xs btn-default" ng-if="showReorder">
+                <span class="glyphicon glyphicon-move"></span>
+            </span>
+            <button class="delete-question btn btn-xs btn-default" ng-if="showDelete" type="button"
+                confirm-button="onDelete(questionNumber)" message="Are you sure you want to remove this question?"
+                classes="confirm-popover" placement-callback='popoverPlacementCallback()' tabindex="-1">
+
+                <span class="glyphicon glyphicon-trash"></span>
+            </button>
+        </div>
+    </div>
     <div class="question form-group">
         <div class="question-editor" ckedit="{{ckEditorConfig}}" ng-model="question.questionHtml" focus-on="newQuestionReady"></div>
     </div>
