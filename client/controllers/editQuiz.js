@@ -101,7 +101,9 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     };
 
     $scope.addQuestion = function () {
-        $scope.quiz.questions.push({});
+        $scope.quiz.questions.push({
+            type: 'FillInQuestion'
+        });
 
         // Flip this to true to denote that we're currently initializing a new question editor
         // instance. Below, we're listening for the "editorReady" event (fired by ckedit directive,
@@ -232,7 +234,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
 
             // get all invisible items that are also not placeholders
             // and process them when ordering changes...
-            $list.find("li:not(.exclude-me, .ui-sortable-placeholder)").each(function() {
+            $list.children("li:not(.exclude-me, .ui-sortable-placeholder)").each(function() {
                 var item = jQuery(this);
                 var clone = item.data("clone");
 

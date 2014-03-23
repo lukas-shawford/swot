@@ -1,26 +1,83 @@
 <div class="edit-question form-horizontal">
+
+    <!-- Header -->
     <div class="question-header">
         <div class="question-number ng-cloak" ng-if="showQuestionNumber">{{questionNumber}}.</div>
-        <div class="question-actions">
-            <span class="drag-handle btn btn-xs btn-default" ng-if="showReorder">
-                <span class="glyphicon glyphicon-move"></span>
-            </span>
-            <button class="delete-question btn btn-xs btn-default" ng-if="showDelete" type="button"
-                confirm-button="onDelete(questionNumber)" message="Are you sure you want to remove this question?"
-                classes="confirm-popover" placement-callback='popoverPlacementCallback()' tabindex="-1">
+        <div class="question-type-menu btn-group btn-group-sm">
+            <button type="button" class="btn btn-default" ng-model="question.type" btn-radio="'FillInQuestion'">Fill In</button>
+            <button type="button" class="btn btn-default" ng-model="question.type" btn-radio="'MultipleChoiceQuestion'">Multiple Choice</button>
+        </div>
+        <div class="question-actions-container">
+            <div class="question-actions">
+                <span class="drag-handle btn btn-sm btn-default" ng-if="showReorder">
+                    <span class="glyphicon glyphicon-move"></span>
+                </span>
+                <button class="delete-question btn btn-sm btn-default" ng-if="showDelete" type="button"
+                    confirm-button="onDelete(questionNumber)" message="Are you sure you want to remove this question?"
+                    classes="confirm-popover" placement-callback='popoverPlacementCallback()' tabindex="-1">
 
-                <span class="glyphicon glyphicon-trash"></span>
-            </button>
+                    <span class="glyphicon glyphicon-trash"></span>
+                </button>
+            </div>
         </div>
     </div>
+
+    <!-- Question -->
     <div class="question form-group">
         <div class="question-editor" ckedit="{{ckEditorConfig}}" ng-model="question.questionHtml" focus-on="newQuestionReady"></div>
     </div>
+
+    <!-- Answer -->
     <div class="answer form-group">
-        <label class="control-label col-ms-2 col-sm-2">Answer:</label>
-        <div class="col-ms-10 col-sm-10">
-            <input type="text" name="answer" ng-model="question.answer" class="answer-editor form-control"
-                placeholder="Answer" ng-keydown="handleAnswerKeypress($event)" auto-grow="auto-grow" max-width="443" >
+
+        <!-- Fill In -->
+        <div ng-show="question.type === 'FillInQuestion'" class="answer-editor fill-in">
+            <label class="control-label col-ms-2 col-sm-2">Answer:</label>
+            <div class="col-ms-10 col-sm-10">
+                <input type="text" name="answer" ng-model="question.answer" class="form-control" placeholder="Answer"
+                    ng-keydown="handleAnswerKeypress($event)" auto-grow="auto-grow" max-width="443" >
+            </div>
+        </div>
+
+        <!-- Multiple Choice -->
+        <div ng-show="question.type === 'MultipleChoiceQuestion'" class="answer-editor multiple-choice">
+            <label class="control-label col-ms-2 col-sm-2">Choices:</label>
+            <div class="col-ms-10 col-sm-10">
+                <ul class="choices">
+                    <li class="choice" ng-repeat="(i, choice) in question.choices track by $index">
+                        <div class="choice-row">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-sm btn-default" ng-class="{correct: question.correctAnswerIndex === i}" ng-model="question.correctAnswerIndex" btn-radio="i">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    </button>
+                                </span>
+                                <input type="text" ng-model="question.choices[i]" class="choice-editor form-control"
+                                    auto-grow="auto-grow" max-width="443">
+                                <span class="choice-actions btn-group">
+                                    
+                                    <!-- No support yet for reordering choices
+                                    <button type="button" class="btn btn-sm btn-default drag-handle">
+                                        <span class="glyphicon glyphicon-move"></span>
+                                    </button>
+                                    -->
+
+                                    <button type="button" class="btn btn-sm btn-default" ng-click="removeChoice(i)">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <button ng-click="addChoice()" type="button" class="btn btn-sm btn-default">
+                            <span class="glyphicon glyphicon-plus"></span> Add
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

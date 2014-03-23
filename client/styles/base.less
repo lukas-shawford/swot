@@ -133,15 +133,34 @@ a {
 
 .sortable-list-container, .shadow-list { list-style: none outside none; }
 
-.sortable-list-container li {
+.sortable-list-container > li {
     float: left;
     position: relative;
     z-index: 5;
 }
 
-.shadow-list li {
+.shadow-list > li {
     position: absolute;
     z-index: 1;
+}
+
+.drag-handle {
+    cursor: hand;
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+.drag-handle.grabbing {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+// IE does not support the "grab" cursor, so use the "move" cursor instead
+body.ie {
+    .drag-handle { cursor: move; }
+    .drag-handle.grabbing { cursor: move; }
 }
 
 

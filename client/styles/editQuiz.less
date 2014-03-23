@@ -47,7 +47,7 @@
 
             .messages {
                 display: inline-block;
-                line-height: 34px;
+                line-height: 33px;
 
                 @media(max-width:@header-breakpoint) {
                     float: right;
@@ -74,54 +74,21 @@
         margin-bottom: 1em;
 
         .sortable-list-container { padding: 0; }
+    }
 
-        .question-container {
-            width: 100%;
-            margin: 8px 0;
-            padding: 1em 2em;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: hsl(230, 32%, 97%);
-
-            .question-header {
-                margin-bottom: .5em;
-
-                .question-number {
-                    display: inline;
-                    font-size: 1.1em;
-                    font-weight: bold;
-                }
-
-                .question-actions { float: right; }
-            }
-        }
+    .question-container {
+        width: 100%;
+        margin: 8px 0;
+        padding: 1em 2em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: hsl(230, 32%, 97%);
     }
 
     .no-questions {
         margin: 1em auto;
         text-align: center;
     }
-
-    .delete-question:hover { background-color: rgb(255, 29, 29); }
-
+    
     .alerts { margin: 1em 0; }
-}
-
-.drag-handle {
-    cursor: hand;
-    cursor: grab;
-    cursor: -moz-grab;
-    cursor: -webkit-grab;
-}
-
-.drag-handle.grabbing {
-    cursor: grabbing;
-    cursor: -moz-grabbing;
-    cursor: -webkit-grabbing;
-}
-
-// IE does not support the "grab" cursor, so use the "move" cursor instead
-body.ie {
-    .drag-handle { cursor: move; }
-    .drag-handle.grabbing { cursor: move; }
 }

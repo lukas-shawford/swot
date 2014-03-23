@@ -5,6 +5,7 @@ var User = require('../lib/user');
 var Quiz = require('../lib/quiz');
 var Question = require('../lib/question').Question;
 var FillInQuestion = require('../lib/questions/fillIn').FillInQuestion;
+var MultipleChoiceQuestion = require('../lib/questions/multipleChoice').MultipleChoiceQuestion;
 
 var ObjectId = mongoose.Types.ObjectId;
 
@@ -212,11 +213,22 @@ function updateQuiz(quiz, req, res, includeId) {
     quiz.questions = [];
 
     // Save the questions
-    _.each(req.body.quiz.questions, function (q) {
+    _.each(req.body.quiz.questions, function (q, index) {
         
-        // TODO: Need to pass in the question type from the UI and instantiate the appropriate
-        // question type, instead of always using fill-in.
-        var question = new FillInQuestion(q);
+        var question;
+        switch (q.type) {
+            case 'FillInQuestion':
+                question = new FillInQuestion(q);
+                break;
+            case 'MultipleChoiceQuestion':
+                question = new MultipleChoiceQuestion(q);
+                break;
+            default:
+                return res.json({
+                    success: false,
+                    message: "Unrecognized question type \"" + q.type + "\" for question " + (index + 1) + "."
+                });
+        }
 
         question.validate(function (err) {
             if (err) {

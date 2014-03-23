@@ -1,9 +1,10 @@
-angular.module('swot').directive('editquestion', function () {
+angular.module('swot').directive('editquestion', function ($timeout) {
     return {
         restrict: 'E',
         templateUrl: '/partials/editQuestion.html',
         scope: {
             question: '=',
+            form: '=?',
             questionNumber: '=',
             ckEditorConfig: '=',
             answerKeypress: '&',
@@ -36,13 +37,34 @@ angular.module('swot').directive('editquestion', function () {
                 };
             };
 
+            scope.addChoice = function () {
+                scope.question.choices.push("");
+                $timeout(function () {
+                    $(elem).find('.choice-editor').last().focus();
+                });
+                if (attrs.form) {
+                    scope.form.$setDirty();
+                }
+            };
+
+            scope.removeChoice = function (i) {
+                scope.question.choices.splice(i, 1);
+                if (scope.question.correctAnswerIndex >= i) {
+                    scope.question.correctAnswerIndex--;
+                }
+                if (attrs.form) {
+                    scope.form.$setDirty();
+                }
+            };
+
             scope.showQuestionNumber = angular.isNumber(scope.$eval(attrs.questionNumber));
             scope.showReorder = scope.$eval(attrs.allowReorder) && scope.showQuestionNumber;
             scope.showDelete = scope.$eval(attrs.allowDelete) && scope.showQuestionNumber;
 
-            var questionNumberBlock = elem.find('.question-number');
-            var questionTypeBlock = elem.find('.question-type-menu');
-            var questionActionsBlock = elem.find('.question-actions');
+            if (!scope.question.choices) {
+                scope.question.choices = [""];
+                scope.question.correctAnswerIndex = 0;
+            }
         }
     };
 });

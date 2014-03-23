@@ -1,4 +1,30 @@
 .edit-question {
+    .question-header {
+        .make-row();
+
+        margin-bottom: .5em;
+
+        .question-number {
+            .make-xs-column(1);
+
+            font-size: 1.1em;
+            font-weight: bold;
+            line-height: 2;
+        }
+
+        .question-type-menu {
+            .make-xs-column(8);
+        }
+
+        .question-actions-container {
+            .make-xs-column(3);
+
+            @media(min-width:@screen-xs) {
+                .question-actions{ float: right; }
+            }
+        }
+    }
+
     .question {
         margin: 1em 0;
 
@@ -12,9 +38,55 @@
         }
     }
 
-    .answer input {
-        @media(max-width:@screen-xs) { margin-top: 6px; }
-        @media(min-width:@screen-xs) { width: 40%; }
-        @media(min-width:@screen-xs) and (max-width:@screen-sm) { margin-left: 1em; }
+    .answer {
+
+        .answer-editor.fill-in {
+            input {
+                @media(max-width:@screen-xs) { margin-top: 6px; }
+                @media(min-width:@screen-xs) { width: 40%; }
+                @media(min-width:@screen-xs) and (max-width:@screen-sm) { margin-left: 1em; }
+            }
+        }
+
+        .answer-editor.multiple-choice {
+            .choices {
+                padding-left: 0;
+                list-style: none;
+
+                .choice {
+                    padding-bottom: 6px;
+
+                    .choice-row {
+                        display: table;
+
+                        .choice-editor {
+                            border-right-color: transparent;
+
+                            // Remove the blue outline around the input when it has focus. It generally
+                            // looks nice, but it's not visible on the left/right because the buttons
+                            // are right next to it.
+                            &:focus {
+                                border-color: @input-border;
+                                border-right-color: transparent;
+                                box-shadow: none;
+                                -moz-box-shadow: none;
+                                -webkit-box-shadow: none;
+                            }
+                        }
+
+                        .choice-actions {
+                            display: table-cell;
+                            .btn:first-child { border-radius: 0; }
+                        }
+                    }
+                }
+
+                .btn.correct {
+                    color: @btn-success-color;
+                    background-color: @btn-success-bg;
+                    border-color: @btn-success-border;
+                }
+            }
+        }
     }
 }
