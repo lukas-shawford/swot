@@ -152,21 +152,51 @@ describe('quiz', function () {
 
         describe('submitQuestion', function () {
             it('should return true if the submission matches the correct answer', function () {
-                expect(quiz.submitQuestion(0, "Bismarck")).to.deep.equal([null, true, "Bismarck"]);
-                expect(quiz.submitQuestion(1, "1200")).to.deep.equal([null, true, "1200"]);
-                expect(quiz.submitQuestion(2, "strength")).to.deep.equal([null, true, "strength"]);
+                expect(quiz.submitQuestion(0, "Bismarck")).to.deep.equal({
+                    success: true,
+                    isCorrect: true
+                });
+                expect(quiz.submitQuestion(1, "1200")).to.deep.equal({
+                    success: true,
+                    isCorrect: true
+                });
+                expect(quiz.submitQuestion(2, "strength")).to.deep.equal({
+                    success: true,
+                    isCorrect: true
+                });
             });
 
             it('should return false if the submission does not match', function () {
-                expect(quiz.submitQuestion(0, "Pierre")).to.deep.equal([null, false, "Bismarck"]);
-                expect(quiz.submitQuestion(1, "7700")).to.deep.equal([null, false, "1200"]);
-                expect(quiz.submitQuestion(2, "opportunity")).to.deep.equal([null, false, "strength"]);
+                expect(quiz.submitQuestion(0, "Pierre")).to.deep.equal({
+                    success: true,
+                    isCorrect: false,
+                    correctAnswer: "Bismarck"
+                });
+                expect(quiz.submitQuestion(1, "7700")).to.deep.equal({
+                    success: true,
+                    isCorrect: false,
+                    correctAnswer: "1200"
+                });
+                expect(quiz.submitQuestion(2, "opportunity")).to.deep.equal({
+                    success: true,
+                    isCorrect: false,
+                    correctAnswer: "strength"
+                });
             });
 
             it('should return an error if the question index is out of range or invalid', function () {
-                expect(quiz.submitQuestion(-1, "Pierre")).to.include.members(['Invalid question index.']);
-                expect(quiz.submitQuestion(3, "Pierre")).to.include.members(['Invalid question index.']);
-                expect(quiz.submitQuestion('asparagus', "Pierre")).to.include.members(['Invalid question index.']);
+                expect(quiz.submitQuestion(-1, "Pierre")).to.deep.equal({
+                    success: false,
+                    message: "Invalid question index."
+                });
+                expect(quiz.submitQuestion(3, "Pierre")).to.deep.equal({
+                    success: false,
+                    message: "Invalid question index."
+                });
+                expect(quiz.submitQuestion("asparagus", "Pierre")).to.deep.equal({
+                    success: false,
+                    message: "Invalid question index."
+                });
             });
         });
     });

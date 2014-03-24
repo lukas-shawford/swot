@@ -9,7 +9,12 @@ angular.module('swot').controller('ViewQuizCtrl', [ '$scope', 'quiz', 'focus', f
         $scope.closeAllAlerts();
 
         quiz.questions($scope._id, function (questions) {
-            $scope.questions = _.map(questions, function (question) { return { question: question }; });
+            $scope.questions = questions;
+
+            _.each($scope.questions, function (question) {
+                question.submission = null;
+            });
+
             focus('switchedQuestion');
         }, function (error) {
             $scope.showError('An error occurred while loading the quiz: ' + error);
@@ -21,10 +26,9 @@ angular.module('swot').controller('ViewQuizCtrl', [ '$scope', 'quiz', 'focus', f
         var currentQuestion = $scope.currentQuestion();
         var submission = currentQuestion.submission;
 
-        quiz.submit($scope._id, $scope.currentQuestionIndex, submission, function (isCorrect, correctAnswer) {
+        quiz.submit($scope._id, $scope.currentQuestionIndex, submission, function (result) {
             currentQuestion.submitted = true;
-            currentQuestion.isCorrect = isCorrect;
-            currentQuestion.correctAnswer = correctAnswer;
+            currentQuestion.result = result;
             currentQuestion.submission = submission;    // Restore in case it was edited while waiting for the response.
         }, function (error) {
             $scope.showError('An error occurred while submitting the question: ' + error);
@@ -58,7 +62,7 @@ angular.module('swot').controller('ViewQuizCtrl', [ '$scope', 'quiz', 'focus', f
     $scope.restart = function () {
         _.each($scope.questions, function (question) {
             question.submitted = false;
-            question.isCorrect = null;
+            question.result = null;
             question.submission = null;
         });
 
@@ -93,12 +97,16 @@ angular.module('swot').controller('ViewQuizCtrl', [ '$scope', 'quiz', 'focus', f
         return _.where($scope.questions, { submitted: true });
     };
 
+    $scope.questionResults = function () {
+        return _.pluck($scope.submittedQuestions(), 'result');
+    };
+
     $scope.numCorrect = function () {
-        return _.where($scope.submittedQuestions(), { isCorrect: true }).length;
+        return _.where($scope.questionResults(), { isCorrect: true }).length;
     };
 
     $scope.numIncorrect = function () {
-        return _.where($scope.submittedQuestions(), { isCorrect: false }).length;
+        return _.where($scope.questionResults(), { isCorrect: false }).length;
     };
 
     $scope.numRemaining = function() {

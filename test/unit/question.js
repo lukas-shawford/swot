@@ -33,22 +33,29 @@ describe('question', function () {
     describe('Fill In Questions', function () {
         describe('submit', function () {
 
-            it('should return true if the submission matches the correct answer', function () {
+            it('should return true for isCorrect if the submission matches the correct answer', function () {
                 var question = new FillInQuestion({
                     questionHtml: '<p>What is the capital of North Dakota?</p>',
                     answer: 'Bismarck'
                 });
 
-                expect(question.submit("Bismarck")).to.be.true;
+                expect(question.submit("Bismarck")).to.deep.equal({
+                    success: true,
+                    isCorrect: true
+                });
             });
 
-            it('should return false if the submission does not match the correct answer', function () {
+            it('should return false and the correct answer if the submission does not match', function () {
                 var question = new FillInQuestion({
                     questionHtml: '<p>What is the capital of North Dakota?</p>',
                     answer: 'Bismarck'
                 });
 
-                expect(question.submit("Pierre")).to.be.false;
+                expect(question.submit("Pierre")).to.deep.equal({
+                    success: true,
+                    isCorrect: false,
+                    correctAnswer: "Bismarck"
+                });
             });
 
         });
@@ -57,24 +64,31 @@ describe('question', function () {
     describe('Multiple Choice Questions', function () {
         describe('submit', function () {
 
-            it('should return true if the submission matches the correct answer index', function () {
+            it('should return true for isCorrect if the submission matches the correct answer index', function () {
                 var question = new MultipleChoiceQuestion({
                     questionHtml: '<p>What is the capital of North Dakota?</p>',
                     choices: ['Pierre', 'Bismarck', 'Des Moines', 'Helena'],
                     correctAnswerIndex: 1
                 });
 
-                expect(question.submit(1)).to.be.true;
+                expect(question.submit(1)).to.deep.equal({
+                    success: true,
+                    isCorrect: true
+                });
             });
 
-            it('should return false if the submission does not match the correct answer index', function () {
+            it('should return false and the correct answer index if the submission does not match', function () {
                 var question = new MultipleChoiceQuestion({
                     questionHtml: '<p>What is the capital of North Dakota?</p>',
                     choices: ['Pierre', 'Bismarck', 'Des Moines', 'Helena'],
                     correctAnswerIndex: 1
                 });
 
-                expect(question.submit(2)).to.be.false;
+                expect(question.submit(2)).to.deep.equal({
+                    success: true,
+                    isCorrect: false,
+                    correctAnswerIndex: 1
+                });
             });
 
         });

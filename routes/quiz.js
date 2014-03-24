@@ -71,7 +71,21 @@ exports.questions = function(req, res, next) {
         }
 
         // Load the questions only (not the answers)
-        var questions = _.map(quiz.questions, function(question) { return question.questionHtml; });
+        var questions = _.map(quiz.questions, function(question) {
+            switch (question.__t) {
+                case 'FillInQuestion':
+                    return {
+                        type: 'FillInQuestion',
+                        questionHtml: question.questionHtml
+                    };
+                case 'MultipleChoiceQuestion':
+                    return {
+                        type: 'MultipleChoiceQuestion',
+                        questionHtml: question.questionHtml,
+                        choices: question.choices
+                    };
+            }
+        });
 
         res.json({ success: true, questions: questions });
     });
@@ -101,17 +115,7 @@ exports.submitQuestion = function(req, res, next) {
         if (err) { return error(err.toString()); }
         if (!quiz) { return error('Failed to load quiz'); }
 
-        var result = quiz.submitQuestion(questionIndex, submission);
-        var err = result[0];
-        var isCorrect = result[1];
-        var correctAnswer = result[2];
-
-        if (err) { return error(err); }
-        return res.json({
-            success: true,
-            isCorrect: isCorrect,
-            correctAnswer: correctAnswer
-        });
+        return res.json(quiz.submitQuestion(questionIndex, submission));
     });
 };
 

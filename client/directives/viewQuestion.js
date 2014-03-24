@@ -22,7 +22,7 @@ angular.module('swot').directive('viewquestion', function ($sce) {
                     if (scope.showNext) {
                         scope.next();
                     }
-                } else if (scope.question.submission) {
+                } else if (scope.question.submission !== null) {
                     // Submit question, but only if the submission field is not empty.
                     scope.submit();
                 }

@@ -111,10 +111,8 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
      *      is meant for.
      * @param {Object} submission - The user's submission
      * @param {Function} success - Function to run if the submission was submitted successfully
-     *      (which does not necessarily mean the submission was correct). This should accept the
-     *      following parameters:
-     *          - isCorrect: boolean value indicating whether the user's submission was correct.
-     *          - correctAnswer: The correct answer (note - this is only set if isCorrect is false).
+     *      (which does not necessarily mean the submission was correct). The function should
+     *      accept an object indicating the result of submitting the question (TO DO: DOCUMENT).
      * @param {Function} error - Function to run if an error occurred while sending the submission.
      *      This should accept a single parameter containing the error message.
      */
@@ -124,7 +122,7 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
             currentQuestionIndex: questionIndex,
             submission: submission
         }).success(function (response) {
-            if (response.success) { success(response.isCorrect, response.correctAnswer); }
+            if (response.success) { success(response); }
             else { error(response.message); }
         }).error(function (data) {
             error(self.getError(data));

@@ -1,36 +1,86 @@
 <div class="view-question">
-    <div class="question ng-cloak" ng-bind-html="trusted(question.question)"></div>
 
+    <!-- Question -->
+    <div class="question ng-cloak" ng-bind-html="trusted(question.questionHtml)"></div>
+
+    <!-- Submission Entry -->
     <div class="submission">
-        <input class="submission form-control" type="text" ng-model="question.submission"
-            focus-on="switchedQuestion" ui-keypress="{ 'enter': 'handleEnter($event)' }"
-            ng-readonly="question.submitted" />
 
-        <button class="submit btn btn-success" type="button" ng-click="submit()"
-            ng-disabled="!question.submission" ng-hide="question.submitted">
-            Submit
-        </button>
+        <!-- Fill In -->
+        <div ng-show="question.type === 'FillInQuestion'" class="fill-in">
+            <input class="submission form-control" type="text" ng-model="question.submission"
+                focus-on="switchedQuestion" ui-keypress="{ 'enter': 'handleEnter($event)' }"
+                ng-readonly="question.submitted" />
 
-        <button type="button" ng-click="next()" ng-show="showNext && question.submitted"
-            class="next btn btn-primary ng-cloak">
-            {{ nextButtonText }}
-            <span class="glyphicon glyphicon-circle-arrow-right"></span>
-        </button>
+            <button class="submit btn btn-success" type="button" ng-click="submit()"
+                ng-disabled="!question.submission" ng-hide="question.submitted">
+                Submit
+            </button>
 
-        <div class="result-container">
-            <div ng-show="question.submitted" class="result ng-cloak">
-                <div ng-show="question.isCorrect" class="correct alert alert-success result-header">
-                    <span class="glyphicon glyphicon-ok-sign"></span>
-                    <strong>Correct!</strong>
-                </div>
-                <div ng-show="!question.isCorrect" class="incorrect alert alert-danger">
-                    <strong class="result-header">
-                        <span class="glyphicon glyphicon-remove-sign"></span>
-                        Incorrect!
-                    </strong>
-                    The correct answer is:&nbsp;<strong>{{question.correctAnswer}}</strong>
-                </div>
+            <button type="button" ng-click="next()" ng-show="showNext && question.submitted"
+                class="next btn btn-primary ng-cloak">
+                {{ nextButtonText }}
+                <span class="glyphicon glyphicon-circle-arrow-right"></span>
+            </button>
+        </div>
+
+        <!-- Multiple Choice -->
+        <div ng-show="question.type === 'MultipleChoiceQuestion'" class="multiple-choice">
+            <div class="choices">
+                <button type="button" ng-repeat="(i, choice) in question.choices track by $index"
+                    ng-model="question.submission" btn-radio="i" class="choice btn btn-default form-control"
+                    ng-disabled="question.submitted"
+                    ng-class="{selected: (question.submitted && (question.submission === i)),
+                               correct: (question.submitted && (question.submission === i && question.result.isCorrect) || (question.result.correctAnswerIndex === i)),
+                               incorrect: (question.submitted && (question.submission === i ? !question.result.isCorrect : (question.result.correctAnswerIndex !== i)))}">
+
+                    <span ng-show="question.submitted" class="result-icon">
+                        <span ng-show="(question.submission === i) && !question.result.isCorrect" class="glyphicon incorrect glyphicon-remove-sign"></span>
+                        <span ng-show="(question.submission === i) && question.result.isCorrect" class="glyphicon correct glyphicon-ok"></span>
+                        <span ng-show="(question.submission !== i) && question.result.correctAnswerIndex === i" class="glyphicon correct glyphicon-circle-arrow-right"></span>
+                    </span>
+
+                    {{choice}}
+                </button>
+            </div>
+
+            <button class="submit btn btn-success" type="button" ng-click="submit()"
+                ng-disabled="question.submission === null" ng-hide="question.submitted">
+                Submit
+            </button>
+        </div>
+    </div>
+
+    <!-- Submission Result -->
+    <div class="result-container">
+        <div ng-show="question.submitted" class="result ng-cloak">
+            <div ng-show="question.result && question.result.isCorrect" class="correct alert alert-success result-header">
+                <span class="glyphicon glyphicon-ok-sign"></span>
+                <strong>Correct!</strong>
+            </div>
+            <div ng-show="question.result && !question.result.isCorrect" class="incorrect alert alert-danger">
+                <strong class="result-header">
+                    <span class="glyphicon glyphicon-remove-sign"></span>
+                    Incorrect!
+                </strong>
+
+                <span ng-show="question.type === 'FillInQuestion'">
+                    The correct answer is:&nbsp;<strong>{{question.result.correctAnswer}}</strong>
+                </span>
+
+                <span ng-show="question.type === 'MultipleChoiceQuestion'">
+                    The correct answer is:&nbsp;<strong>{{question.choices[question.result.correctAnswerIndex]}}</strong>
+                </span>
             </div>
         </div>
     </div>
+
+    <!-- Next button -->
+    <!-- (Some question types have a different placement) -->
+    <button type="button" ng-click="next()" ng-show="showNext && question.submitted && (question.type === 'MultipleChoiceQuestion')"
+        class="next btn btn-primary ng-cloak">
+        {{ nextButtonText }}
+        <span class="glyphicon glyphicon-circle-arrow-right"></span>
+    </button>
+
 </div>

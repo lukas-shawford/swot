@@ -12,10 +12,10 @@ block content
                 .list-group(ng-model="questions")
                     a.sidebar-question.list-group-item(href="#", ng-repeat="question in questions"
                         ng-click="jumpToQuestion($index)", ng-class="{active: (!showingSummary && $index === currentQuestionIndex)}")
-                        span.question.ellipsis {{$index+1}}. {{question.question | htmlToPlainText}}
+                        span.question.ellipsis {{$index+1}}. {{question.questionHtml | htmlToPlainText}}
                         span.status.ng-cloak
-                            span.glyphicon.correct.glyphicon-ok-sign(ng-show="question.submitted && question.isCorrect")
-                            span.glyphicon.incorrect.glyphicon-remove-sign(ng-show="question.submitted && !question.isCorrect")
+                            span.glyphicon.correct.glyphicon-ok-sign(ng-show="question.result && question.result.isCorrect")
+                            span.glyphicon.incorrect.glyphicon-remove-sign(ng-show="question.result && !question.result.isCorrect")
 
                     a.sidebar-summary-row.list-group-item(href="#", ng-show="isFinished()", ng-click="finish()", ng-class="{active: showingSummary}")
                         span.summary Summary

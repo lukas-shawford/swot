@@ -19,6 +19,36 @@
 
         input[readonly] { cursor: default; }
 
+        .multiple-choice {
+            .choices {
+                margin-bottom: 1em;
+
+                .choice {
+                    margin-bottom: .5em;
+                }
+            }
+
+            .choice.correct {
+                border-color: #d6e9c6;
+                color: #3c763d;
+            }
+
+            .choice.selected.correct {
+                background-color: #dff0d8;
+            }
+
+            .choice.correct:not(.selected) {
+                font-weight: bold;
+                opacity: 1;
+            }
+
+            .choice.selected.incorrect {
+                background-color: #f2dede;
+                border-color: #ebccd1;
+                color: #a94442;
+            }
+        }
+
         .result-container {
             margin-top: 1em;
         }
