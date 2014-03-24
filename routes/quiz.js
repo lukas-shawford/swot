@@ -211,7 +211,7 @@ exports.save = function (req, res, next) {
 
 function updateQuiz(quiz, req, res, includeId) {
     // Update quiz properties
-    quiz.name = req.body.quiz.name;
+    quiz.name = req.body.quiz.name || "New Quiz";
 
     // Empty out the question list - embedded document arrays need to be saved using push()
     quiz.questions = [];
