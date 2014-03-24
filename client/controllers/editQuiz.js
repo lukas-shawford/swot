@@ -2,7 +2,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     $scope.quiz = {
         _id: _quizId || null,
         name: "",
-        questions: [{}]
+        questions: [{ type: 'FillInQuestion' }]
     };
     $scope.alerts = [];
     $scope.finishedLoading = false;
