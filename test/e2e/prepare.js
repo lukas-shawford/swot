@@ -18,6 +18,7 @@ var User = require('../../lib/user');
 var Quiz = require('../../lib/quiz');
 var Question = require('../../lib/question').Question;
 var FillInQuestion = require('../../lib/questions/fillIn').FillInQuestion;
+var MultipleChoiceQuestion = require('../../lib/questions/multipleChoice').MultipleChoiceQuestion;
 
 // Extend mongoose with promises
 require('../../lib/util/mongoosePromises');
@@ -48,13 +49,25 @@ Q.ninvoke(mongoose, 'connect', MONGODB_URL)
     return Q.ninvoke(Quiz, 'createQuiz', 'VFR Operations', user);
 })
 .then(function (quiz) {
-    quiz.questions.push(new FillInQuestion({
+    quiz.questions.push(new MultipleChoiceQuestion({
         questionHtml: 'What is the capital of North Dakota?',
-        answer: 'Bismarck'
+        choices: [
+            'Pierre',
+            'Bismarck',
+            'Helena',
+            'Des Moines'
+        ],
+        correctAnswerIndex: 1
     }));
-    quiz.questions.push(new FillInQuestion({
+    quiz.questions.push(new MultipleChoiceQuestion({
         questionHtml: 'What color identifies the normal flap operating range?',
-        answer: 'white'
+        choices: [
+            'Yellow',
+            'Black',
+            'White',
+            'Green'
+        ],
+        correctAnswerIndex: 2
     }));
     quiz.questions.push(new FillInQuestion({
         questionHtml: 'What is the default squawk code of VFR aircraft in the United States?',

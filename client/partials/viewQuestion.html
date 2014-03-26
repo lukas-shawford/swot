@@ -1,4 +1,6 @@
-<div class="view-question">
+<div class="view-question"
+    ng-class="{'fill-in': (question.type === 'FillInQuestion'),
+               'multiple-choice': (question.type === 'MultipleChoiceQuestion')}">
 
     <!-- Question -->
     <div class="question ng-cloak" ng-bind-html="trusted(question.questionHtml)"></div>
@@ -18,7 +20,7 @@
             </button>
 
             <button type="button" ng-click="next()" ng-show="showNext && question.submitted"
-                class="next btn btn-primary ng-cloak">
+                class="next fill-in btn btn-primary ng-cloak">
                 {{ nextButtonText }}
                 <span class="glyphicon glyphicon-circle-arrow-right"></span>
             </button>
@@ -65,11 +67,11 @@
                 </strong>
 
                 <span ng-show="question.type === 'FillInQuestion'">
-                    The correct answer is:&nbsp;<strong>{{question.result.correctAnswer}}</strong>
+                    The correct answer is:&nbsp;<strong class="correct-answer fill-in">{{question.result.correctAnswer}}</strong>
                 </span>
 
                 <span ng-show="question.type === 'MultipleChoiceQuestion'">
-                    The correct answer is:&nbsp;<strong>{{question.choices[question.result.correctAnswerIndex]}}</strong>
+                    The correct answer is:&nbsp;<strong class="correct-answer multiple-choice">{{question.choices[question.result.correctAnswerIndex]}}</strong>
                 </span>
             </div>
         </div>
@@ -78,7 +80,7 @@
     <!-- Next button -->
     <!-- (Some question types have a different placement) -->
     <button type="button" ng-click="next()" ng-show="showNext && question.submitted && (question.type === 'MultipleChoiceQuestion')"
-        class="next btn btn-primary ng-cloak">
+        class="next multiple-choice btn btn-primary ng-cloak">
         {{ nextButtonText }}
         <span class="glyphicon glyphicon-circle-arrow-right"></span>
     </button>
