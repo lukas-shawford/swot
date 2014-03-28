@@ -25,21 +25,24 @@ describe('Quiz Editor', function () {
         loginPage.loginAsTestUser();
     });
 
-    it('should be able to save a quiz', function () {
-        quizEditorPage.create().then(function () {
-            quizEditorPage.quizNameField.sendKeys('My Test Quiz');
-            return quizEditorPage.getQuestionField(1);
-        }).then(function (question) {
-            question.sendKeys('What is the capital of North Dakota?');
-            return quizEditorPage.getAnswerField(1);
-        }).then(function (answer) {
-            answer.sendKeys('Bismarck');
-            return quizEditorPage.save();
-        }).then(function () {
-            return myQuizzesPage.get();
-        }).then(function () {
-            return myQuizzesPage.getQuizzes();
-        }).then(function (quizzes) {
+    it('should be able to save a quiz with one question', function () {
+        quizEditorPage.create();
+        quizEditorPage.quizNameField.sendKeys('My Test Quiz');
+        quizEditorPage.setQuestion(1, {
+            type: 'multiple-choice',
+            question: 'What is the capital of North Dakota?',
+            choices: [
+                'Pierre',
+                'Bismarck',
+                'Helena',
+                'Des Moines'
+            ],
+            correctAnswerIndex: 1
+        });
+        quizEditorPage.save();
+        myQuizzesPage.get();
+        myQuizzesPage.getQuizzes()
+        .then(function (quizzes) {
             expect(_.pluck(quizzes, 'name')).toContain('My Test Quiz');
 
             // Save the ID of "My Test Quiz" for later tests
@@ -51,52 +54,156 @@ describe('Quiz Editor', function () {
         // Load the quiz saved in the previous test and verify everything actually got saved
         quizEditorPage.edit(testQuizId);
         expect(quizEditorPage.quizNameField.getAttribute('value')).toBe('My Test Quiz');
-
-        quizEditorPage.getQuestionField(1).then(function (question) {
-            expect(question.getText()).toBe('What is the capital of North Dakota?');
-            return quizEditorPage.getAnswerField(1);
-        }).then(function (answer) {
-            expect(answer.getAttribute('value')).toBe('Bismarck');
+        expect(quizEditorPage.getQuestion(1)).toEqual({
+            type: 'multiple-choice',
+            question: 'What is the capital of North Dakota?',
+            choices: [
+                'Pierre',
+                'Bismarck',
+                'Helena',
+                'Des Moines'
+            ],
+            correctAnswerIndex: 1
         });
     });
 
-    it('should be able to add a question', function () {
-        quizEditorPage.edit(testQuizId).then(function () {
-            return quizEditorPage.addQuestion('What is the default squawk code of VFR aircraft in the United States?', '1200');
-        }).then(function () {
-            // Save the quiz
-            return quizEditorPage.save();
-        }).then(function () {
-            // Navigate to a different page
-            return myQuizzesPage.get();
-        }).then(function () {
-            // Reopen the quiz
-            return quizEditorPage.edit(testQuizId);
-        }).then(function () {
-            // Check the first question is still the same
-            return quizEditorPage.getQuestion(1);
-        }).then(function (question1) {
-            expect(question1.question).toBe('What is the capital of North Dakota?');
-            expect(question1.answer).toBe('Bismarck');
-            // Check the new question was saved successfully.                
-            return quizEditorPage.getQuestion(2);
-        }).then(function (question2) {
-            expect(question2.question).toBe('What is the default squawk code of VFR aircraft in the United States?');
-            expect(question2.answer).toBe('1200');
+    describe('Fill-In Questions', function () {
+        
+        it('should be able to save a fill-in question', function () {
+            // Add a fill-in question as the 2nd question
+            quizEditorPage.addQuestion({
+                type: 'fill-in',
+                question: 'What is the default squawk code for VFR aircraft in the United States?',
+                answer: '1200'
+            });
+
+            quizEditorPage.save();
+            
+            // Make sure all the fields were saved
+            quizEditorPage.edit(testQuizId);
+            expect(quizEditorPage.getQuestion(2)).toEqual({
+                type: 'fill-in',
+                question: 'What is the default squawk code for VFR aircraft in the United States?',
+                answer: '1200'
+            });
         });
+
+    });
+
+    describe('Multiple Choice Questions', function () {
+        
+        it('should default in 4 empty choices', function () {
+            quizEditorPage.edit(testQuizId);
+            quizEditorPage.clickAddQuestion();
+            quizEditorPage.setQuestionType(3, 'multiple-choice');
+            expect(quizEditorPage.getNumChoices(3)).toBe(4);
+        });
+
+        it('should be able to save a multiple choice question', function () {
+            quizEditorPage.setQuestion(3, {
+                type: 'multiple-choice',
+                question: 'What color identifies the normal flap operating range?',
+                choices: [
+                    'Yellow',
+                    'Black',
+                    'White',
+                    'Green'
+                ],
+                correctAnswerIndex: 2
+            });
+            
+            quizEditorPage.save();
+            
+            // Make sure all the fields were saved
+            quizEditorPage.edit(testQuizId);
+            expect(quizEditorPage.getQuestion(3)).toEqual({
+                type: 'multiple-choice',
+                question: 'What color identifies the normal flap operating range?',
+                choices: [
+                    'Yellow',
+                    'Black',
+                    'White',
+                    'Green'
+                ],
+                correctAnswerIndex: 2
+            });
+        });
+
+        it('should be able to add a choice', function () {
+            quizEditorPage.clickAddChoice(3);
+            quizEditorPage.setChoice(3, 4, 'Orange');
+            
+            quizEditorPage.save();
+            
+            // Make sure all the fields were saved
+            quizEditorPage.edit(testQuizId);
+            expect(quizEditorPage.getQuestion(3)).toEqual({
+                type: 'multiple-choice',
+                question: 'What color identifies the normal flap operating range?',
+                choices: [
+                    'Yellow',
+                    'Black',
+                    'White',
+                    'Green',
+                    'Orange'
+                ],
+                correctAnswerIndex: 2
+            });
+        });
+
+        it('should retain correct choice index after removing a choice higher in the list', function () {
+            quizEditorPage.removeChoice(3, 0);
+            expect(quizEditorPage.getCorrectChoiceIndex(3)).toBe(1);
+        });
+
+        it('should clear correct choice index after removing the correct choice', function () {
+            quizEditorPage.removeChoice(3, 1);
+            expect(quizEditorPage.getCorrectChoiceIndex(3)).toBe(-1);
+        });
+
+        it('should be able to edit a choice', function () {
+            quizEditorPage.setChoice(3, 2, 'White', true);
+            quizEditorPage.markChoiceAsCorrect(3, 2);
+            quizEditorPage.save();
+            quizEditorPage.edit(testQuizId);
+            expect(quizEditorPage.getQuestion(3)).toEqual({
+                type: 'multiple-choice',
+                question: 'What color identifies the normal flap operating range?',
+                choices: [
+                    'Black',
+                    'Green',
+                    'White'
+                ],
+                correctAnswerIndex: 2
+            });
+        });
+
     });
 
     it('should be able to reorder questions', function () {
-        quizEditorPage.edit(testQuizId).then(function () {
-            return quizEditorPage.moveQuestion(2, 1);
-        }).then(function () {
-            return quizEditorPage.save();
-        }).then(function () {
-            return quizEditorPage.edit(testQuizId);
-        }).then(function () {
-            return quizEditorPage.getQuestionField(1);
-        }).then(function (question) {
-            expect(question.getText()).toBe('What is the default squawk code of VFR aircraft in the United States?');
+        quizEditorPage.edit(testQuizId);
+        quizEditorPage.moveQuestion(2, 1);
+        quizEditorPage.save();
+        quizEditorPage.edit(testQuizId);
+        
+        // What used to be question #2 should now be question #1
+        expect(quizEditorPage.getQuestion(1)).toEqual({
+            type: 'fill-in',
+            question: 'What is the default squawk code for VFR aircraft in the United States?',
+            answer: '1200'
+        });
+
+        // What used to be question #1 should now be question #2
+        expect(quizEditorPage.getQuestion(2)).toEqual({
+            type: 'multiple-choice',
+            question: 'What is the capital of North Dakota?',
+            choices: [
+                'Pierre',
+                'Bismarck',
+                'Helena',
+                'Des Moines'
+            ],
+            correctAnswerIndex: 1
         });
     });
     
@@ -112,12 +219,19 @@ describe('Quiz Editor', function () {
             // Do NOT click the save button - just reload the quiz and make sure the question got
             // updated
             quizEditorPage.edit(testQuizId);
-            return quizEditorPage.getQuestion(1);
-        }).then(function (question1) {
-            expect(question1.question).toMatch(/\(Updated\)$/);
+            expect(quizEditorPage.getQuestion(1)).toEqual({
+                type: 'fill-in',
+                question: 'What is the default squawk code for VFR aircraft in the United States? (Updated)',
+                answer: '1200'
+            });
         });
     });
 
+    // ** Failing Test Case **
+    // -----------------------
+    //
+    // The Add Question tooltip should be removed because it's not true anymore now that we have
+    // multiple choice questions. I will leave this failing test case in here as a reminder.
     it('should be able to add a question by hitting TAB', function () {
         var initialNumberOfQuestions;
 
@@ -134,37 +248,26 @@ describe('Quiz Editor', function () {
             quizEditorPage.save();
         });
     });
+    // -----------------------
 
     it('should be able to delete a question', function () {
-        var initialNumberOfQuestions;
-
-        quizEditorPage.edit(testQuizId).then(function () {
-            return quizEditorPage.getNumQuestions();
-        }).then(function (last) {
-            initialNumberOfQuestions = last;
-            return quizEditorPage.deleteQuestion(last);
-        }).then(function () {
-            return quizEditorPage.save();
-        }).then(function () {
-            return quizEditorPage.edit(testQuizId);
-        }).then(function () {
-            return quizEditorPage.getNumQuestions();
-        }).then(function (newNumberOfQuestions) {
-            expect(newNumberOfQuestions).toBe(initialNumberOfQuestions - 1);
-        });
+        quizEditorPage.edit(testQuizId);
+        quizEditorPage.deleteQuestion(2);
+        quizEditorPage.save();
+        quizEditorPage.edit(testQuizId);
+        expect(quizEditorPage.getNumQuestions()).toBe(2);
     });
 
     it('should not be able to delete a quiz that has not been saved yet', function () {
-        quizEditorPage.create().then(function () {
-            expect(quizEditorPage.quizSettingsButton.isDisplayed()).toBeFalsy();
+        quizEditorPage.create();
+        expect(quizEditorPage.quizSettingsButton.isDisplayed()).toBeFalsy();
 
-            // Save the quiz so we can test deleting it later.
-            quizEditorPage.quizNameField.sendKeys('Delete Me');
-            return quizEditorPage.save();
-        }).then(function () {
-            // The settings dropdown should be visible now that the quiz has been saved
-            expect(quizEditorPage.quizSettingsButton.isDisplayed()).toBeTruthy();
-        });
+        // Save the quiz so we can test deleting it later.
+        quizEditorPage.quizNameField.sendKeys('Delete Me');
+        quizEditorPage.save();
+
+        // The settings dropdown should be visible now that the quiz has been saved
+        expect(quizEditorPage.quizSettingsButton.isDisplayed()).toBeTruthy();
     });
 
     it('should be able to delete a quiz', function () {

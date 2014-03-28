@@ -1,11 +1,13 @@
-<div class="edit-question form-horizontal">
+<div class="edit-question form-horizontal"
+    ng-class="{'fill-in': (question.type === 'FillInQuestion'),
+               'multiple-choice': (question.type === 'MultipleChoiceQuestion')}">
 
     <!-- Header -->
     <div class="question-header">
         <div class="question-number ng-cloak" ng-if="showQuestionNumber">{{questionNumber}}.</div>
         <div class="question-type-menu btn-group btn-group-sm">
-            <button type="button" class="btn btn-default" ng-model="question.type" btn-radio="'FillInQuestion'">Fill In</button>
-            <button type="button" class="btn btn-default" ng-model="question.type" btn-radio="'MultipleChoiceQuestion'">Multiple Choice</button>
+            <button type="button" class="btn btn-default fill-in" ng-model="question.type" btn-radio="'FillInQuestion'">Fill In</button>
+            <button type="button" class="btn btn-default multiple-choice" ng-model="question.type" btn-radio="'MultipleChoiceQuestion'">Multiple Choice</button>
         </div>
         <div class="question-actions-container">
             <div class="question-actions">
@@ -48,7 +50,7 @@
                         <div class="choice-row">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-btn">
-                                    <button type="button" class="btn btn-sm btn-default" ng-class="{correct: question.correctAnswerIndex === i}" ng-model="question.correctAnswerIndex" btn-radio="i">
+                                    <button type="button" class="btn btn-sm btn-default marker" ng-class="{correct: question.correctAnswerIndex === i}" ng-model="question.correctAnswerIndex" btn-radio="i">
                                         <span class="glyphicon glyphicon-ok"></span>
                                     </button>
                                 </span>
@@ -62,7 +64,7 @@
                                     </button>
                                     -->
 
-                                    <button type="button" class="btn btn-sm btn-default" ng-click="removeChoice(i)">
+                                    <button type="button" class="btn btn-sm btn-default remove-choice" ng-click="removeChoice(i)">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                 </span>
@@ -72,7 +74,7 @@
                 </ul>
                 <div class="row">
                     <div class="col-xs-12">
-                        <button ng-click="addChoice()" type="button" class="btn btn-sm btn-default">
+                        <button ng-click="addChoice()" type="button" class="btn btn-sm btn-default add-choice">
                             <span class="glyphicon glyphicon-plus"></span> Add
                         </button>
                     </div>

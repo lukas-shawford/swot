@@ -49,8 +49,11 @@ angular.module('swot').directive('editquestion', function ($timeout) {
 
             scope.removeChoice = function (i) {
                 scope.question.choices.splice(i, 1);
-                if (scope.question.correctAnswerIndex >= i) {
+                if (scope.question.correctAnswerIndex > i) {
                     scope.question.correctAnswerIndex--;
+                } else if (scope.question.correctAnswerIndex == i) {
+                    // Clear the correct answer if it was removed
+                    scope.question.correctAnswerIndex = null;
                 }
                 if (attrs.form) {
                     scope.form.$setDirty();
@@ -62,7 +65,7 @@ angular.module('swot').directive('editquestion', function ($timeout) {
             scope.showDelete = scope.$eval(attrs.allowDelete) && scope.showQuestionNumber;
 
             if (!scope.question.choices) {
-                scope.question.choices = [""];
+                scope.question.choices = ["", "", "", ""];  // Default in 4 empty choices
                 scope.question.correctAnswerIndex = 0;
             }
         }
