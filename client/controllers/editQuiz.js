@@ -12,9 +12,6 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     $scope.isSaving = false;
     $scope.savedSuccessfully = true;
 
-    // Stop showing the tooltip after adding a couple questions.
-    $scope.addQuestionTooltipsRemaining = 2;
-    
     // Keep track of when a new question is being added. This is flipped to true when user clicks on
     // Add Question (or adds a question by hitting TAB), and stays true until the question editor
     // has finished loading.
@@ -119,13 +116,6 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
 
         // Mark the form as dirty
         $scope.editQuizForm.$setDirty();
-
-        // Stop showing the tooltip on the Add Question button after adding a couple questions
-        // Note that tooltip is now shown where there are no questions, so adding the first question
-        // should not decrement the count.
-        if ($scope.quiz.questions.length > 1) {
-            $scope.addQuestionTooltipsRemaining--;
-        }
     };
 
     $scope.$on('editorReady', function (event, args) {
@@ -289,19 +279,6 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             // Remove the shadow list
             $('.shadow-list').remove();
         }
-    };
-
-    $scope.addQuestionTooltip = function () {
-        if (Modernizr.touch) {
-            // Don't show tooltips on touch-based devices
-            return "";
-        }
-
-        if ($scope.addQuestionTooltipsRemaining <= 0 || $scope.quiz.questions.length === 0) {
-            return "";
-        }
-
-        return "You can also add a question by hitting the TAB key after typing in the last answer.";
     };
 
     // Question Editor (ckeditor)

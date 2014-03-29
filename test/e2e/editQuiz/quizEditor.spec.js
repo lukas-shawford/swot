@@ -88,13 +88,24 @@ describe('Quiz Editor', function () {
             });
         });
 
+        it('should be able to add a question by hitting TAB on the answer field for the last question', function () {
+            quizEditorPage.getFillInAnswerField(2)
+            .then(function (lastAnswerField) {
+                lastAnswerField.sendKeys(protractor.Key.TAB);
+                ptor.sleep(1000);
+                return quizEditorPage.getNumQuestions();
+            })
+            .then(function (numQuestions) {
+                expect(numQuestions).toBe(3);
+                quizEditorPage.save();
+            });
+        });
+
     });
 
     describe('Multiple Choice Questions', function () {
         
         it('should default in 4 empty choices', function () {
-            quizEditorPage.edit(testQuizId);
-            quizEditorPage.clickAddQuestion();
             quizEditorPage.setQuestionType(3, 'multiple-choice');
             expect(quizEditorPage.getNumChoices(3)).toBe(4);
         });
@@ -226,29 +237,6 @@ describe('Quiz Editor', function () {
             });
         });
     });
-
-    // ** Failing Test Case **
-    // -----------------------
-    //
-    // The Add Question tooltip should be removed because it's not true anymore now that we have
-    // multiple choice questions. I will leave this failing test case in here as a reminder.
-    it('should be able to add a question by hitting TAB', function () {
-        var initialNumberOfQuestions;
-
-        quizEditorPage.edit(testQuizId);
-        quizEditorPage.getNumQuestions().then(function (last) {
-            initialNumberOfQuestions = last;
-            return quizEditorPage.getAnswerField(last);
-        }).then(function (lastAnswerField) {
-            lastAnswerField.sendKeys(protractor.Key.TAB);
-            ptor.sleep(1000);
-            return quizEditorPage.getNumQuestions();
-        }).then(function (newNumberOfQuestions) {
-            expect(newNumberOfQuestions).toBe(initialNumberOfQuestions + 1);
-            quizEditorPage.save();
-        });
-    });
-    // -----------------------
 
     it('should be able to delete a question', function () {
         quizEditorPage.edit(testQuizId);

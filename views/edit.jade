@@ -48,8 +48,7 @@ block content
 
                 .no-questions.ng-cloak(ng-show="questions.length === 0") Nothing here yet! Click on "Add Question" below to start adding questions.
 
-            button#add-question.btn.btn-success(type="button", ng-click="addQuestion()", tooltip-trigger="mouseenter"
-                tooltip-placement="bottom", tooltip="{{addQuestionTooltip()}}", focus-on="beginAddNewQuestion")
+            button#add-question.btn.btn-success(type="button", ng-click="addQuestion()" focus-on="beginAddNewQuestion")
                 span.glyphicon.glyphicon-plus
                 | Add Question
 
