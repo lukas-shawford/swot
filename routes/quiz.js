@@ -217,6 +217,8 @@ function updateQuiz(quiz, req, res, includeId) {
     quiz.questions = [];
 
     // Save the questions
+    var allValid = true;
+    var message = null;
     _.each(req.body.quiz.questions, function (q, index) {
         
         var question;
@@ -228,36 +230,32 @@ function updateQuiz(quiz, req, res, includeId) {
                 question = new MultipleChoiceQuestion(q);
                 break;
             default:
-                return res.json({
-                    success: false,
-                    message: "Unrecognized question type \"" + q.type + "\" for question " + (index + 1) + "."
-                });
+                allValid = false;
+                message = "Unrecognized question type \"" + q.type + "\" for question " + (index + 1) + ".";
         }
 
-        question.validate(function (err) {
-            if (err) {
-                return res.json({
-                    success: false,
-                    message: err.toString()
-                });
-            }
+        quiz.questions.push(question);
+    });
 
-            quiz.questions.push(question);
-
-            // Save the quiz
-            quiz.save(function (err) {
-                if (err) {
-                    return res.json({
-                        success: false,
-                        message: err.toString()
-                    });
-                }
-
-                var response = { success: true };
-                if (includeId) { response.id = quiz._id; }
-                res.json(response);
-            });
+    if (!allValid) {
+        return res.json({
+            success: false,
+            message: message
         });
+    }
+
+    // Save the quiz
+    quiz.save(function (err) {
+        if (err) {
+            return res.json({
+                success: false,
+                message: err.toString()
+            });
+        }
+
+        var response = { success: true };
+        if (includeId) { response.id = quiz._id; }
+        res.json(response);
     });
 }
 
