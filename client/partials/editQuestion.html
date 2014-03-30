@@ -11,6 +11,10 @@
         </div>
         <div class="question-actions-container">
             <div class="question-actions">
+                <button class="copy-question btn btn-sm btn-default" ng-if="showCopy"
+                    ng-click="onCopy(questionNumber)" type="button" tabindex="-1">
+                    <i class="fa fa-copy"></i>
+                </button>
                 <span class="drag-handle btn btn-sm btn-default" ng-if="showReorder">
                     <span class="glyphicon glyphicon-move"></span>
                 </span>

@@ -88,6 +88,26 @@ describe('Quiz Editor', function () {
             });
         });
 
+        it('should be able to duplicate a fill-in question', function () {
+            quizEditorPage.copyQuestion(2);
+            expect(quizEditorPage.getQuestion(3)).toEqual({
+                type: 'fill-in',
+                question: 'What is the default squawk code for VFR aircraft in the United States?',
+                answer: '1200'
+            });
+
+            // Should be a distinct copy - try editing the copy's answer, and make sure the original
+            // stays the same
+            quizEditorPage.getFillInAnswerField(3)
+            .then(function (answerField) {
+                answerField.sendKeys(' - updated');
+                expect(quizEditorPage.getFillInAnswer(2), '1200');
+
+                // Delete the copy to restore the quiz back to its previous state
+                quizEditorPage.deleteQuestion(3);
+            });
+        });
+
         it('should be able to add a question by hitting TAB on the answer field for the last question', function () {
             quizEditorPage.getFillInAnswerField(2)
             .then(function (lastAnswerField) {
@@ -187,6 +207,27 @@ describe('Quiz Editor', function () {
                 ],
                 correctAnswerIndex: 2
             });
+        });
+
+        it('should be able to duplicate a multiple choice question', function () {
+            quizEditorPage.copyQuestion(3);
+            expect(quizEditorPage.getQuestion(4)).toEqual({
+                type: 'multiple-choice',
+                question: 'What color identifies the normal flap operating range?',
+                choices: [
+                    'Black',
+                    'Green',
+                    'White'
+                ],
+                correctAnswerIndex: 2
+            });
+
+            // Should be a distinct copy - try editing one of the choices on the copy, and make sure
+            // the corresponding choice on the original question stays the same
+            quizEditorPage.setChoice(4, 1, 'Turqoise', true);
+            
+            // Delete the copy to restore the quiz back to its previous state
+            quizEditorPage.deleteQuestion(4);
         });
 
     });

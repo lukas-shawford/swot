@@ -139,6 +139,14 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         $scope.editQuizForm.$setDirty();
     };
 
+    $scope.copyQuestion = function (index) {
+        var question = $scope.quiz.questions[index];
+        var copy = JSON.parse(JSON.stringify(question));
+        copy = _.pick(copy, 'type', 'questionHtml', 'answer', 'choices', 'correctAnswerIndex');
+        $scope.quiz.questions.splice(index + 1, 0, copy);
+        $scope.editQuizForm.$setDirty();
+    };
+
     $scope.exportJson = function () {
         bootbox.confirm('The quiz will be saved before exporting. Continue?', function (confirmed) {
             if (confirmed) {

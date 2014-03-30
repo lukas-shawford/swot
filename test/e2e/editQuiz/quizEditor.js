@@ -274,6 +274,18 @@ var QuizEditorPage = function () {
     };
 
     /**
+     * Duplicates a question
+     */
+    this.copyQuestion = function (number) {
+        return element(by.repeater('question in quiz.questions').row(number - 1))
+            .findElement(by.css('.copy-question'))
+            .click()
+            .then(function () {
+                ptor.sleep(800);    // Allow some time for the animation to finish playing
+            });
+    };
+
+    /**
      * Deletes a question
      */
     this.deleteQuestion = function (number) {

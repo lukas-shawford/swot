@@ -8,8 +8,10 @@ angular.module('swot').directive('editquestion', function ($timeout) {
             questionNumber: '=',
             ckEditorConfig: '=',
             answerKeypress: '&',
+            allowCopy: '=',
             allowReorder: '=',
             allowDelete: '=',
+            onCopy: '&',
             onDelete: '&'
         },
         link: function (scope, elem, attrs) {
@@ -61,6 +63,7 @@ angular.module('swot').directive('editquestion', function ($timeout) {
             };
 
             scope.showQuestionNumber = angular.isNumber(scope.$eval(attrs.questionNumber));
+            scope.showCopy = scope.$eval(attrs.allowCopy) && scope.showQuestionNumber;
             scope.showReorder = scope.$eval(attrs.allowReorder) && scope.showQuestionNumber;
             scope.showDelete = scope.$eval(attrs.allowDelete) && scope.showQuestionNumber;
 
