@@ -4,26 +4,43 @@
 
     <!-- Header -->
     <div class="question-header">
+
+        <!-- Question Number -->
         <div class="question-number ng-cloak" ng-if="showQuestionNumber">{{questionNumber}}.</div>
+
+        <!-- Question Type Menu -->
         <div class="question-type-menu btn-group btn-group-sm">
             <button type="button" class="btn btn-default fill-in" ng-model="question.type" btn-radio="'FillInQuestion'">Fill In</button>
             <button type="button" class="btn btn-default multiple-choice" ng-model="question.type" btn-radio="'MultipleChoiceQuestion'">Multiple Choice</button>
         </div>
+
+        <!-- Question Actions Menu -->
         <div class="question-actions-container">
             <div class="question-actions">
-                <button class="copy-question btn btn-sm btn-default" ng-if="showCopy"
+
+                <!-- Copy -->
+                <button tooltip="Copy" class="copy-question btn btn-sm btn-default" ng-if="showCopy"
                     ng-click="onCopy(questionNumber)" type="button" tabindex="-1">
                     <i class="fa fa-copy"></i>
                 </button>
-                <span class="drag-handle btn btn-sm btn-default" ng-if="showReorder">
+
+                <!-- Move -->
+                <span tooltip="Move" class="drag-handle btn btn-sm btn-default" ng-if="showReorder">
                     <span class="glyphicon glyphicon-move"></span>
                 </span>
-                <button class="delete-question btn btn-sm btn-default" ng-if="showDelete" type="button"
-                    confirm-button="onDelete(questionNumber)" message="Are you sure you want to remove this question?"
-                    classes="confirm-popover" placement-callback='popoverPlacementCallback()' tabindex="-1">
 
-                    <span class="glyphicon glyphicon-trash"></span>
-                </button>
+                <!-- Delete -->
+                <!-- Use a wrapper elem because both the tooltip and the confirm-button directives
+                     want an isolate scope, so they can't both be on the same element. -->
+                <span class="delete-wrapper" tooltip="Delete">
+                    <button class="delete-question btn btn-sm btn-default" ng-if="showDelete" type="button"
+                        confirm-button="onDelete(questionNumber)" message="Are you sure you want to remove this question?"
+                        classes="confirm-popover" placement-callback='popoverPlacementCallback()' tabindex="-1">
+
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                </span>
+
             </div>
         </div>
     </div>

@@ -22,6 +22,13 @@
             @media(min-width:@screen-xs) {
                 .question-actions{ float: right; }
             }
+
+            .delete-wrapper { display: inline-block; }  // For consistent tooltip positioning
+
+            // Don't show the "Move" tooltip while dragging
+            .drag-handle.grabbing + .tooltip {
+                display: none !important;
+            }
         }
     }
 
