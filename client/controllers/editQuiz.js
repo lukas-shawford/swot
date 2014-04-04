@@ -99,7 +99,10 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
 
     $scope.addQuestion = function () {
         $scope.quiz.questions.push({
-            type: 'FillInQuestion'
+            type: 'FillInQuestion',
+            questionHtml: '',
+            answer: '',
+            ignoreCase: true
         });
 
         // Flip this to true to denote that we're currently initializing a new question editor
@@ -142,7 +145,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     $scope.copyQuestion = function (index) {
         var question = $scope.quiz.questions[index];
         var copy = JSON.parse(JSON.stringify(question));
-        copy = _.pick(copy, 'type', 'questionHtml', 'answer', 'choices', 'correctAnswerIndex');
+        copy = _.pick(copy, 'type', 'questionHtml', 'answer', 'choices', 'correctAnswerIndex', 'ignoreCase');
         $scope.quiz.questions.splice(index + 1, 0, copy);
         $scope.editQuizForm.$setDirty();
     };

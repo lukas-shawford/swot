@@ -90,32 +90,7 @@ var QuizEditorPage = function () {
     this.setQuestionType = function (number, type) {
         var row = page.getQuestionRow(number);
 
-        // HACK ALERT:
-        // If the question field has focus, the CKEditor toolbar may obscure the question type menu.
-        // This is actually a usability issue with the site that should really be addressed.
-        // The formatting toolbar should either be reduced to just the bare essentials so that it's
-        // a single row, or more spacing needs to be added between the question header and the
-        // question field, or both - this will be addressed when I give the site a facelift.
-        // Once that's done, the whole first part of this can go away.
-        //
-        // For now, to prevent this test from failing, we make the toolbar go away by clicking into
-        // either the answer field (if it's a fill-in question), or one of the choices (if it's a
-        // multiple choice question). Kind of lame... and that's roughly what the user would have to
-        // do if they wanted to switch the question type as well.
-
-        // Get the current question type (the type we're switching *away* from), pretty much just
-        // so that we can find another appropriate element nearby that we can click on without
-        // having to scroll so that the question field loses focus, and the ckeditor toolbar
-        // goes away and reveals the question type menu.
-        return page.getQuestionType(number).then(function (currentType) {
-            switch(currentType) {
-                case 'fill-in':
-                    return page.getFillInAnswerField(number).click();
-                case 'multiple-choice':
-                    return page.getChoiceField(number, 0).click();
-            }
-            throw 'Current question type is invalid: "' + currentType + '".';
-        })
+        return page.hideQuestionToolbar(number)     // HACK ALERT
         .then(function () {
             // Give the ckeditor toolbar some time to go away
             ptor.sleep(250);
@@ -140,34 +115,15 @@ var QuizEditorPage = function () {
      * The other properties depend on the question type. Returns a promise.
      */
     this.getQuestion = function (number) {
-        var question = {};
-
         return page.getQuestionType(number).then(function (questionType) {
-            question.type = questionType;
-            return page.getQuestionField(number);
-        }).then(function (questionField) {
-            return questionField.getText();
-        }).then(function (text) {
-            question.question = text;
-
-            if (question.type === 'fill-in') {
-                return page.getFillInAnswer(number).then(function (answer) {
-                    question.answer = answer;
-                    return question;
-                });
-            } else if (question.type === 'multiple-choice') {
-                return page.getChoicesAsText(number)
-                .then(function (choices) {
-                    question.choices = choices;
-                    return page.getCorrectChoiceIndex(number);
-                })
-                .then(function (correctAnswerIndex) {
-                    question.correctAnswerIndex = correctAnswerIndex;
-                    return question;
-                });
+            switch (questionType) {
+                case 'fill-in':
+                    return page.getFillIn(number);
+                case 'multiple-choice':
+                    return page.getMultipleChoice(number);
+                default:
+                    throw 'Invalid question type: "' + questionType + '".';
             }
-
-            throw 'Invalid question type: "' + question.type + '".';
         });
     };
 
@@ -181,9 +137,9 @@ var QuizEditorPage = function () {
     this.setQuestion = function (number, question, erase) {
         switch (question.type) {
             case 'fill-in':
-                return page.enterFillIn(number, question.question, question.answer, erase);
+                return page.enterFillIn(number, question, erase);
             case 'multiple-choice':
-                return page.enterMultipleChoice(number, question.question, question.choices, question.correctAnswerIndex, erase);
+                return page.enterMultipleChoice(number, question, erase);
         }
 
         throw 'Invalid question type: "' + question.type + '".';
@@ -213,28 +169,88 @@ var QuizEditorPage = function () {
     };
 
     /**
+     * Returns an object representing the fill-in question (including the answer, and all associated
+     * settings). Assumes that the given question number (starting at one) is a fill-in question.
+     */
+    this.getFillIn = function (number) {
+        var question = {
+            type: 'fill-in'
+        };
+
+        return page.getQuestionField(number)
+            .then(function (questionField) {
+                return questionField.getText();
+            })
+            .then(function (text) {
+                question.question = text;
+                return page.getFillInAnswer(number);
+            })
+            .then(function (answer) {
+                question.answer = answer;
+                return page.getFillInIgnoreCase(number);
+            })
+            .then(function (ignoreCase) {
+                question.ignoreCase = ignoreCase;
+                return question;
+            });
+    };
+
+    /**
      * Sets the given question number (starting at one) to be a fill-in question, and sets the contents
      * to the given question and answer. If the 'erase' parameter is true, will erase whatever is
      * present by hitting CTRL+A then BACKSPACE in each field before entering the contents.
      */
-    this.enterFillIn = function (number, question, answer, erase) {
+    this.enterFillIn = function (number, question, erase) {
         return page.setQuestionType(number, 'fill-in')
         .then(function () {
             return page.getQuestionField(number);
-        }).then(function (questionField) {
+        })
+        .then(function (questionField) {
             if (erase) {
                 questionField.sendKeys(protractor.Key.chord(protractor.Key.CONTROL, 'a'));
                 questionField.sendKeys(protractor.Key.BACK_SPACE);
             }
-            questionField.sendKeys(question);
+            questionField.sendKeys(question.question);
             return page.getFillInAnswerField(number);
-        }).then(function (answerField) {
+        })
+        .then(function (answerField) {
             if (erase) {
                 answerField.sendKeys(protractor.Key.chord(protractor.Key.CONTROL, 'a'));
                 answerField.sendKeys(protractor.Key.BACK_SPACE);
             }
-            answerField.sendKeys(answer);
+            return answerField.sendKeys(question.answer);
+        })
+        .then(function () {
+            return page.setFillInIgnoreCase(number, question.ignoreCase);
         });
+    };
+
+    /**
+     * Returns an object representing the multiple-choice question (including the choices, the correct
+     * answer, and all associated settings). Assumes that the given question number (starting at one)
+     * is a multiple choice question.
+     */
+    this.getMultipleChoice = function (number) {
+        var question = {
+            type: 'multiple-choice'
+        };
+
+        return page.getQuestionField(number)
+            .then(function (questionField) {
+                return questionField.getText();
+            })
+            .then(function (text) {
+                question.question = text;
+                return page.getChoicesAsText(number);
+            })
+            .then(function (choices) {
+                question.choices = choices;
+                return page.getCorrectChoiceIndex(number);
+            })
+            .then(function (correctAnswerIndex) {
+                question.correctAnswerIndex = correctAnswerIndex;
+                return question;
+            });
     };
 
     /**
@@ -242,7 +258,7 @@ var QuizEditorPage = function () {
      * the contents to the given question. If the 'erase' parameter is true, will erase whatever is
      * present by hitting CTRL+A then BACKSPACE in each field before entering the contents.
      */
-    this.enterMultipleChoice = function (number, question, choices, correctAnswerIndex, erase) {
+    this.enterMultipleChoice = function (number, question, erase) {
         return page.setQuestionType(number, 'multiple-choice')
         .then(function () {
             return page.getQuestionField(number);
@@ -252,11 +268,12 @@ var QuizEditorPage = function () {
                 questionField.sendKeys(protractor.Key.chord(protractor.Key.CONTROL, 'a'));
                 questionField.sendKeys(protractor.Key.BACK_SPACE);
             }
-            questionField.sendKeys(question);
+            questionField.sendKeys(question.question);
+            var choices = question.choices.slice(0);
             return page.enterRemainingChoices(number, choices, 0, erase);
         })
         .then(function () {
-            return page.markChoiceAsCorrect(number, correctAnswerIndex);
+            return page.markChoiceAsCorrect(number, question.correctAnswerIndex);
         });
     };
 
@@ -355,6 +372,36 @@ var QuizEditorPage = function () {
     };
 
     /**
+     * HACK ALERT:
+     * If the question field has focus, the CKEditor toolbar may obscure elements in the header.
+     * This is actually a usability issue with the site that should really be addressed.
+     * The ckeditor toolbar should either be reduced to just the bare essentials so that it's
+     * a single row, or more spacing needs to be added between the question header and the
+     * question field, or both - this will be addressed when I give the site a facelift.
+     * Once that's done, this can go away.
+     *
+     * For now, to prevent certain tests from failing, we make the toolbar go away by clicking into
+     * either the answer field (if it's a fill-in question), or one of the choices (if it's a
+     * multiple choice question). Kind of lame... and that's roughly what the user would have to
+     * do as well if they wanted to switch the question type or show the settings.
+     */
+    this.hideQuestionToolbar = function (number) {
+        // Get the current question type (the type we're switching *away* from), pretty much just
+        // so that we can find another appropriate element nearby that we can click on without
+        // having to scroll so that the question field loses focus, and the ckeditor toolbar
+        // goes away and reveals the question type menu.
+        return page.getQuestionType(number).then(function (currentType) {
+            switch(currentType) {
+                case 'fill-in':
+                    return page.getFillInAnswerField(number).click();
+                case 'multiple-choice':
+                    return page.getChoiceField(number, 0).click();
+            }
+            throw 'Current question type is invalid: "' + currentType + '".';
+        });
+    };
+
+    /**
      * Returns an Angular repeater row element for the given question number (starting at one).
      */
     this.getQuestionRow = function (number) {
@@ -370,11 +417,35 @@ var QuizEditorPage = function () {
     };
 
     /**
+     * Opens up the settings for the question (if not already open).
+     */
+    this.showQuestionSettings = function (number) {
+        var settingsToggle;
+
+        return page.hideQuestionToolbar(number)     // HACK ALERT
+            .then(function () {
+                return element(by.repeater('question in quiz.questions').row(number - 1)).findElement(by.css('.toggle-settings'));
+            })
+            .then(function (elem) {
+                settingsToggle = elem;
+                return settingsToggle.getAttribute('class');
+            })
+            .then(function (cls) {
+                if (/active/.test(cls)) {
+                    // Settings already open - do nothing
+                    return;
+                }
+
+                return settingsToggle.click();
+            });
+    };
+
+    /**
      * Retrieves the answer field for the given question number (starting at one). Assumes the current
      * question is a fill-in question.
      */
     this.getFillInAnswerField = function (number) {
-        return page.getQuestionRow(number).findElement(by.css('.fill-in.answer-editor input[name="answer"]'));
+        return page.getQuestionRow(number).findElement(by.css('.fill-in-answer'));
     };
 
     /**
@@ -385,6 +456,48 @@ var QuizEditorPage = function () {
         return page.getFillInAnswerField(number).then(function (answerField) {
             return answerField.getAttribute('value');
         });
+    };
+
+    /**
+     * Gets the checkbox field for the "Ignore capitalization" setting for the given question number
+     * (starting at one). Assumes the question is a fill-in question.
+     */
+    this.getFillInIgnoreCaseField = function (number) {
+        return page.showQuestionSettings(number)
+            .then(function () {
+                return element(by.repeater('question in quiz.questions').row(number - 1)).findElement(by.model('question.ignoreCase'));
+            });
+    };
+
+    /**
+     * Returns a promise that resolves to true if the "Ignore capitalization" setting is turned on
+     * for the given question number (starting at one). Assumes the question is a fill-in question.
+     */
+    this.getFillInIgnoreCase = function (number) {
+        return page.getFillInIgnoreCaseField(number)
+            .then(function (checkbox) {
+                return checkbox.getAttribute('checked');
+            })
+            .then(function (checked) {
+                return checked === 'true';
+            });
+    };
+
+    /**
+     * Sets the the "Ignore capitalization" setting for the given question number (starting at one)
+     * to the given value (true or false). Assumes the question is a fill-in question.
+     */
+    this.setFillInIgnoreCase = function (number, value) {
+        value = !!value;    // Force boolean
+        return page.getFillInIgnoreCase(number)
+            .then(function (currentValue) {
+                if (currentValue != value) {
+                    return page.getFillInIgnoreCaseField(number)
+                        .then(function (checkbox) {
+                            return checkbox.click();
+                        });
+                }
+            });
     };
 
     /**
@@ -438,7 +551,7 @@ var QuizEditorPage = function () {
      */
     this.getNumChoices = function (questionNumber) {
         return page.getQuestionRow(questionNumber)
-            .findElements(by.css('.answer-editor.multiple-choice .choices .choice'))
+            .findElements(by.css('.multiple-choice .choices .choice'))
             .then(function (elems) {
                 return elems.length;
             });

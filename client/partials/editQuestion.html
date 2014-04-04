@@ -18,6 +18,14 @@
         <div class="question-actions-container">
             <div class="question-actions">
 
+                <!-- Settings -->
+                <button tooltip="{{ui.showingSettings ? 'Hide Options' : 'Show Options'}}" class="toggle-settings btn btn-sm btn-default"
+                    ng-show="question.type === 'FillInQuestion'"
+                    ng-click="ui.showingSettings = !ui.showingSettings" ng-class="{'active': ui.showingSettings}"
+                    type="button" tabindex="-1">
+                    <span class="glyphicon glyphicon-cog"></span>
+                </button>
+
                 <!-- Copy -->
                 <button tooltip="Copy" class="copy-question btn btn-sm btn-default" ng-if="showCopy"
                     ng-click="onCopy(questionNumber)" type="button" tabindex="-1">
@@ -54,16 +62,30 @@
     <div class="answer form-group">
 
         <!-- Fill In -->
-        <div ng-show="question.type === 'FillInQuestion'" class="answer-editor fill-in">
+        <div ng-show="question.type === 'FillInQuestion'" class="question-editor-row answer-container fill-in">
             <label class="control-label col-ms-2 col-sm-2">Answer:</label>
             <div class="col-ms-10 col-sm-10">
-                <input type="text" name="answer" ng-model="question.answer" class="form-control" placeholder="Answer"
+
+                <!-- Fill In Answer Field -->
+                <input type="text" name="answer" ng-model="question.answer" class="fill-in-answer form-control" placeholder="Answer"
                     ng-keydown="handleAnswerKeypress($event)" auto-grow="auto-grow" max-width="443" >
+                
+                <!-- Settings Toggle Button -->
+                <!--
+                <button type="button" class="toggle-settings btn btn-default"
+                    ng-click="ui.showingSettings = !ui.showingSettings"
+                    ng-class="{'active': ui.showingSettings}">
+                    <span class="fa fa-caret-right" ng-show="!ui.showingSettings"></span>
+                    <span class="fa fa-caret-down" ng-show="ui.showingSettings"></span>
+                    <span class="glyphicon glyphicon-cog"></span>
+                </button>
+                -->
+
             </div>
         </div>
 
         <!-- Multiple Choice -->
-        <div ng-show="question.type === 'MultipleChoiceQuestion'" class="answer-editor multiple-choice">
+        <div ng-show="question.type === 'MultipleChoiceQuestion'" class="answer-container multiple-choice">
             <label class="control-label col-ms-2 col-sm-2">Choices:</label>
             <div class="col-ms-10 col-sm-10">
                 <ul class="choices">
@@ -103,4 +125,25 @@
             </div>
         </div>
     </div>
+
+    <!-- Options -->
+    <div class="settings form-group">
+        <div class="question-editor-row" collapse="!ui.showingSettings">
+            <label class="control-label col-ms-2 col-sm-2">Options:</label>
+            <div class="col-ms-10 col-sm-10">
+
+                <!-- Fill In Options -->
+                <div class="settings-container fill-in" ng-show="question.type === 'FillInQuestion'">
+                    <div class="checkbox setting">
+                        <label>
+                            <input type="checkbox" ng-model="question.ignoreCase" class="ignore-case"> Ignore capitalization
+                        </label>
+                        <span class="help-icon fa fa-question-circle" tooltip='Ignore differences in capitalization when grading submissions (consider "Answer" same as "answer").'></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
 </div>

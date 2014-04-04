@@ -78,8 +78,14 @@ Q.ninvoke(mongoose, 'connect', MONGODB_URL)
         answer: '30'
     }));
     quiz.questions.push(new FillInQuestion({
-        questionHtml: 'What is the minimum number of statute miles of visibility for Class B airspace operations when operating under VFR?',
-        answer: '3'
+        questionHtml: 'Fill In: Ignore case test',
+        answer: 'Answer',
+        ignoreCase: true
+    }));
+    quiz.questions.push(new FillInQuestion({
+        questionHtml: 'Fill In: Case sensitive',
+        answer: 'ANSWER',
+        ignoreCase: false
     }));
     return quiz.qsave();
 })

@@ -1,4 +1,7 @@
 .edit-question {
+
+    .question-editor-row { .make-row(@gutter: 0); }
+
     .question-header {
         .make-row();
 
@@ -13,11 +16,11 @@
         }
 
         .question-type-menu {
-            .make-xs-column(8);
+            .make-xs-column(7);
         }
 
         .question-actions-container {
-            .make-xs-column(3);
+            .make-xs-column(4);
 
             @media(min-width:@screen-xs) {
                 .question-actions{ float: right; }
@@ -47,15 +50,14 @@
 
     .answer {
 
-        .answer-editor.fill-in {
-            input {
-                @media(max-width:@screen-xs) { margin-top: 6px; }
-                @media(min-width:@screen-xs) { width: 40%; }
-                @media(min-width:@screen-xs) and (max-width:@screen-sm) { margin-left: 1em; }
-            }
+        .fill-in-answer {
+            display: inline;
+            @media(max-width:@screen-xs) { margin-top: 6px; }
+            @media(min-width:@screen-xs) { width: 40%; }
+            @media(min-width:@screen-xs) and (max-width:@screen-sm) { margin-left: 1em; }
         }
 
-        .answer-editor.multiple-choice {
+        .answer-container.multiple-choice {
             .choices {
                 padding-left: 0;
                 list-style: none;
@@ -96,5 +98,27 @@
                 }
             }
         }
+
+        .toggle-settings {
+            .fa { padding: 0; }
+            .fa.fa-caret-right {  }
+        }
+    }
+
+    .settings {
+        margin-top: 6px;
+
+        input[type="checkbox"] {
+            margin-top: 2px;
+        }
+
+        .help-icon {
+            visibility: hidden;
+            display: inline;
+            font-size: 16px;
+            color: #9295CA;
+        }
+
+        &:hover .help-icon { visibility: visible; }
     }
 }

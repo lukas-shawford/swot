@@ -74,7 +74,8 @@ describe('Quiz Editor', function () {
             quizEditorPage.addQuestion({
                 type: 'fill-in',
                 question: 'What is the default squawk code for VFR aircraft in the United States?',
-                answer: '1200'
+                answer: '1200',
+                ignoreCase: true
             });
 
             quizEditorPage.save();
@@ -84,7 +85,8 @@ describe('Quiz Editor', function () {
             expect(quizEditorPage.getQuestion(2)).toEqual({
                 type: 'fill-in',
                 question: 'What is the default squawk code for VFR aircraft in the United States?',
-                answer: '1200'
+                answer: '1200',
+                ignoreCase: true
             });
         });
 
@@ -93,7 +95,8 @@ describe('Quiz Editor', function () {
             expect(quizEditorPage.getQuestion(3)).toEqual({
                 type: 'fill-in',
                 question: 'What is the default squawk code for VFR aircraft in the United States?',
-                answer: '1200'
+                answer: '1200',
+                ignoreCase: true
             });
 
             // Should be a distinct copy - try editing the copy's answer, and make sure the original
@@ -121,6 +124,24 @@ describe('Quiz Editor', function () {
             });
         });
 
+        it('should be able to save the value of the "Ignore capitalization" setting', function () {
+            quizEditorPage.setQuestion(3, {
+                type: 'fill-in',
+                question: 'Case sensitive',
+                answer: 'ANSWER',
+                ignoreCase: false   // The default is true - set it to false and make sure it saved.
+            });
+
+            quizEditorPage.save();
+            expect(quizEditorPage.getFillInIgnoreCase(3)).toBeFalsy();
+        });
+
+        it('should copy the "Ignore capitalization" setting when duplicating a question', function () {
+            quizEditorPage.copyQuestion(3);
+            expect(quizEditorPage.getFillInIgnoreCase(4)).toBeFalsy();
+            quizEditorPage.deleteQuestion(4);   // Restore
+        });
+
     });
 
     describe('Multiple Choice Questions', function () {
@@ -141,7 +162,7 @@ describe('Quiz Editor', function () {
                     'Green'
                 ],
                 correctAnswerIndex: 2
-            });
+            }, true);
             
             quizEditorPage.save();
             
@@ -242,7 +263,8 @@ describe('Quiz Editor', function () {
         expect(quizEditorPage.getQuestion(1)).toEqual({
             type: 'fill-in',
             question: 'What is the default squawk code for VFR aircraft in the United States?',
-            answer: '1200'
+            answer: '1200',
+            ignoreCase: true
         });
 
         // What used to be question #1 should now be question #2
@@ -274,7 +296,8 @@ describe('Quiz Editor', function () {
             expect(quizEditorPage.getQuestion(1)).toEqual({
                 type: 'fill-in',
                 question: 'What is the default squawk code for VFR aircraft in the United States? (Updated)',
-                answer: '1200'
+                answer: '1200',
+                ignoreCase: true
             });
         });
     });

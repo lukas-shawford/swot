@@ -15,6 +15,20 @@ angular.module('swot').directive('editquestion', function ($timeout) {
             onDelete: '&'
         },
         link: function (scope, elem, attrs) {
+            scope.showQuestionNumber = angular.isNumber(scope.$eval(attrs.questionNumber));
+            scope.showCopy = scope.$eval(attrs.allowCopy) && scope.showQuestionNumber;
+            scope.showReorder = scope.$eval(attrs.allowReorder) && scope.showQuestionNumber;
+            scope.showDelete = scope.$eval(attrs.allowDelete) && scope.showQuestionNumber;
+
+            if (!scope.question.choices) {
+                scope.question.choices = ["", "", "", ""];  // Default in 4 empty choices
+                scope.question.correctAnswerIndex = 0;
+            }
+
+            scope.ui = {
+                showingSettings: false
+            };
+
             scope.handleAnswerKeypress = function ($event) {
                 scope.answerKeypress({
                     $event: $event,
@@ -61,16 +75,6 @@ angular.module('swot').directive('editquestion', function ($timeout) {
                     scope.form.$setDirty();
                 }
             };
-
-            scope.showQuestionNumber = angular.isNumber(scope.$eval(attrs.questionNumber));
-            scope.showCopy = scope.$eval(attrs.allowCopy) && scope.showQuestionNumber;
-            scope.showReorder = scope.$eval(attrs.allowReorder) && scope.showQuestionNumber;
-            scope.showDelete = scope.$eval(attrs.allowDelete) && scope.showQuestionNumber;
-
-            if (!scope.question.choices) {
-                scope.question.choices = ["", "", "", ""];  // Default in 4 empty choices
-                scope.question.correctAnswerIndex = 0;
-            }
         }
     };
 });

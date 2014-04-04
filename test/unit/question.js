@@ -58,6 +58,31 @@ describe('question', function () {
                 });
             });
 
+            it('should respect ignoreCase setting when comparing submissions', function () {
+                var question = new FillInQuestion({
+                    questionHtml: '<p>What is the capital of North Dakota?</p>',
+                    answer: 'Bismarck',
+                    ignoreCase: true
+                });
+
+                expect(question.submit("bisMARCK")).to.deep.equal({
+                    success: true,
+                    isCorrect: true
+                });
+
+                var question2 = new FillInQuestion({
+                    questionHtml: '<p>What is the capital of North Dakota?</p>',
+                    answer: 'Bismarck',
+                    ignoreCase: false
+                });
+
+                expect(question2.submit("bisMARCK")).to.deep.equal({
+                    success: true,
+                    isCorrect: false,
+                    correctAnswer: 'Bismarck'
+                });
+            });
+
         });
     });
 
