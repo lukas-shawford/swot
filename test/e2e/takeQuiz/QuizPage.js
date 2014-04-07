@@ -27,6 +27,8 @@ var QuizPage = function () {
     // Fill-In question elements
     this.submissionField = element(by.css('#question input.submission'));
     this.correctAnswerFillIn = element(by.css('.result .correct-answer.fill-in'));
+    this.altAnswerIcon = element(by.css('.alt-ans'));
+    this.altAnswerTooltip = element(by.css('.alt-ans-tooltip'));
 
     // Multiple Choice question elements
     this.choiceButtons = element.all(by.css('.multiple-choice .choice'));
@@ -315,6 +317,24 @@ var QuizPage = function () {
         .then(function (classAttr) {
             return classAttr.split(' ').indexOf(className) !== -1;
         });
+    };
+
+    /**
+     * Hovers over the alternative answers icon and returns a promise that resolves to the content of the tooltip.
+     *
+     * Assumes the following:
+     *     - The current question is a fill-in question.
+     *     - The question had at least one alternative answer defined.
+     *     - The question has been submitted
+     *     - The submission was not correct
+     *
+     * These conditions are all necessary for the alternative answers icon to be visible at all.
+     */
+    this.getAltAnsTooltip = function () {
+        ptor.actions()
+            .mouseMove(page.altAnswerIcon.find())
+            .perform();
+        return page.altAnswerTooltip.getText();
     };
 };
 

@@ -68,6 +68,9 @@
 
                 <span ng-show="question.type === 'FillInQuestion'">
                     The correct answer is:&nbsp;<strong class="correct-answer fill-in">{{question.result.correctAnswer}}</strong>
+                    <span class="glyphicon glyphicon-info-sign alt-ans" ng-show="question.result.alternativeAnswers.length > 0"
+                          tooltip-html-unsafe="{{getAlternativeAnswerTooltip()}}">
+                    </span>
                 </span>
 
                 <span ng-show="question.type === 'MultipleChoiceQuestion'">

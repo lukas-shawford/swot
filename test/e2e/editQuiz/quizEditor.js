@@ -187,6 +187,10 @@ var QuizEditorPage = function () {
             })
             .then(function (answer) {
                 question.answer = answer;
+                return page.getFillInAltsAsText(number);
+            })
+            .then(function (alts) {
+                question.alternativeAnswers = alts;
                 return page.getFillInIgnoreCase(number);
             })
             .then(function (ignoreCase) {
@@ -219,6 +223,10 @@ var QuizEditorPage = function () {
                 answerField.sendKeys(protractor.Key.BACK_SPACE);
             }
             return answerField.sendKeys(question.answer);
+        })
+        .then(function () {
+            var alts = question.alternativeAnswers.slice(0);
+            return page.enterRemainingAltAns(number, alts, 0, erase);
         })
         .then(function () {
             return page.setFillInIgnoreCase(number, question.ignoreCase);
@@ -422,10 +430,7 @@ var QuizEditorPage = function () {
     this.showQuestionSettings = function (number) {
         var settingsToggle;
 
-        return page.hideQuestionToolbar(number)     // HACK ALERT
-            .then(function () {
-                return element(by.repeater('question in quiz.questions').row(number - 1)).findElement(by.css('.toggle-settings'));
-            })
+        return element(by.repeater('question in quiz.questions').row(number - 1)).findElement(by.css('.toggle-settings'))
             .then(function (elem) {
                 settingsToggle = elem;
                 return settingsToggle.getAttribute('class');
@@ -435,8 +440,10 @@ var QuizEditorPage = function () {
                     // Settings already open - do nothing
                     return;
                 }
-
-                return settingsToggle.click();
+                return page.hideQuestionToolbar(number)     // HACK ALERT
+                    .then(function () {
+                        return settingsToggle.click();
+                    });
             });
     };
 
@@ -521,7 +528,9 @@ var QuizEditorPage = function () {
     this.setChoice = function (questionNumber, choiceIndex, choiceText, erase) {
         return page.getNumChoices(questionNumber).then(function (numChoices) {
             if (choiceIndex >= numChoices) {
-                return page.setChoice(questionNumber, choiceIndex, choiceText);
+                return page.clickAddChoice(questionNumber).then(function () {
+                    return page.setChoice(questionNumber, choiceIndex, choiceText, erase);
+                });
             } else {
                 return page.getChoiceField(questionNumber, choiceIndex).then(function (field) {
                     if (erase) {
@@ -635,7 +644,7 @@ var QuizEditorPage = function () {
 
     /**
      * For the given question number (starting at one), removes the given choice index (starting at
-     * zero... sorry). Assumes that the question is a multiple choie question, and that the choice
+     * zero... sorry). Assumes that the question is a multiple choice question, and that the choice
      * index is valid.
      */
     this.removeChoice = function (questionNumber, choiceIndex) {
@@ -643,6 +652,137 @@ var QuizEditorPage = function () {
             .getQuestionRow(questionNumber)
             .findElement(by.css('.choices .choice:nth-of-type(' + (choiceIndex + 1) + ') .remove-choice'))
             .click();
+    };
+
+    /**
+     * For the given question number (starting at one), which is assumed to be a fill-in question,
+     * returns the text of the alternative answer at the given index (starting at zero).
+     */
+    this.getAltAns = function (questionNumber, index) {
+        return page.showQuestionSettings(questionNumber)
+            .then(function () {
+                return page.getAltAnsField(questionNumber, index).then(function (field) {
+                    return field.getAttribute('value');
+                });
+            });
+    };
+
+    /**
+     * For the given question number (starting at one), which is assumed to be a fill-in question,
+     * sets the text of the alternative answer at the given index (starting at zero) to the given
+     * value. Will automatically click on the Add button to add more alternative answers if the
+     * index is out of range. If the 'erase' parameter is true, then any existing contents for the
+     * given alternative answer will be erased by sending CTRL+A then BACKSPACE before entering the
+     * new value.
+     */
+    this.setAltAns = function (questionNumber, index, text, erase) {
+        return page.showQuestionSettings(questionNumber)
+            .then(function () {
+                return page.getNumAltAnswers(questionNumber).then(function (numAltAns) {
+                    if (index >= numAltAns) {
+                        return page.clickAddAltAns(questionNumber).then(function () {
+                            return page.setAltAns(questionNumber, index, text, erase);
+                        });
+                    } else {
+                        return page.getAltAnsField(questionNumber, index).then(function (field) {
+                            if (erase) {
+                                field.sendKeys(protractor.Key.chord(protractor.Key.CONTROL, 'a'));
+                                field.sendKeys(protractor.Key.BACK_SPACE);
+                            }
+                            return field.sendKeys(text);
+                        });
+                    }
+                });
+            });
+    };
+
+    /**
+     * For the given question number (starting at one), returns the number of alternative answers
+     * currently present. Assumes the given question number is a fill-in question. Returns a promise.
+     */
+    this.getNumAltAnswers = function (questionNumber) {
+        return page.showQuestionSettings(questionNumber)
+            .then(function () {
+                return page.getQuestionRow(questionNumber)
+                    .findElements(by.css('.fill-in-alts-container .fill-in-alt'))
+                    .then(function (elems) {
+                        return elems.length;
+                    });
+            });
+    };
+
+    /**
+     * Returns the alternative answers as an array of strings for the given question number (starting at one).
+     * The question is assumed to be a fill-in question. Returns a promise.
+     */
+    this.getFillInAltsAsText = function (questionNumber) {
+        return page.showQuestionSettings(questionNumber)
+            .then(function () {
+                return page.getQuestionRow(questionNumber).findElements(by.css('.fill-in-alts-container .alt-answer-editor'))
+                    .then(function (editorElems) {
+                        var promises = [];
+                        for (var i = 0; i < editorElems.length; i++) {
+                            promises.push(editorElems[i].getAttribute('value'));
+                        }
+                        return Q.all(promises);
+                    });
+            });
+    };
+
+    /**
+     * Returns the input field for the alternative answer textbox for the given question number
+     * (starting at one) and the given alternative answer index (starting at zero). The question
+     * is assumed to be a fill-in question.
+     */
+    this.getAltAnsField = function (questionNumber, index) {
+        return page.showQuestionSettings(questionNumber)
+            .then(function () {
+                return page.getQuestionRow(questionNumber)
+                    .findElement(by.css('.fill-in-alts-container .fill-in-alt:nth-of-type(' + (index + 1) + ') .alt-answer-editor'));
+            });
+    };
+
+    /**
+     * Clicks on the "Add" button to add an alternative answer for a fill-in question.
+     */
+    this.clickAddAltAns = function (questionNumber) {
+        return page.showQuestionSettings(questionNumber)
+            .then(function () {
+                return page.getQuestionRow(questionNumber).findElement(by.css('.add-alt-ans')).click();
+            });
+    };
+
+    /**
+     * Recursively adds in the remaining alternative answers for a fill-in question.
+     */
+    this.enterRemainingAltAns = function (questionNumber, remaining, startIndex, erase) {
+        if (remaining.length === 0) {
+            return;
+        } else {
+            return page.showQuestionSettings(questionNumber)
+                .then(function () {
+                    var ans = remaining.splice(0, 1);
+                    return page.setAltAns(questionNumber, startIndex, ans, erase).then(function () {
+                        startIndex++;
+                        return page.enterRemainingAltAns(questionNumber, remaining, startIndex);
+                    });
+                });
+        }
+    };
+
+    /**
+     * For the given question number (starting at one), removes the alternative answer with the
+     * given index (starting at zero). Assumes that the question is a fill-in question, and that
+     * the index is valid.
+     */
+    this.removeAltAns = function (questionNumber, index) {
+        return page.showQuestionSettings(questionNumber)
+            .then(function () {
+                return page
+                    .getQuestionRow(questionNumber)
+                    .findElement(by.css('.fill-in-alts-container .fill-in-alt:nth-of-type(' + (index + 1) + ') .remove-alt-ans'))
+                    .click();
+            });
     };
 };
 

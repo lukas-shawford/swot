@@ -75,7 +75,8 @@ describe('Quiz Editor', function () {
                 type: 'fill-in',
                 question: 'What is the default squawk code for VFR aircraft in the United States?',
                 answer: '1200',
-                ignoreCase: true
+                ignoreCase: true,
+                alternativeAnswers: []
             });
 
             quizEditorPage.save();
@@ -86,7 +87,8 @@ describe('Quiz Editor', function () {
                 type: 'fill-in',
                 question: 'What is the default squawk code for VFR aircraft in the United States?',
                 answer: '1200',
-                ignoreCase: true
+                ignoreCase: true,
+                alternativeAnswers: []
             });
         });
 
@@ -96,7 +98,8 @@ describe('Quiz Editor', function () {
                 type: 'fill-in',
                 question: 'What is the default squawk code for VFR aircraft in the United States?',
                 answer: '1200',
-                ignoreCase: true
+                ignoreCase: true,
+                alternativeAnswers: []
             });
 
             // Should be a distinct copy - try editing the copy's answer, and make sure the original
@@ -129,7 +132,8 @@ describe('Quiz Editor', function () {
                 type: 'fill-in',
                 question: 'Case sensitive',
                 answer: 'ANSWER',
-                ignoreCase: false   // The default is true - set it to false and make sure it saved.
+                ignoreCase: false,   // The default is true - set it to false and make sure it saved.
+                alternativeAnswers: []
             });
 
             quizEditorPage.save();
@@ -142,17 +146,72 @@ describe('Quiz Editor', function () {
             quizEditorPage.deleteQuestion(4);   // Restore
         });
 
+        it('should be able to save alternative answers for a fill-in question', function () {
+            quizEditorPage.addQuestion({
+                type: 'fill-in',
+                question: 'At what altitude does class A airspace begin?',
+                answer: '18,000 feet',
+                ignoreCase: true,
+                alternativeAnswers: [
+                    '18000 feet',
+                    '18,000 ft',
+                    '18,000ft',
+                    '18000',
+                    '18,000'
+                ]
+            });
+
+            quizEditorPage.save();
+
+            // Make sure all the fields were saved
+            quizEditorPage.edit(testQuizId);
+            expect(quizEditorPage.getQuestion(4)).toEqual({
+                type: 'fill-in',
+                question: 'At what altitude does class A airspace begin?',
+                answer: '18,000 feet',
+                ignoreCase: true,
+                alternativeAnswers: [
+                    '18000 feet',
+                    '18,000 ft',
+                    '18,000ft',
+                    '18000',
+                    '18,000'
+                ]
+            });
+        });
+        
+        it('should copy alternative answers when duplicating a question', function () {
+            quizEditorPage.copyQuestion(4);
+            expect(quizEditorPage.getFillInAltsAsText(5)).toEqual([
+                '18000 feet',
+                '18,000 ft',
+                '18,000ft',
+                '18000',
+                '18,000'
+            ]);
+
+            // Should be a distinct copy - try editing one of the alternate answers on
+            // the copy, and make sure the corresponding answer on the original question
+            // stays the same
+            quizEditorPage.setAltAns(5, 1, ' - Updated', false);
+            expect(quizEditorPage.getAltAns(4, 1)).toEqual('18,000 ft');
+
+            // Delete the copy to restore the quiz back to its previous state
+            quizEditorPage.deleteQuestion(5);
+        });
+
     });
 
     describe('Multiple Choice Questions', function () {
         
         it('should default in 4 empty choices', function () {
-            quizEditorPage.setQuestionType(3, 'multiple-choice');
-            expect(quizEditorPage.getNumChoices(3)).toBe(4);
+            quizEditorPage.clickAddQuestion();
+            quizEditorPage.setQuestionType(5, 'multiple-choice');
+            expect(quizEditorPage.getNumChoices(5)).toBe(4);
         });
 
         it('should be able to save a multiple choice question', function () {
-            quizEditorPage.setQuestion(3, {
+            quizEditorPage.setQuestion(5, {
                 type: 'multiple-choice',
                 question: 'What color identifies the normal flap operating range?',
                 choices: [
@@ -168,7 +227,7 @@ describe('Quiz Editor', function () {
             
             // Make sure all the fields were saved
             quizEditorPage.edit(testQuizId);
-            expect(quizEditorPage.getQuestion(3)).toEqual({
+            expect(quizEditorPage.getQuestion(5)).toEqual({
                 type: 'multiple-choice',
                 question: 'What color identifies the normal flap operating range?',
                 choices: [
@@ -182,14 +241,14 @@ describe('Quiz Editor', function () {
         });
 
         it('should be able to add a choice', function () {
-            quizEditorPage.clickAddChoice(3);
-            quizEditorPage.setChoice(3, 4, 'Orange');
+            quizEditorPage.clickAddChoice(5);
+            quizEditorPage.setChoice(5, 4, 'Orange');
             
             quizEditorPage.save();
             
             // Make sure all the fields were saved
             quizEditorPage.edit(testQuizId);
-            expect(quizEditorPage.getQuestion(3)).toEqual({
+            expect(quizEditorPage.getQuestion(5)).toEqual({
                 type: 'multiple-choice',
                 question: 'What color identifies the normal flap operating range?',
                 choices: [
@@ -204,21 +263,21 @@ describe('Quiz Editor', function () {
         });
 
         it('should retain correct choice index after removing a choice higher in the list', function () {
-            quizEditorPage.removeChoice(3, 0);
-            expect(quizEditorPage.getCorrectChoiceIndex(3)).toBe(1);
+            quizEditorPage.removeChoice(5, 0);
+            expect(quizEditorPage.getCorrectChoiceIndex(5)).toBe(1);
         });
 
         it('should clear correct choice index after removing the correct choice', function () {
-            quizEditorPage.removeChoice(3, 1);
-            expect(quizEditorPage.getCorrectChoiceIndex(3)).toBe(-1);
+            quizEditorPage.removeChoice(5, 1);
+            expect(quizEditorPage.getCorrectChoiceIndex(5)).toBe(-1);
         });
 
         it('should be able to edit a choice', function () {
-            quizEditorPage.setChoice(3, 2, 'White', true);
-            quizEditorPage.markChoiceAsCorrect(3, 2);
+            quizEditorPage.setChoice(5, 2, 'White', true);
+            quizEditorPage.markChoiceAsCorrect(5, 2);
             quizEditorPage.save();
             quizEditorPage.edit(testQuizId);
-            expect(quizEditorPage.getQuestion(3)).toEqual({
+            expect(quizEditorPage.getQuestion(5)).toEqual({
                 type: 'multiple-choice',
                 question: 'What color identifies the normal flap operating range?',
                 choices: [
@@ -231,8 +290,8 @@ describe('Quiz Editor', function () {
         });
 
         it('should be able to duplicate a multiple choice question', function () {
-            quizEditorPage.copyQuestion(3);
-            expect(quizEditorPage.getQuestion(4)).toEqual({
+            quizEditorPage.copyQuestion(5);
+            expect(quizEditorPage.getQuestion(6)).toEqual({
                 type: 'multiple-choice',
                 question: 'What color identifies the normal flap operating range?',
                 choices: [
@@ -245,10 +304,11 @@ describe('Quiz Editor', function () {
 
             // Should be a distinct copy - try editing one of the choices on the copy, and make sure
             // the corresponding choice on the original question stays the same
-            quizEditorPage.setChoice(4, 1, 'Turqoise', true);
+            quizEditorPage.setChoice(6, 1, 'Turqoise', true);
+            expect(quizEditorPage.getChoice(5, 1)).toEqual('Green');
             
             // Delete the copy to restore the quiz back to its previous state
-            quizEditorPage.deleteQuestion(4);
+            quizEditorPage.deleteQuestion(6);
         });
 
     });
@@ -264,7 +324,8 @@ describe('Quiz Editor', function () {
             type: 'fill-in',
             question: 'What is the default squawk code for VFR aircraft in the United States?',
             answer: '1200',
-            ignoreCase: true
+            ignoreCase: true,
+            alternativeAnswers: []
         });
 
         // What used to be question #1 should now be question #2
@@ -297,7 +358,8 @@ describe('Quiz Editor', function () {
                 type: 'fill-in',
                 question: 'What is the default squawk code for VFR aircraft in the United States? (Updated)',
                 answer: '1200',
-                ignoreCase: true
+                ignoreCase: true,
+                alternativeAnswers: []
             });
         });
     });
@@ -307,7 +369,7 @@ describe('Quiz Editor', function () {
         quizEditorPage.deleteQuestion(2);
         quizEditorPage.save();
         quizEditorPage.edit(testQuizId);
-        expect(quizEditorPage.getNumQuestions()).toBe(2);
+        expect(quizEditorPage.getNumQuestions()).toBe(4);
     });
 
     it('should not be able to delete a quiz that has not been saved yet', function () {

@@ -4,7 +4,14 @@ Quiz maker written using the MEAN stack (MongoDB, Express, AngularJS, and Node.j
 
 The primary goal of swot is to create an advanced quiz editor that is capable of more than just simple flashcard style questions, while keeping the UI simple and easy to use.
 
-Current capabilities are fairly basic at this point, but include the ability to create and save quizzes with rich formatting in the questions (courtesy of [ckeditor](http://ckeditor.com/)), as well as to take quizzes (with automatic score keeping). Currently, only short-answer style questions are supported - other question types including fill-in, multiple choice, and self-graded long response questions are coming soon.
+Current capabilities include:
+
+- Ability to create, save and take quizzes
+- Rich formatting in the questions (support for font styles, lists, images, etc. all courtesy of [ckeditor](http://ckeditor.com/))
+- Navigate and take quizzes with instant feedback and automatic score-keeping
+- Support for multiple question types, including fill-in and multiple choice
+
+Support for a greater variety of question types including true/false, short answer, matching, check all that apply, and others - along with more grading options and the ability to show supplemental information - is all coming soon.
 
 ### Launching
 
@@ -58,9 +65,19 @@ The `test:e2e` task is a shortcut that essentially runs all of the following com
 - Runs protractor:  
   `protractor e2e.conf.js`
 
-While doing development, it is recommended to run each of the above commands in 3 separate terminals.  This way, you're not repeatedly launching and bringing down the app all the time, as well as selenium server. It also keeps the output from running the tests separate, instead of mixing it all in one place.  However, if you just want to just run the tests once, quickly, then this can save a lot of time and remembering.
+While doing development, it is recommended to run each of the above commands in 3 separate terminals.  This way, you're not repeatedly launching and bringing down the app, as well as selenium server, without need (rather, you can restart the app only if you've made any server-side changes, and you can probably just leave selenium running all the time). It also keeps the output from running the tests separate, instead of mixing it all in one place.  However, if you just want to just run the tests once, quickly, then this can save a lot of time and remembering.
 
-Finally, you can run both the unit tests as well as end-to-end tests using one command:
+Note also that the end-to-end tests can take several minutes to run. If you're doing work on the quiz editor, it's unlikely that you broke anything related to the login/registration functionality, so you may want to save some time by skipping these tests. To do this, you can temporarily edit the file filter in [`e2e.conf.js`](https://github.com/sergkr/swot/blob/master/e2e.conf.js) by changing this line:
+
+    specs: ['test/e2e/**/*.spec.js'],
+
+To this (for example):
+
+    specs: ['test/e2e/editQuiz/*.spec.js'],
+
+This way, you will only be running the quiz editor specs when launching protractor.
+
+Finally, note that there's another shortcut task in grunt that allows you to run both the unit tests as well as end-to-end tests using one command:
 
 `grunt test:all`
 

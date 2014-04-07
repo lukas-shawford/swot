@@ -25,6 +25,14 @@ angular.module('swot').directive('editquestion', function ($timeout) {
                 scope.question.correctAnswerIndex = 0;
             }
 
+            if (!scope.question.alternativeAnswers) {
+                scope.question.alternativeAnswers = [];
+            }
+
+            if (typeof scope.question.ignoreCase !== "boolean") {
+                scope.question.ignoreCase = true;
+            }
+
             scope.ui = {
                 showingSettings: false
             };
@@ -71,6 +79,23 @@ angular.module('swot').directive('editquestion', function ($timeout) {
                     // Clear the correct answer if it was removed
                     scope.question.correctAnswerIndex = null;
                 }
+                if (attrs.form) {
+                    scope.form.$setDirty();
+                }
+            };
+
+            scope.addAltAns = function () {
+                scope.question.alternativeAnswers.push("");
+                $timeout(function () {
+                    $(elem).find('.alt-answer-editor').last().focus();
+                });
+                if (attrs.form) {
+                    scope.form.$setDirty();
+                }
+            };
+
+            scope.removeAltAns = function (i) {
+                scope.question.alternativeAnswers.splice(i, 1);
                 if (attrs.form) {
                     scope.form.$setDirty();
                 }

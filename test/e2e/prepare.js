@@ -71,21 +71,39 @@ Q.ninvoke(mongoose, 'connect', MONGODB_URL)
     }));
     quiz.questions.push(new FillInQuestion({
         questionHtml: 'What is the default squawk code of VFR aircraft in the United States?',
-        answer: '1200'
+        answer: '1200',
+        ignoreCase: true,
+        alternativeAnswers: []
     }));
     quiz.questions.push(new FillInQuestion({
         questionHtml: 'An operable mode C transponder is required within how many nautical miles of the primary Class B airport?',
-        answer: '30'
+        answer: '30',
+        ignoreCase: true,
+        alternativeAnswers: []
     }));
     quiz.questions.push(new FillInQuestion({
         questionHtml: 'Fill In: Ignore case test',
         answer: 'Answer',
-        ignoreCase: true
+        ignoreCase: true,
+        alternativeAnswers: []
     }));
     quiz.questions.push(new FillInQuestion({
         questionHtml: 'Fill In: Case sensitive',
         answer: 'ANSWER',
-        ignoreCase: false
+        ignoreCase: false,
+        alternativeAnswers: []
+    }));
+    quiz.questions.push(new FillInQuestion({
+        questionHtml: 'At what altitude does class A airspace begin?',
+        answer: '18,000 feet',
+        ignoreCase: true,
+        alternativeAnswers: [
+            '18000 feet',
+            '18,000 ft',
+            '18,000ft',
+            '18000',
+            '18,000'
+        ]
     }));
     return quiz.qsave();
 })

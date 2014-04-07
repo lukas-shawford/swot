@@ -31,12 +31,14 @@ describe('question', function () {
     });
 
     describe('Fill In Questions', function () {
+        
         describe('submit', function () {
 
-            it('should return true for isCorrect if the submission matches the correct answer', function () {
+            it('should accept the submission if it matches the correct answer', function () {
                 var question = new FillInQuestion({
                     questionHtml: '<p>What is the capital of North Dakota?</p>',
-                    answer: 'Bismarck'
+                    answer: 'Bismarck',
+                    alternativeAnswers: []
                 });
 
                 expect(question.submit("Bismarck")).to.deep.equal({
@@ -45,20 +47,70 @@ describe('question', function () {
                 });
             });
 
-            it('should return false and the correct answer if the submission does not match', function () {
+            it('should reject the submission and return the correct answer if the submission does not match the answer', function () {
                 var question = new FillInQuestion({
                     questionHtml: '<p>What is the capital of North Dakota?</p>',
-                    answer: 'Bismarck'
+                    answer: 'Bismarck',
+                    alternativeAnswers: []
                 });
 
-                expect(question.submit("Pierre")).to.deep.equal({
+                var result = question.submit("Pierre");
+
+                expect(result.success).to.be.true;
+                expect(result.isCorrect).to.be.false;
+                expect(result.correctAnswer).to.equal("Bismarck");
+                expect(result.alternativeAnswers).to.be.empty;
+            });
+
+            it('should accept a submission if it matches one of the alternative answers', function () {
+                var question = new FillInQuestion({
+                    questionHtml: 'In the U.S., Class A airspace begins at what altitude?',
+                    answer: '18,000 feet',
+                    ignoreCase: true,
+                    alternativeAnswers: [
+                        '18000 feet',
+                        '18,000 ft',
+                        '18,000ft',
+                        '18000',
+                        '18,000'
+                    ]
+                });
+
+                expect(question.submit('18000')).to.deep.equal({
                     success: true,
-                    isCorrect: false,
-                    correctAnswer: "Bismarck"
+                    isCorrect: true
                 });
             });
 
-            it('should respect ignoreCase setting when comparing submissions', function () {
+            it('should reject a submission if it does not match any of the alternative answers, and return the correct answer and all alternative answers', function () {
+                var question = new FillInQuestion({
+                    questionHtml: 'In the U.S., Class A airspace begins at what altitude?',
+                    answer: '18,000 feet',
+                    ignoreCase: true,
+                    alternativeAnswers: [
+                        '18000 feet',
+                        '18,000 ft',
+                        '18,000ft',
+                        '18000',
+                        '18,000'
+                    ]
+                });
+
+                var result = question.submit('24,000 feet');
+
+                expect(result.success).to.be.true;
+                expect(result.isCorrect).to.be.false;
+                expect(result.correctAnswer).to.equal('18,000 feet');
+                expect(result.alternativeAnswers).to.include.members([
+                    '18000 feet',
+                    '18,000 ft',
+                    '18,000ft',
+                    '18000',
+                    '18,000'
+                ]);
+            });
+
+            it('should accept a submission if the answer does not match capitalization, but the ignoreCase setting is set to true', function () {
                 var question = new FillInQuestion({
                     questionHtml: '<p>What is the capital of North Dakota?</p>',
                     answer: 'Bismarck',
@@ -69,20 +121,75 @@ describe('question', function () {
                     success: true,
                     isCorrect: true
                 });
+            });
 
-                var question2 = new FillInQuestion({
+            it('should reject a submission if the answer does not match capitalization, and the ignoreCase setting is set to false', function () {
+                var question = new FillInQuestion({
                     questionHtml: '<p>What is the capital of North Dakota?</p>',
                     answer: 'Bismarck',
-                    ignoreCase: false
+                    ignoreCase: false,
+                    alternativeAnswers: []
                 });
 
-                expect(question2.submit("bisMARCK")).to.deep.equal({
+                var result = question.submit('bisMARCK');
+
+                expect(result.success).to.be.true;
+                expect(result.isCorrect).to.be.false;
+                expect(result.correctAnswer).to.equal('Bismarck');
+                expect(result.alternativeAnswers).to.be.empty;
+            });
+
+            it('should accept the submission if it matches one of the alternative answers with different ' +
+                'casing, but the ignoreCase setting is set to true', function () {
+
+                var question = new FillInQuestion({
+                    questionHtml: 'In the U.S., Class A airspace begins at what altitude?',
+                    answer: '18,000 feet',
+                    ignoreCase: true,
+                    alternativeAnswers: [
+                        '18000 feet',
+                        '18,000 ft',
+                        '18,000ft',
+                        '18000',
+                        '18,000'
+                    ]
+                });
+
+                expect(question.submit('18,000 FT')).to.deep.equal({
                     success: true,
-                    isCorrect: false,
-                    correctAnswer: 'Bismarck'
+                    isCorrect: true
                 });
             });
 
+            it('should reject the submission if it matches one of the alternative answers with different ' +
+                'casing, but the ignoreCase setting is set to false', function () {
+
+                var question = new FillInQuestion({
+                    questionHtml: 'In the U.S., Class A airspace begins at what altitude?',
+                    answer: '18,000 feet',
+                    ignoreCase: false,
+                    alternativeAnswers: [
+                        '18000 feet',
+                        '18,000 ft',
+                        '18,000ft',
+                        '18000',
+                        '18,000'
+                    ]
+                });
+
+                var result = question.submit('18,000 FT');
+
+                expect(result.success).to.be.true;
+                expect(result.isCorrect).to.be.false;
+                expect(result.correctAnswer).to.equal('18,000 feet');
+                expect(result.alternativeAnswers).to.include.members([
+                    '18000 feet',
+                    '18,000 ft',
+                    '18,000ft',
+                    '18000',
+                    '18,000'
+                ]);
+            });
         });
     });
 
@@ -115,7 +222,6 @@ describe('question', function () {
                     correctAnswerIndex: 1
                 });
             });
-
         });
     });
 });

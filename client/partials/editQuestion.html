@@ -88,18 +88,18 @@
         <div ng-show="question.type === 'MultipleChoiceQuestion'" class="answer-container multiple-choice">
             <label class="control-label col-ms-2 col-sm-2">Choices:</label>
             <div class="col-ms-10 col-sm-10">
-                <ul class="choices">
-                    <li class="choice" ng-repeat="(i, choice) in question.choices track by $index">
-                        <div class="choice-row">
+                <ul class="choices input-list">
+                    <li class="choice list-item" ng-repeat="(i, choice) in question.choices track by $index">
+                        <div class="choice-row list-item-row">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-btn">
                                     <button type="button" class="btn btn-sm btn-default marker" ng-class="{correct: question.correctAnswerIndex === i}" ng-model="question.correctAnswerIndex" btn-radio="i">
                                         <span class="glyphicon glyphicon-ok"></span>
                                     </button>
                                 </span>
-                                <input type="text" ng-model="question.choices[i]" class="choice-editor form-control"
+                                <input type="text" ng-model="question.choices[i]" class="editor choice-editor form-control"
                                     auto-grow="auto-grow" max-width="443">
-                                <span class="choice-actions btn-group">
+                                <span class="item-actions choice-actions btn-group">
                                     
                                     <!-- No support yet for reordering choices
                                     <button type="button" class="btn btn-sm btn-default drag-handle">
@@ -127,22 +127,67 @@
     </div>
 
     <!-- Options -->
-    <div class="settings form-group">
-        <div class="question-editor-row" collapse="!ui.showingSettings">
-            <label class="control-label col-ms-2 col-sm-2">Options:</label>
-            <div class="col-ms-10 col-sm-10">
+    <!-- (Note: To avoid jumpy toggle animations when collapsing/expanding, this top-level
+         element cannot have top/bottom margins.) -->
+    <div class="settings" collapse="!ui.showingSettings">
 
-                <!-- Fill In Options -->
-                <div class="settings-container fill-in" ng-show="question.type === 'FillInQuestion'">
-                    <div class="checkbox setting">
-                        <label>
-                            <input type="checkbox" ng-model="question.ignoreCase" class="ignore-case"> Ignore capitalization
-                        </label>
-                        <span class="help-icon fa fa-question-circle" tooltip='Ignore differences in capitalization when grading submissions (consider "Answer" same as "answer").'></span>
+        <!-- (Margins are OK here.) -->
+        <div class="form-group">
+
+            <!-- "Alternate Answers:" row (fill-in) -->
+            <div class="question-editor-row fill-in-alts-container" ng-show="question.type === 'FillInQuestion'">
+                <label class="control-label col-ms-2 col-sm-2">Alternate Answers:</label>
+                <div class="col-ms-10 col-sm-10">
+                    <ul class="fill-in-alts input-list">
+                        <li class="fill-in-alt list-item" ng-repeat="(i, ans) in question.alternativeAnswers track by $index">
+                            <div class="list-item-row">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" ng-model="question.alternativeAnswers[i]" class="editor alt-answer-editor form-control"
+                                           auto-grow="auto-grow" max-width="443">
+                                    <span class="item-actions alt-ans-actions btn-group">
+                                        <button type="button" class="btn btn-sm btn-default remove-alt-ans" ng-click="removeAltAns(i)">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <button ng-click="addAltAns()" type="button" class="btn btn-sm btn-default add-alt-ans">
+                                <span class="glyphicon glyphicon-plus"></span> Add
+                            </button>
+                            <span class="help-icon fa fa-question-circle"
+                                  tooltip='Add other acceptable answers that should be marked as correct.'>
+                            </span>
+                        </div>
                     </div>
                 </div>
-
             </div>
+
+            <!-- "Options:" row -->
+            <div class="question-editor-row">
+                <label class="control-label col-ms-2 col-sm-2">Options:</label>
+                <div class="col-ms-10 col-sm-10">
+
+                    <!-- Fill In Options -->
+                    <div class="settings-container fill-in" ng-show="question.type === 'FillInQuestion'">
+
+                        <!-- Ignore capitalization -->
+                        <div class="checkbox setting">
+                            <label>
+                                <input type="checkbox" ng-model="question.ignoreCase" class="ignore-case"> Ignore capitalization
+                            </label>
+                            <span class="help-icon fa fa-question-circle"
+                                  tooltip='Ignore differences in capitalization when grading submissions (consider "Answer" same as "answer").'>
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </div>
     

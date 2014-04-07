@@ -167,21 +167,20 @@ describe('quiz', function () {
             });
 
             it('should return false if the submission does not match', function () {
-                expect(quiz.submitQuestion(0, "Pierre")).to.deep.equal({
-                    success: true,
-                    isCorrect: false,
-                    correctAnswer: "Bismarck"
-                });
-                expect(quiz.submitQuestion(1, "7700")).to.deep.equal({
-                    success: true,
-                    isCorrect: false,
-                    correctAnswer: "1200"
-                });
-                expect(quiz.submitQuestion(2, "opportunity")).to.deep.equal({
-                    success: true,
-                    isCorrect: false,
-                    correctAnswer: "strength"
-                });
+                var result = quiz.submitQuestion(0, "Pierre");
+                expect(result.success).to.be.true;
+                expect(result.isCorrect).to.be.false;
+                expect(result.correctAnswer).to.equal("Bismarck");
+
+                result = quiz.submitQuestion(1, "7700");
+                expect(result.success).to.be.true;
+                expect(result.isCorrect).to.be.false;
+                expect(result.correctAnswer).to.equal("1200");
+
+                result = quiz.submitQuestion(2, "opportunity");
+                expect(result.success).to.be.true;
+                expect(result.isCorrect).to.be.false;
+                expect(result.correctAnswer).to.equal("strength");
             });
 
             it('should return an error if the question index is out of range or invalid', function () {

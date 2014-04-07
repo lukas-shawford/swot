@@ -1,6 +1,48 @@
 .edit-question {
 
-    .question-editor-row { .make-row(@gutter: 0); }
+    .question-editor-row { .make-row(@gutter: 0); margin-top: 6px; }
+
+    // Generic list of inputs (e.g., choices in a multiple choice question,
+    // or alternate answers for a fill-in question)
+    .input-list {
+        padding-left: 0;
+        list-style: none;
+
+        .list-item {
+            padding-bottom: 6px;
+
+            .list-item-row {
+                display: table;
+                width: 60%;
+
+                .editor {
+                    border-right-color: transparent;
+
+                    // Remove the blue outline around the input when it has focus. It generally
+                    // looks nice, but it's not visible on the left/right because the buttons
+                    // are right next to it.
+                    &:focus {
+                        border-color: @input-border;
+                        border-right-color: transparent;
+                        box-shadow: none;
+                        -moz-box-shadow: none;
+                        -webkit-box-shadow: none;
+                    }
+                }
+
+                .item-actions {
+                    display: table-cell;
+                    .btn:first-child { border-radius: 0; }
+                }
+            }
+        }
+
+        .btn.correct {
+            color: @btn-success-color;
+            background-color: @btn-success-bg;
+            border-color: @btn-success-border;
+        }
+    }
 
     .question-header {
         .make-row();
@@ -54,49 +96,7 @@
             display: inline;
             @media(max-width:@screen-xs) { margin-top: 6px; }
             @media(min-width:@screen-xs) { width: 40%; }
-            @media(min-width:@screen-xs) and (max-width:@screen-sm) { margin-left: 1em; }
-        }
-
-        .answer-container.multiple-choice {
-            .choices {
-                padding-left: 0;
-                list-style: none;
-
-                .choice {
-                    padding-bottom: 6px;
-
-                    .choice-row {
-                        display: table;
-                        width: 60%;
-
-                        .choice-editor {
-                            border-right-color: transparent;
-
-                            // Remove the blue outline around the input when it has focus. It generally
-                            // looks nice, but it's not visible on the left/right because the buttons
-                            // are right next to it.
-                            &:focus {
-                                border-color: @input-border;
-                                border-right-color: transparent;
-                                box-shadow: none;
-                                -moz-box-shadow: none;
-                                -webkit-box-shadow: none;
-                            }
-                        }
-
-                        .choice-actions {
-                            display: table-cell;
-                            .btn:first-child { border-radius: 0; }
-                        }
-                    }
-                }
-
-                .btn.correct {
-                    color: @btn-success-color;
-                    background-color: @btn-success-bg;
-                    border-color: @btn-success-border;
-                }
-            }
+            //@media(min-width:@screen-xs) and (max-width:@screen-sm) { margin-left: 1em; }
         }
 
         .toggle-settings {
@@ -106,7 +106,6 @@
     }
 
     .settings {
-        margin-top: 6px;
 
         input[type="checkbox"] {
             margin-top: 2px;
@@ -121,4 +120,6 @@
 
         &:hover .help-icon { visibility: visible; }
     }
+
+    .fill-in-alts { margin-top: 7px; }
 }
