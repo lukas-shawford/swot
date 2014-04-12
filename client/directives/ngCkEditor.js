@@ -72,9 +72,37 @@ angular.module('swot').directive('ckedit', function ($parse) {
             };
 
             config.title = false;   // Remove the useless tooltip
-            var editorangular = CKEDITOR.inline(element[0], config); //invoke
- 
+
+            // Define the initialization function
+            var editorangular;
+            var initData;
+            var initCkEditor = function () {
+                if (!editorangular) {
+                    editorangular = CKEDITOR.inline(element[0], config);
+                    if (initData) {
+                        editorangular.setData(initData);
+                    }
+                }
+            };
+
+            // If ck-init-on attribute is passed in, then delay initialization until
+            // the specified event occurs. Otherwise, initialize immediately.
+            if (attrs.ckInitOn) {
+                scope.$on(attrs.ckInitOn, function () {
+                    initCkEditor();
+                });
+            } else {
+                initCkEditor();
+            }
+
             scope.$watch(attrs.ngModel, function (value) {
+                if (!editorangular) {
+                    // If the editor hasn't been initialized yet, grab the model data so we
+                    // can populate it later, and bail out.
+                    initData = value;
+                    return;
+                }
+
                 if (editorangular.getData() !== value) {
                     editorangular.setData(value);
                 }
