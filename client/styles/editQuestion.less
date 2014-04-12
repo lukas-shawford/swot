@@ -1,6 +1,15 @@
 .edit-question {
 
-    .question-editor-row { .make-row(@gutter: 0); margin-top: 6px; }
+    .question-editor-row {
+        .make-row(@gutter: 0);
+        margin-top: 6px;
+
+        .control-label {
+            padding-left: 0;
+            padding-right: 0;
+            text-align: center;
+        }
+    }
 
     // Generic list of inputs (e.g., choices in a multiple choice question,
     // or alternate answers for a fill-in question)
