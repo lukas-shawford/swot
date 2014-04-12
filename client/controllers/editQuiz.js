@@ -146,7 +146,15 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     $scope.copyQuestion = function (index) {
         var question = $scope.quiz.questions[index];
         var copy = JSON.parse(JSON.stringify(question));
-        copy = _.pick(copy, 'type', 'questionHtml', 'answer', 'choices', 'correctAnswerIndex', 'ignoreCase', 'alternativeAnswers');
+
+        // TODO: Should use a blacklist approach instead of whitelist so that I don't have to update this
+        // list every time I add a new field. The properties that I don't want to copy (mostly Angular internals)
+        // can be eliminated via a pattern (i.e., don't copy any properties starting with '$' or '_'), and are
+        // generally pretty static. On the other hand, I keep adding new fields all the time, and have to
+        // remember to update this list, or otherwise copying wouldn't work properly...
+        copy = _.pick(copy, 'type', 'questionHtml', 'answer', 'choices', 'correctAnswerIndex', 'ignoreCase',
+            'alternativeAnswers', 'supplementalInfoHtml');
+
         $scope.quiz.questions.splice(index + 1, 0, copy);
         $scope.editQuizForm.$setDirty();
     };

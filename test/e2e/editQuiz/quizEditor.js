@@ -115,16 +115,26 @@ var QuizEditorPage = function () {
      * The other properties depend on the question type. Returns a promise.
      */
     this.getQuestion = function (number) {
-        return page.getQuestionType(number).then(function (questionType) {
-            switch (questionType) {
-                case 'fill-in':
-                    return page.getFillIn(number);
-                case 'multiple-choice':
-                    return page.getMultipleChoice(number);
-                default:
-                    throw 'Invalid question type: "' + questionType + '".';
-            }
-        });
+        var question;
+        return page.getQuestionType(number)
+            .then(function (questionType) {
+                switch (questionType) {
+                    case 'fill-in':
+                        return page.getFillIn(number);
+                    case 'multiple-choice':
+                        return page.getMultipleChoice(number);
+                    default:
+                        throw 'Invalid question type: "' + questionType + '".';
+                }
+            })
+            .then(function (q) {
+                question = q;
+                return page.getSupplementalInfo(number);
+            })
+            .then(function (info) {
+                question.supplementalInfoHtml = info;
+                return question;
+            });
     };
 
     /**
@@ -135,14 +145,23 @@ var QuizEditorPage = function () {
      * hitting CTRL+A then BACKSPACE in each field before entering the contents.
      */
     this.setQuestion = function (number, question, erase) {
+        var promise;
         switch (question.type) {
             case 'fill-in':
-                return page.enterFillIn(number, question, erase);
+                promise = page.enterFillIn(number, question, erase);
+                break;
             case 'multiple-choice':
-                return page.enterMultipleChoice(number, question, erase);
+                promise = page.enterMultipleChoice(number, question, erase);
+                break;
+            default:
+                throw 'Invalid question type: "' + question.type + '".';
         }
 
-        throw 'Invalid question type: "' + question.type + '".';
+        return promise.then(function () {
+            if (question.supplementalInfoHtml) {
+                return page.enterSupplementalInfo(number, question.supplementalInfoHtml, erase);
+            }
+        });
     };
 
     /**
@@ -782,6 +801,55 @@ var QuizEditorPage = function () {
                     .getQuestionRow(questionNumber)
                     .findElement(by.css('.fill-in-alts-container .fill-in-alt:nth-of-type(' + (index + 1) + ') .remove-alt-ans'))
                     .click();
+            });
+    };
+
+    /**
+     * Returns the Supplemental Information field for the given question number (starting at one).
+     */
+    this.getSupplementalInfoField = function (number) {
+        return page.showQuestionSettings(number).then(function () {
+
+            // Unfortunately, there is a fairly long delay before the Supplemental Information field
+            // finishes initializing and becomes populated. Due to this ckeditor bug:
+            //
+            //     http://dev.ckeditor.com/ticket/11789
+            //
+            // We delay initializing ckeditor until the settings actually get shown (which is after
+            // clicking the settings button). However, we add an additional 250ms delay before even
+            // attempting to initialize ckeditor in order to make the toggle animation for showing/hiding
+            // the settings play a bit more smoothly, and on top of that, ckeditor itself takes some time
+            // to initialize.
+            //
+            // Once the ckeditor bug is fixed, and the app is updated so that these fields get loaded
+            // when the page itself loads, this sleep call can be removed.
+            ptor.sleep(400);
+
+            return page.getQuestionRow(number).findElement(by.css('.supplemental-info-editor'));
+        });
+    };
+
+    /**
+     * Returns the contents of the Supplemental Information field for the given question number.
+     */
+    this.getSupplementalInfo = function (number) {
+        return page.getSupplementalInfoField(number).then(function (field) {
+            return field.getText();
+        });
+    };
+
+    /**
+     * Sets the Supplemental Information field for the given question number (starting at one)
+     * to the given text. If the 'erase' parameter is true, will erase whatever is  present by
+     * hitting CTRL+A then BACKSPACE before entering the new contents.
+     */
+    this.enterSupplementalInfo = function (number, info, erase) {
+        return page.getSupplementalInfoField(number).then(function (field) {
+                if (erase) {
+                    field.sendKeys(protractor.Key.chord(protractor.Key.CONTROL, 'a'));
+                    field.sendKeys(protractor.Key.BACK_SPACE);
+                }
+                field.sendKeys(info);
             });
     };
 };

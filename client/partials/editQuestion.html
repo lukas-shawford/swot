@@ -20,8 +20,7 @@
 
                 <!-- Settings -->
                 <button tooltip="{{ui.showingSettings ? 'Hide Options' : 'Show Options'}}" class="toggle-settings btn btn-sm btn-default"
-                    ng-show="question.type === 'FillInQuestion'"
-                    ng-click="ui.showingSettings = !ui.showingSettings" ng-class="{'active': ui.showingSettings}"
+                    ng-click="toggleSettings()" ng-class="{'active': ui.showingSettings}"
                     type="button" tabindex="-1">
                     <span class="glyphicon glyphicon-cog"></span>
                 </button>
@@ -55,7 +54,7 @@
 
     <!-- Question -->
     <div class="question form-group">
-        <div class="question-editor" ckedit="{{ckEditorConfig}}" ng-model="question.questionHtml" focus-on="newQuestionReady"></div>
+        <div class="question-editor rich-editor" ckedit="{{ckEditorConfig}}" ng-model="question.questionHtml" focus-on="newQuestionReady"></div>
     </div>
 
     <!-- Answer -->
@@ -167,7 +166,8 @@
             </div>
 
             <!-- "Options:" row -->
-            <div class="question-editor-row">
+            <!-- (Hide if multiple choice, since there aren't any additional options for multiple choice yet.) -->
+            <div class="question-editor-row" ng-hide="question.type === 'MultipleChoiceQuestion'">
                 <label class="control-label col-ms-2 col-sm-2">Options:</label>
                 <div class="col-ms-10 col-sm-10">
 
@@ -185,6 +185,25 @@
                         </div>
                     </div>
 
+                </div>
+            </div>
+
+            <!-- "Supplemental Information:" row -->
+            <div class="question-editor-row">
+                <div class="col-ms-2 col-sm-2">
+                    <label class="control-label">Supplemental Information:</label>
+                </div>
+                <div class="col-ms-10 col-sm-10">
+                    <div class="supplemental-info-editor rich-editor" ckedit="{{ckEditorConfig}}" ck-init-on="settingsOpened"
+                         contenteditable="true" ng-model="question.supplementalInfoHtml"></div>
+
+                    <!-- Help icon: the help text is fine, but the placement is starting to look a bit scattered. I will
+                         be adjusting the placement of help icons so that they're all next to the field label itself (on
+                         the left), and so that they all line up vertically. For now, I'm just commenting this out.
+                    <span class="help-icon fa fa-question-circle"
+                          tooltip-html-unsafe='Additional information to show <i>after</i> the question has been submitted (e.g., explanation of the correct answer, or links to external sources). If provided, this information will be shown regardless of whether the submission was correct.'>
+                    </span>
+                    -->
                 </div>
             </div>
 

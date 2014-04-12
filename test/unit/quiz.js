@@ -152,18 +152,17 @@ describe('quiz', function () {
 
         describe('submitQuestion', function () {
             it('should return true if the submission matches the correct answer', function () {
-                expect(quiz.submitQuestion(0, "Bismarck")).to.deep.equal({
-                    success: true,
-                    isCorrect: true
-                });
-                expect(quiz.submitQuestion(1, "1200")).to.deep.equal({
-                    success: true,
-                    isCorrect: true
-                });
-                expect(quiz.submitQuestion(2, "strength")).to.deep.equal({
-                    success: true,
-                    isCorrect: true
-                });
+                var result = quiz.submitQuestion(0, "Bismarck");
+                expect(result.success).to.be.true;
+                expect(result.isCorrect).to.be.true;
+
+                result = quiz.submitQuestion(1, "1200");
+                expect(result.success).to.be.true;
+                expect(result.isCorrect).to.be.true;
+
+                result = quiz.submitQuestion(2, "strength");
+                expect(result.success).to.be.true;
+                expect(result.isCorrect).to.be.true;
             });
 
             it('should return false if the submission does not match', function () {

@@ -33,8 +33,27 @@ angular.module('swot').directive('editquestion', function ($timeout) {
                 scope.question.ignoreCase = true;
             }
 
+            if (typeof scope.question.supplementalInfoHtml !== "string") {
+                scope.question.supplementalInfoHtml = "";
+            }
+
             scope.ui = {
                 showingSettings: false
+            };
+
+            scope.toggleSettings = function () {
+                scope.ui.showingSettings = !scope.ui.showingSettings;
+                if (scope.ui.showingSettings) {
+                    // Emit the settingsOpened event, which notifies all ckEditor instances within the settings
+                    // panel to initialize. There's an issue with inline ckeditor that causes it to not initialize
+                    // properly in Chrome if the editor is within a hidden container, so we must wait until the
+                    // container becomes visible before initializing. Also, add a slight timeout so that opening
+                    // the settings panel is visually smooth instead of jumpy.
+                    // http://dev.ckeditor.com/ticket/11789
+                    $timeout(function () {
+                        scope.$emit('settingsOpened');
+                    }, 250);
+                }
             };
 
             scope.handleAnswerKeypress = function ($event) {

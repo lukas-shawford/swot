@@ -63,7 +63,8 @@ describe('Quiz Editor', function () {
                 'Helena',
                 'Des Moines'
             ],
-            correctAnswerIndex: 1
+            correctAnswerIndex: 1,
+            supplementalInfoHtml: ''
         });
     });
 
@@ -88,7 +89,8 @@ describe('Quiz Editor', function () {
                 question: 'What is the default squawk code for VFR aircraft in the United States?',
                 answer: '1200',
                 ignoreCase: true,
-                alternativeAnswers: []
+                alternativeAnswers: [],
+                supplementalInfoHtml: ''
             });
         });
 
@@ -99,7 +101,8 @@ describe('Quiz Editor', function () {
                 question: 'What is the default squawk code for VFR aircraft in the United States?',
                 answer: '1200',
                 ignoreCase: true,
-                alternativeAnswers: []
+                alternativeAnswers: [],
+                supplementalInfoHtml: ''
             });
 
             // Should be a distinct copy - try editing the copy's answer, and make sure the original
@@ -176,7 +179,8 @@ describe('Quiz Editor', function () {
                     '18,000ft',
                     '18000',
                     '18,000'
-                ]
+                ],
+                supplementalInfoHtml: ''
             });
         });
         
@@ -236,7 +240,8 @@ describe('Quiz Editor', function () {
                     'White',
                     'Green'
                 ],
-                correctAnswerIndex: 2
+                correctAnswerIndex: 2,
+                supplementalInfoHtml: ''
             });
         });
 
@@ -258,7 +263,8 @@ describe('Quiz Editor', function () {
                     'Green',
                     'Orange'
                 ],
-                correctAnswerIndex: 2
+                correctAnswerIndex: 2,
+                supplementalInfoHtml: ''
             });
         });
 
@@ -285,7 +291,8 @@ describe('Quiz Editor', function () {
                     'Green',
                     'White'
                 ],
-                correctAnswerIndex: 2
+                correctAnswerIndex: 2,
+                supplementalInfoHtml: ''
             });
         });
 
@@ -299,7 +306,8 @@ describe('Quiz Editor', function () {
                     'Green',
                     'White'
                 ],
-                correctAnswerIndex: 2
+                correctAnswerIndex: 2,
+                supplementalInfoHtml: ''
             });
 
             // Should be a distinct copy - try editing one of the choices on the copy, and make sure
@@ -311,6 +319,43 @@ describe('Quiz Editor', function () {
             quizEditorPage.deleteQuestion(6);
         });
 
+    });
+
+    describe('Question Settings', function () {
+
+        var info = 'A beacon that flashes green, yellow, and white indicates a heliport. For more information, consult AIM 2-1-10.';
+
+        it('should be able to save supplemental info for a question', function () {
+            quizEditorPage.addQuestion({
+                type: 'multiple-choice',
+                question: 'An airport beacon whose colors alternate between green, yellow, and white indicates what type of facility?',
+                choices: [
+                    'Military airport',
+                    'Civilian land airport',
+                    'Water airport',
+                    'Heliport'
+                ],
+                correctAnswerIndex: 3,
+                supplementalInfoHtml: info
+            });
+
+            quizEditorPage.save();
+
+            quizEditorPage.edit(testQuizId);
+            expect(quizEditorPage.getSupplementalInfo(6)).toEqual(info);
+        });
+
+        it('should copy the supplemental info field when duplicating a question', function () {
+            quizEditorPage.copyQuestion(6);
+            expect(quizEditorPage.getSupplementalInfo(7)).toEqual(info);
+
+            // Should be a distinct copy
+            quizEditorPage.enterSupplementalInfo(7, 'test', true);
+            expect(quizEditorPage.getSupplementalInfo(6)).toEqual(info);
+
+            // Restore
+            quizEditorPage.deleteQuestion(7);
+        });
     });
 
     it('should be able to reorder questions', function () {
@@ -325,7 +370,8 @@ describe('Quiz Editor', function () {
             question: 'What is the default squawk code for VFR aircraft in the United States?',
             answer: '1200',
             ignoreCase: true,
-            alternativeAnswers: []
+            alternativeAnswers: [],
+            supplementalInfoHtml: ''
         });
 
         // What used to be question #1 should now be question #2
@@ -338,7 +384,8 @@ describe('Quiz Editor', function () {
                 'Helena',
                 'Des Moines'
             ],
-            correctAnswerIndex: 1
+            correctAnswerIndex: 1,
+            supplementalInfoHtml: ''
         });
     });
     
@@ -359,7 +406,8 @@ describe('Quiz Editor', function () {
                 question: 'What is the default squawk code for VFR aircraft in the United States? (Updated)',
                 answer: '1200',
                 ignoreCase: true,
-                alternativeAnswers: []
+                alternativeAnswers: [],
+                supplementalInfoHtml: ''
             });
         });
     });
@@ -369,7 +417,7 @@ describe('Quiz Editor', function () {
         quizEditorPage.deleteQuestion(2);
         quizEditorPage.save();
         quizEditorPage.edit(testQuizId);
-        expect(quizEditorPage.getNumQuestions()).toBe(4);
+        expect(quizEditorPage.getNumQuestions()).toBe(5);
     });
 
     it('should not be able to delete a quiz that has not been saved yet', function () {
