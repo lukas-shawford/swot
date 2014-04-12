@@ -1,0 +1,18 @@
+{
+  "name": "flexbox.less",
+  "version": "0.0.3",
+  "dependencies": {
+    "less.js": ">=1"
+  },
+  "homepage": "https://github.com/ProLoser/Flexbox.less",
+  "_release": "0.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.0.3",
+    "commit": "4a816c551c05fbc482381ce74b21843250b470a3"
+  },
+  "_source": "git://github.com/ProLoser/Flexbox.less.git",
+  "_target": "~0.0.3",
+  "_originalSource": "flexbox.less",
+  "_direct": true
+}

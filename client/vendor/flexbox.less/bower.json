@@ -1,0 +1,7 @@
+{
+  "name": "flexbox.less",
+  "version": "0.0.3",
+  "dependencies": {
+    "less.js": ">=1"
+  }
+}
