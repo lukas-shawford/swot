@@ -51,6 +51,9 @@ var QuizPage = function () {
     // Result
     this.result = element(by.css('#question .result'));
 
+    // Supplemental Information
+    this.supplementalInfo = element(by.css('#question .supplemental-info'));
+
     // Quiz Summary    
     this.summaryContainer = element(by.css('.summary-container'));
     this.summaryScore = element(by.css('.summary-container .score'));

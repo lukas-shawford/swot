@@ -60,27 +60,22 @@
 
         .result-header .glyphicon { margin-right: 4px; }
 
-        // If the submission is correct, the "Correct!" message and the Next button should
-        // appear on the same line.
-        .result-header.correct {
+        .result-header {
             .flex(@spec: 2013; @grow: 1; @shrink: 1; @basis: auto);
             .align-self(center);
         }
 
-        // If the submission is incorrect, the "Incorrect!" message should be on a row by itself.
-        .result-header.incorrect {
-            .flex(@spec: 2013; @grow: 1; @shrink: 1; @basis: 100%);
-            margin-top: 5px;    // A bit of extra spacing on top, since there's more content within
-        }
-
-        .correct-answer-container {
+        .detail-container {
             .flex(@spec: 2013; @grow: 1; @shrink: 1; @basis: auto);
             .align-self(center);
             margin: .5em .8em .8em 0;
+
+            .supplemental-info { margin-top: .5em; }
         }
 
         .next-button-container {
             .flex(@spec: 2013; @grow: 0; @shrink: 1; @basis: auto);
+            .align-self(center);
         }
 
         .glyphicon-info-sign {
@@ -89,6 +84,33 @@
 
         .alt-ans-tooltip {
             text-align: left;
+        }
+    }
+
+    // Layout adjustments if there's any amount of detail within the result box
+    // (e.g., if the answer is incorrect, or if there's supplemental information.)
+    .result.has-detail {
+        .result-header {
+
+            // A bit of extra spacing on top, since there's more content within
+            margin-top: 5px;
+
+            // Make the header ("Correct!" or "Incorrect!") appear on a row by itself
+            .flex(@spec: 2013; @grow: 1; @shrink: 1; @basis: 100%);
+        }
+    }
+
+    // Layout adjustments if there's supplemental information.
+    .result.has-supplemental-info {
+        .detail-container {
+
+            // Make the detail container (correct answer, supplemental information, etc.)
+            // appear on a row by itself
+            .flex(@spec: 2013; @grow: 1; @shrink: 1; @basis: 100%);
+
+            // The bottom margin can be a bit smaller since the <p> tags have margins.
+            // Otherwise, there's too much room between the detail and the Next button.
+            margin-bottom: .25em;
         }
     }
 }

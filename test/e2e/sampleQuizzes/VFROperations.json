@@ -61,5 +61,17 @@
             "18000",
             "18,000"
         ]
+    },
+    {
+        "type": "MultipleChoiceQuestion",
+        "questionHtml": "An airport beacon whose colors alternate between green, yellow, and white indicates what type of facility?",
+        "choices": [
+            "Military airport",
+            "Civilian land airport",
+            "Water airport",
+            "Heliport"
+        ],
+        "correctAnswerIndex": 3,
+        "supplementalInfoHtml": "A beacon that flashes green, yellow, and white indicates a heliport. For more information, consult AIM 2-1-10."
     }
 ]

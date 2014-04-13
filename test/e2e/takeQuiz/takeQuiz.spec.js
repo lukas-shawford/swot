@@ -346,6 +346,22 @@ describe('Take Quiz', function () {
         });
     });
 
+    describe('Supplemental Information', function () {
+        it('should show supplemental information for correct submissions', function () {
+            quizPage.get(testQuizId);
+            quizPage.jumpToQuestion(8);
+            submitCorrectly();
+            expect(quizPage.supplementalInfo.getText()).toContain(testQuiz[7].supplementalInfoHtml);
+        });
+
+        it('should show supplemental information for incorrect submissions', function () {
+            quizPage.get(testQuizId);
+            quizPage.jumpToQuestion(8);
+            submitIncorrectly();
+            expect(quizPage.supplementalInfo.getText()).toContain(testQuiz[7].supplementalInfoHtml);
+        });
+    });
+
     describe('Quiz Sidebar', function () {
         it('should be able to navigate the quiz using the sidebar', function () {
             quizPage.get(testQuizId);

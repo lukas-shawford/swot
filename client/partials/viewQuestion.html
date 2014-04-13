@@ -53,7 +53,9 @@
              ng-class="{ 'correct': question.result.isCorrect,
                          'alert-success': question.result.isCorrect,
                          'incorrect': !question.result.isCorrect,
-                          'alert-danger': !question.result.isCorrect }">
+                         'alert-danger': !question.result.isCorrect,
+                         'has-detail': (!question.result.isCorrect || question.result.supplementalInfoHtml),
+                         'has-supplemental-info': question.result.supplementalInfoHtml }">
 
             <!-- Result header -->
             <div class="result-header"
@@ -75,18 +77,28 @@
                 </span>
             </div>
 
-            <!-- Correct answer (shown when submission is not correct) -->
-            <div class="correct-answer-container" ng-show="!question.result.isCorrect">
-                <span ng-show="question.type === 'FillInQuestion'">
-                    The correct answer is:&nbsp;<strong class="correct-answer fill-in">{{question.result.correctAnswer}}</strong>
-                    <span class="glyphicon glyphicon-info-sign alt-ans" ng-show="question.result.alternativeAnswers.length > 0"
-                          tooltip-html-unsafe="{{getAlternativeAnswerTooltip()}}">
-                    </span>
-                </span>
+            <!-- Detail container (correct answer, supplemental info, etc.) -->
+            <div class="detail-container">
 
-                <span ng-show="question.type === 'MultipleChoiceQuestion'">
-                    The correct answer is:&nbsp;<strong class="correct-answer multiple-choice">{{question.choices[question.result.correctAnswerIndex]}}</strong>
-                </span>
+                <!-- Correct answer (shown when submission is not correct) -->
+                <div class="correct-answer-container" ng-show="!question.result.isCorrect">
+                    <span ng-show="question.type === 'FillInQuestion'">
+                        The correct answer is:&nbsp;<strong class="correct-answer fill-in">{{question.result.correctAnswer}}</strong>
+                        <span class="glyphicon glyphicon-info-sign alt-ans" ng-show="question.result.alternativeAnswers.length > 0"
+                              tooltip-html-unsafe="{{getAlternativeAnswerTooltip()}}">
+                        </span>
+                    </span>
+
+                    <span ng-show="question.type === 'MultipleChoiceQuestion'">
+                        The correct answer is:&nbsp;<strong class="correct-answer multiple-choice">{{question.choices[question.result.correctAnswerIndex]}}</strong>
+                    </span>
+                </div>
+
+                <!-- Supplemental Information -->
+                <div class="supplemental-info" ng-show="question.result.supplementalInfoHtml"
+                     ng-bind-html="trusted(question.result.supplementalInfoHtml)">
+                </div>
+
             </div>
 
             <!-- Next button -->
