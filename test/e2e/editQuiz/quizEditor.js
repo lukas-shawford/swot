@@ -1,5 +1,6 @@
 var util = require('util');
 var Q = require('q');
+var ptorExtensions = require('../ptorExtensions');
 
 // Page Object for the quiz editor page
 var QuizEditorPage = function () {
@@ -609,23 +610,16 @@ var QuizEditorPage = function () {
         // to mark a particular choice is correct.)
         return page.getQuestionRow(questionNumber).findElements(by.css('.choices .choice .marker'))
         .then(function (markerElems) {
-            // Get the class attribute of each marker element. This requires resolving an array of
-            // promises, since getAttribute returns a promise.
+            // Test each marker element to see if it has the 'correct' class applied to it. This
+            // requires resolving an array of promises, since hasClass returns a promise.
             var promises = [];
             for (var i = 0; i < markerElems.length; i++) {
-                promises.push(markerElems[i].getAttribute('class'));
+                promises.push(ptorExtensions.hasClass(markerElems[i], 'correct'));
             }
             return Q.all(promises);
         })
         .then(function (results) {
-            // For each class attribute of each marker, see if "correct" is one of the classes.
-            // Returns an array like [false, false, true, false], where the true element is the
-            // correct choice.
-            var correctArray = results.map(function (markerClasses) {
-                return markerClasses.split(' ').indexOf('correct') !== -1;
-            });
-            // Return the index of the first (and hopefully only) true entry in the array.
-            return correctArray.indexOf(true);
+            return results.indexOf(true);
         });
     };
 
