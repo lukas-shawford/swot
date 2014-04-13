@@ -1,3 +1,5 @@
+@import "../vendor/flexbox.less/flexbox.less";
+
 .view-question {
 
     .question {
@@ -49,20 +51,44 @@
         }
     }
 
-    .result-container {
-        margin-top: 1em;
-    }
-
     .result {
-        .result-header {
-            display: block;
-            margin-bottom: 0.5em;
+        .flexbox();
+        .flex-flow(row wrap);
 
-            .glyphicon { margin-right: 4px; }
+        margin-top: 1em;
+        padding: 10px 15px;
+
+        .result-header .glyphicon { margin-right: 4px; }
+
+        // If the submission is correct, the "Correct!" message and the Next button should
+        // appear on the same line.
+        .result-header.correct {
+            .flex(@spec: 2013; @grow: 1; @shrink: 1; @basis: auto);
+            .align-self(center);
         }
 
-        .glyphicon-info-sign { margin-left: 3px; }
+        // If the submission is incorrect, the "Incorrect!" message should be on a row by itself.
+        .result-header.incorrect {
+            .flex(@spec: 2013; @grow: 1; @shrink: 1; @basis: 100%);
+            margin-top: 5px;    // A bit of extra spacing on top, since there's more content within
+        }
 
-        .alt-ans-tooltip { text-align: left; }
+        .correct-answer-container {
+            .flex(@spec: 2013; @grow: 1; @shrink: 1; @basis: auto);
+            .align-self(center);
+            margin: .5em .8em .8em 0;
+        }
+
+        .next-button-container {
+            .flex(@spec: 2013; @grow: 0; @shrink: 1; @basis: auto);
+        }
+
+        .glyphicon-info-sign {
+            margin-left: 3px;
+        }
+
+        .alt-ans-tooltip {
+            text-align: left;
+        }
     }
 }

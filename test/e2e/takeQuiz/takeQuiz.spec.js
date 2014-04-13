@@ -78,8 +78,8 @@ describe('Take Quiz', function () {
     it('should be able to go to next question by clicking "Next" after submitting', function () {
         quizPage.get(testQuizId);
         quizPage.submit(1);
-        expect(quizPage.isNextVisible()).toBe(true);
-        quizPage.clickNextButton();
+        expect(quizPage.nextButton.isDisplayed()).toBe(true);
+        quizPage.nextButton.click();
         expect(quizPage.currentQuestionHeader.getText()).toBe('Question 2 of 7');
         expect(quizPage.currentQuestion.getText()).toContain('What color identifies the normal flap operating range?');
     });
@@ -93,7 +93,7 @@ describe('Take Quiz', function () {
 
         // The "Next" button is labeled "Finish" if this is the last question. However, it should not
         // be displayed at this point because there are questions that haven't been answered yet.
-        expect(quizPage.isNextVisible()).toBe(false);
+        expect(quizPage.nextButton.isDisplayed()).toBe(false);
     });
 
     describe('Fill In Questions', function () {
@@ -103,14 +103,14 @@ describe('Take Quiz', function () {
             // Submit question 3
             quizPage.jumpToQuestion(3);
             quizPage.submit('1200');
-            expect(quizPage.correctAlert.isDisplayed()).toBe(true);
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(false);
+            expect(quizPage.isCorrect()).toBe(true);
+            expect(quizPage.isIncorrect()).toBe(false);
 
             // Submit question 4
-            quizPage.clickNextButton();
+            quizPage.nextButton.click();
             quizPage.submit('30');
-            expect(quizPage.correctAlert.isDisplayed()).toBe(true);
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(false);
+            expect(quizPage.isCorrect()).toBe(true);
+            expect(quizPage.isIncorrect()).toBe(false);
         });
 
         it('should show "incorrect" message and state the correct answer for wrong submissions', function () {
@@ -119,47 +119,47 @@ describe('Take Quiz', function () {
             // Submit question 3
             quizPage.jumpToQuestion(3);
             quizPage.submit('7700');
-            expect(quizPage.correctAlert.isDisplayed()).toBe(false);
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(true);
+            expect(quizPage.isCorrect()).toBe(false);
+            expect(quizPage.isIncorrect()).toBe(true);
             expect(quizPage.correctAnswerFillIn.getText()).toBe('1200');
 
             // Submit question 4
-            quizPage.clickNextButton();
+            quizPage.nextButton.click();
             quizPage.submit('50');
-            expect(quizPage.correctAlert.isDisplayed()).toBe(false);
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(true);
+            expect(quizPage.isCorrect()).toBe(false);
+            expect(quizPage.isIncorrect()).toBe(true);
             expect(quizPage.correctAnswerFillIn.getText()).toBe('30');
         });
 
         it('should ignore case when the "Ignore capitalization" setting is turned on', function () {
             // Submit question 5
-            quizPage.clickNextButton();
+            quizPage.nextButton.click();
             quizPage.submit('aNsWeR');  // Correct answer is "Answer", but submit with different casing
-            expect(quizPage.correctAlert.isDisplayed()).toBe(true);
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(false);
+            expect(quizPage.isCorrect()).toBe(true);
+            expect(quizPage.isIncorrect()).toBe(false);
         });
 
         it('should do case-sensitive comparison when the "Ignore capitalization" setting is turned off', function () {
             // Submit question 6
-            quizPage.clickNextButton();
+            quizPage.nextButton.click();
             quizPage.submit('aNsWeR');  // Correct answer is "ANSWER", but submit with different casing
-            expect(quizPage.correctAlert.isDisplayed()).toBe(false);
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(true);
+            expect(quizPage.isCorrect()).toBe(false);
+            expect(quizPage.isIncorrect()).toBe(true);
         });
 
         it('should accept a submission if it matches one of the alternative answers', function () {
             // Submit question 7
-            quizPage.clickNextButton();
+            quizPage.nextButton.click();
             quizPage.submit('18000');
-            expect(quizPage.correctAlert.isDisplayed()).toBe(true);
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(false);
+            expect(quizPage.isCorrect()).toBe(true);
+            expect(quizPage.isIncorrect()).toBe(false);
         });
 
         it('should show alternative answers in a tooltip for wrong submissions', function () {
             quizPage.get(testQuizId);
             quizPage.jumpToQuestion(7);
             quizPage.submit('24,000 feet');
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(true);
+            expect(quizPage.isIncorrect()).toBe(true);
             expect(quizPage.altAnswerIcon.isDisplayed()).toBe(true);
             quizPage.getAltAnsTooltip().then(function (text) {
                 expect(text).toContain("18000 feet");
@@ -174,7 +174,7 @@ describe('Take Quiz', function () {
             quizPage.get(testQuizId);
             quizPage.jumpToQuestion(7);
             quizPage.submit('18,000 feet');
-            expect(quizPage.correctAlert.isDisplayed()).toBe(true);
+            expect(quizPage.isCorrect()).toBe(true);
             expect(quizPage.altAnswerIcon.isDisplayed()).toBe(false);
         });
 
@@ -182,7 +182,7 @@ describe('Take Quiz', function () {
             quizPage.get(testQuizId);
             quizPage.jumpToQuestion(6);
             quizPage.submit('wrong');
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(true);
+            expect(quizPage.isIncorrect()).toBe(true);
             expect(quizPage.altAnswerIcon.isDisplayed()).toBe(false);
         });
     });
@@ -215,14 +215,14 @@ describe('Take Quiz', function () {
 
             // Submit question 1
             quizPage.submit(1);
-            expect(quizPage.correctAlert.isDisplayed()).toBe(true);
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(false);
+            expect(quizPage.isCorrect()).toBe(true);
+            expect(quizPage.isIncorrect()).toBe(false);
 
             // Submit question 2
             quizPage.nextLink.click();
             quizPage.submit(2);
-            expect(quizPage.correctAlert.isDisplayed()).toBe(true);
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(false);
+            expect(quizPage.isCorrect()).toBe(true);
+            expect(quizPage.isIncorrect()).toBe(false);
         });
 
         it('should show "incorrect" message and state which choice is correct for wrong submissions', function () {
@@ -230,15 +230,15 @@ describe('Take Quiz', function () {
 
             // Submit question 1 incorrectly
             quizPage.submit(3);
-            expect(quizPage.correctAlert.isDisplayed()).toBe(false);
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(true);
+            expect(quizPage.isCorrect()).toBe(false);
+            expect(quizPage.isIncorrect()).toBe(true);
             expect(quizPage.correctAnswerMultipleChoice.getText()).toBe('Bismarck');
 
             // Submit question 2 incorrectly
             quizPage.nextLink.click();
             quizPage.submit(1);
-            expect(quizPage.correctAlert.isDisplayed()).toBe(false);
-            expect(quizPage.incorrectAlert.isDisplayed()).toBe(true);
+            expect(quizPage.isCorrect()).toBe(false);
+            expect(quizPage.isIncorrect()).toBe(true);
             expect(quizPage.correctAnswerMultipleChoice.getText()).toBe('White');
         });
 
@@ -248,13 +248,13 @@ describe('Take Quiz', function () {
             // Submit question 1 correctly
             quizPage.submit(1);
             expect(quizPage.isSubmitVisible()).toBe(false);
-            expect(quizPage.isNextVisible()).toBe(true);
+            expect(quizPage.nextButton.isDisplayed()).toBe(true);
 
             // Submit question 2 incorrectly
             quizPage.nextLink.click();
             quizPage.submit(1);
             expect(quizPage.isSubmitVisible()).toBe(false);
-            expect(quizPage.isNextVisible()).toBe(true);
+            expect(quizPage.nextButton.isDisplayed()).toBe(true);
         });
 
         it('should assign appropriate classes to each choice button after correct submission', function () {
@@ -364,7 +364,7 @@ describe('Take Quiz', function () {
                 expect(content).toContain('Correct: 1');
 
                 // Submit question 2 incorrectly
-                quizPage.clickNextButton();
+                quizPage.nextButton.click();
                 quizPage.submit(3);
                 return quizPage.getScoreTooltip();
             })
@@ -380,37 +380,37 @@ describe('Take Quiz', function () {
 
         // Submit question 1
         quizPage.submit(1);
-        quizPage.clickNextButton();
+        quizPage.nextButton.click();
 
         // Submit question 2
         quizPage.submit(2);
-        quizPage.clickNextButton();
+        quizPage.nextButton.click();
 
         // Submit question 3 - incorrectly
         quizPage.submit('7700');
-        quizPage.clickNextButton();
+        quizPage.nextButton.click();
 
         // Submit question 4
         quizPage.submit('30');
-        quizPage.clickNextButton();
+        quizPage.nextButton.click();
 
         // Submit question 5
         quizPage.submit('Answer');
-        quizPage.clickNextButton();
+        quizPage.nextButton.click();
 
         // Submit question 6
         quizPage.submit('ANSWER');
-        quizPage.clickNextButton();
+        quizPage.nextButton.click();
 
         // Submit question 7
         quizPage.submit('18,000 feet');
 
         // Verify the Finish button is visible
-        expect(quizPage.isNextVisible()).toBe(true);
-        expect(quizPage.getNextButtonText()).toContain('Finish');
+        expect(quizPage.nextButton.isDisplayed()).toBe(true);
+        expect(quizPage.nextButton.getText()).toContain('Finish');
         
         // Finish the quiz and verify we're on the summary screen
-        quizPage.clickNextButton();
+        quizPage.nextButton.click();
         expect(quizPage.summaryContainer.isDisplayed()).toBe(true);
 
         // Verify the score is correct

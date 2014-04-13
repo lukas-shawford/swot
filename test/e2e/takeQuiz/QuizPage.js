@@ -1,3 +1,5 @@
+var ptorExtensions = require('../ptorExtensions');
+
 // Page Object for the quiz page (in the context of taking a quiz, rather than editing it)
 var QuizPage = function () {
     var ptor = protractor.getInstance();
@@ -34,19 +36,19 @@ var QuizPage = function () {
     this.choiceButtons = element.all(by.css('.multiple-choice .choice'));
     this.correctAnswerMultipleChoice = element(by.css('.result .correct-answer.multiple-choice'));
 
-    // Submit & Next buttons
-    // Use getSubmitButton()/getNextButton() methods. The way things are currently set up, we have
-    // multiple submit/next buttons in the DOM (because the placement of the buttons varies depending
-    // on question type). It would probably be better to restructure the viewquestion directive so
-    // that there is only one submit and one next button, and they get transplanted elsewhere (into
-    // a container element) as needed in the linking function. This would remove some of the code
-    // duplication as well... but until I get around to fixing it, just use the getter methods instead.
+    // Submit button
+    // Use the getSubmitButton() method. The way things are currently set up, we have multiple submit buttons in the DOM
+    // (because the placement of the button varies depending on question type). It would probably be better to
+    // restructure the viewquestion directive so that there is only one submit button, and it gets transplanted
+    // elsewhere (into a container element) as needed in the linking function. This would remove some of the code
+    // duplication as well... but until I get around to fixing it, just use the getter method instead.
     //this.submitButton = element(by.css('#question button.submit'));
-    //this.nextButton = element(by.css('#question button.next'));
 
-    // Correct/incorrect messages
-    this.correctAlert = element(by.css('#question .result .correct'));
-    this.incorrectAlert = element(by.css('#question .result .incorrect'));
+    // Next button
+    this.nextButton = element(by.css('#question button.next'));
+
+    // Result
+    this.result = element(by.css('#question .result'));
 
     // Quiz Summary    
     this.summaryContainer = element(by.css('.summary-container'));
@@ -95,6 +97,23 @@ var QuizPage = function () {
         }).then(function (btn) {
             return btn.click();
         });
+    };
+
+    /**
+     * Returns a promise that resolves to true if the submission was accepted as correct.
+     */
+    this.isCorrect = function () {
+        return ptorExtensions.hasClass(page.result, 'correct');
+    };
+
+    /**
+     * Returns a promise that resolves to true if the submission was rejected as incorrect. If the question
+     * has been submitted, then this should generally return the opposite of what isCorrect would return...
+     * unless something is broken and the submission did not get marked as being either correct or incorrect.
+     * Hence, it may be wise to write assertions against the results of both methods.
+     */
+    this.isIncorrect = function () {
+        return ptorExtensions.hasClass(page.result, 'incorrect');
     };
 
     /**
@@ -150,55 +169,6 @@ var QuizPage = function () {
     this.isSubmitVisible = function () {
         return page.getSubmitButton().then(function (btn) {
             return btn.isDisplayed();
-        });
-    };
-
-    /**
-     * Gets the next button for the current question. Different question types have the next
-     * button in different places, so there are actually multiple Next buttons in the DOM, but
-     * only one is visible. Use this method to retrieve the correct Next button element for
-     * the current question type. (Returns a promise.)
-     */
-    this.getNextButton = function () {
-        return page.getQuestionType().then(function (questionType) {
-            if (questionType === 'fill-in') {
-                return element(by.css('.next.fill-in'));
-            } else if (questionType === 'multiple-choice') {
-                return element(by.css('.next.multiple-choice'));
-            }
-
-            return null;
-        });
-    };
-
-    /**
-     * Clicks the Next button. The next button is only visible after submitting a question.
-     * Different question types have the next button in different places, so there are actually
-     * multiple Next buttons in the DOM, but only one is visible. Use this method to retrieve the
-     * correct Next button element for the current question type and click it.
-     */
-    this.clickNextButton = function () {
-        return page.getNextButton().then(function (btn) {
-            return btn.click();
-        });
-    };
-
-    /**
-     * Returns a promise that resolves to true if the Next button for the current question is
-     * visible.
-     */
-    this.isNextVisible = function () {
-        return page.getNextButton().then(function (btn) {
-            return btn.isDisplayed();
-        });
-    };
-
-    /**
-     * Gets the text of the next button.
-     */
-    this.getNextButtonText = function () {
-        return page.getNextButton().then(function (btn) {
-            return btn.getText();
         });
     };
 
