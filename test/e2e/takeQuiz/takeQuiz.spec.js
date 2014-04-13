@@ -4,6 +4,7 @@ var QuizPage = require('./QuizPage');
 var LoginPage = require('../login/login');
 var QuizEditorPage = require('../editQuiz/quizEditor');
 var MyQuizzesPage = require('../editQuiz/myQuizzes');
+var testQuiz = require('../sampleQuizzes/VFROperations.json');
 
 describe('Take Quiz', function () {
     var ptor;
@@ -12,6 +13,46 @@ describe('Take Quiz', function () {
     var quizEditorPage;
     var myQuizzesPage;
     var testQuizId;
+    var numQuestions = testQuiz.length;
+
+    /**
+     * Helper method for submitting a question in the test quiz correctly
+     */
+    var submitCorrectly = function () {
+        quizPage.getCurrentQuestionNumber().then(function (number) {
+            var question = testQuiz[number - 1];
+            switch (question.type) {
+                case 'FillInQuestion':
+                    return quizPage.submit(question.answer);
+                case 'MultipleChoiceQuestion':
+                    return quizPage.submit(question.correctAnswerIndex);
+                default:
+                    throw 'Invalid question type: ' + question.type;
+            }
+        });
+    };
+
+    /**
+     * Helper method for submitting a question in the test quiz incorrectly. Note: This
+     * makes a lot of simplifying assumptions to keep the code simpler (see comments within).
+     * If these assumptions don't hold for a particular question, then don't use this helper.
+     */
+    var submitIncorrectly = function () {
+        quizPage.getCurrentQuestionNumber().then(function (number) {
+            var question = testQuiz[number - 1];
+            switch (question.type) {
+                case 'FillInQuestion':
+                    // Assumes: The question does not have 'wrong' as one of its accepted answers
+                    return quizPage.submit('wrong');
+                case 'MultipleChoiceQuestion':
+                    // Assumes: The question has at least two choices
+                    var i = question.correctAnswerIndex + 1;
+                    return quizPage.submit((i < question.choices.length) ? i : 0);
+                default:
+                    throw 'Invalid question type: ' + question.type;
+            }
+        });
+    };
 
     beforeEach(function () {
         quizPage = new QuizPage();
@@ -35,61 +76,58 @@ describe('Take Quiz', function () {
     it('should be able to load the quiz', function () {
         quizPage.get(testQuizId);
         expect(quizPage.quizName.getText()).toBe('VFR Operations');
-        expect(quizPage.questions.count()).toBe(7);
+        expect(quizPage.questions.count()).toBe(numQuestions);
     });
 
     it('should be able to navigate the quiz using "next" and "previous" links', function () {
         quizPage.get(testQuizId);
 
-        expect(quizPage.currentQuestionHeader.getText()).toBe('Question 1 of 7');
-        expect(quizPage.currentQuestion.getText()).toContain('What is the capital of North Dakota?');
+        expect(quizPage.currentQuestionHeader.getText()).toBe('Question 1 of ' + numQuestions);
+        expect(quizPage.currentQuestion.getText()).toContain(testQuiz[0].questionHtml);
 
         // Clicking "Previous" should not do anything since we're already on the first question
         quizPage.prevLink.click();
-        expect(quizPage.currentQuestionHeader.getText()).toBe('Question 1 of 7');
-        expect(quizPage.currentQuestion.getText()).toContain('What is the capital of North Dakota?');
+        expect(quizPage.currentQuestionHeader.getText()).toBe('Question 1 of ' + numQuestions);
+        expect(quizPage.currentQuestion.getText()).toContain(testQuiz[0].questionHtml);
 
         // Click next
         quizPage.nextLink.click();
-        expect(quizPage.currentQuestionHeader.getText()).toBe('Question 2 of 7');
-        expect(quizPage.currentQuestion.getText()).toContain('What color identifies the normal flap operating range?');
+        expect(quizPage.currentQuestionHeader.getText()).toBe('Question 2 of ' + numQuestions);
+        expect(quizPage.currentQuestion.getText()).toContain(testQuiz[1].questionHtml);
 
         // Click previous
         quizPage.prevLink.click();
-        expect(quizPage.currentQuestionHeader.getText()).toBe('Question 1 of 7');
-        expect(quizPage.currentQuestion.getText()).toContain('What is the capital of North Dakota?');
+        expect(quizPage.currentQuestionHeader.getText()).toBe('Question 1 of ' + numQuestions);
+        expect(quizPage.currentQuestion.getText()).toContain(testQuiz[0].questionHtml);
 
         // Click next all the way to the end
-        quizPage.nextLink.click();
-        quizPage.nextLink.click();
-        quizPage.nextLink.click();
-        quizPage.nextLink.click();
-        quizPage.nextLink.click();
-        quizPage.nextLink.click();
-        expect(quizPage.currentQuestionHeader.getText()).toBe('Question 7 of 7');
-        expect(quizPage.currentQuestion.getText()).toContain('At what altitude does class A airspace begin?');
+        for (var i = 0; i < numQuestions - 1; i++) {
+            quizPage.nextLink.click();
+        }
+        expect(quizPage.currentQuestionHeader.getText()).toBe('Question ' + numQuestions + ' of ' + numQuestions);
+        expect(quizPage.currentQuestion.getText()).toContain(testQuiz[numQuestions-1].questionHtml);
 
         // Clicking "Next" should not do anything since we're already on the last question
         quizPage.nextLink.click();
-        expect(quizPage.currentQuestionHeader.getText()).toBe('Question 7 of 7');
-        expect(quizPage.currentQuestion.getText()).toContain('At what altitude does class A airspace begin?');
+        expect(quizPage.currentQuestionHeader.getText()).toBe('Question ' + numQuestions + ' of ' + numQuestions);
+        expect(quizPage.currentQuestion.getText()).toContain(testQuiz[numQuestions-1].questionHtml);
     });
 
     it('should be able to go to next question by clicking "Next" after submitting', function () {
         quizPage.get(testQuizId);
-        quizPage.submit(1);
+        submitCorrectly();
         expect(quizPage.nextButton.isDisplayed()).toBe(true);
         quizPage.nextButton.click();
-        expect(quizPage.currentQuestionHeader.getText()).toBe('Question 2 of 7');
-        expect(quizPage.currentQuestion.getText()).toContain('What color identifies the normal flap operating range?');
+        expect(quizPage.currentQuestionHeader.getText()).toBe('Question 2 of ' + numQuestions);
+        expect(quizPage.currentQuestion.getText()).toContain(testQuiz[1].questionHtml);
     });
 
     it('should not show "Finish" button after submitting the last question without having finished the entire quiz', function () {
         quizPage.get(testQuizId);
 
         // Jump to the last question and submit it
-        quizPage.jumpToQuestion(7);
-        quizPage.submit('ANSWER');
+        quizPage.jumpToQuestion(numQuestions);
+        submitCorrectly();
 
         // The "Next" button is labeled "Finish" if this is the last question. However, it should not
         // be displayed at this point because there are questions that haven't been answered yet.
@@ -102,13 +140,13 @@ describe('Take Quiz', function () {
 
             // Submit question 3
             quizPage.jumpToQuestion(3);
-            quizPage.submit('1200');
+            submitCorrectly();
             expect(quizPage.isCorrect()).toBe(true);
             expect(quizPage.isIncorrect()).toBe(false);
 
             // Submit question 4
             quizPage.nextButton.click();
-            quizPage.submit('30');
+            submitCorrectly();
             expect(quizPage.isCorrect()).toBe(true);
             expect(quizPage.isIncorrect()).toBe(false);
         });
@@ -118,14 +156,14 @@ describe('Take Quiz', function () {
 
             // Submit question 3
             quizPage.jumpToQuestion(3);
-            quizPage.submit('7700');
+            submitIncorrectly();
             expect(quizPage.isCorrect()).toBe(false);
             expect(quizPage.isIncorrect()).toBe(true);
             expect(quizPage.correctAnswerFillIn.getText()).toBe('1200');
 
             // Submit question 4
             quizPage.nextButton.click();
-            quizPage.submit('50');
+            submitIncorrectly();
             expect(quizPage.isCorrect()).toBe(false);
             expect(quizPage.isIncorrect()).toBe(true);
             expect(quizPage.correctAnswerFillIn.getText()).toBe('30');
@@ -246,13 +284,13 @@ describe('Take Quiz', function () {
             quizPage.get(testQuizId);
 
             // Submit question 1 correctly
-            quizPage.submit(1);
+            submitCorrectly();
             expect(quizPage.isSubmitVisible()).toBe(false);
             expect(quizPage.nextButton.isDisplayed()).toBe(true);
 
             // Submit question 2 incorrectly
             quizPage.nextLink.click();
-            quizPage.submit(1);
+            submitIncorrectly();
             expect(quizPage.isSubmitVisible()).toBe(false);
             expect(quizPage.nextButton.isDisplayed()).toBe(true);
         });
@@ -312,16 +350,16 @@ describe('Take Quiz', function () {
         it('should be able to navigate the quiz using the sidebar', function () {
             quizPage.get(testQuizId);
 
-            expect(quizPage.currentQuestionHeader.getText()).toBe('Question 1 of 7');
-            expect(quizPage.currentQuestion.getText()).toContain('What is the capital of North Dakota?');
+            expect(quizPage.currentQuestionHeader.getText()).toBe('Question 1 of ' + numQuestions);
+            expect(quizPage.currentQuestion.getText()).toContain(testQuiz[0].questionHtml);
 
             quizPage.jumpToQuestion(2);
-            expect(quizPage.currentQuestionHeader.getText()).toBe('Question 2 of 7');
-            expect(quizPage.currentQuestion.getText()).toContain('What color identifies the normal flap operating range?');
+            expect(quizPage.currentQuestionHeader.getText()).toBe('Question 2 of ' + numQuestions);
+            expect(quizPage.currentQuestion.getText()).toContain(testQuiz[1].questionHtml);
 
             quizPage.jumpToQuestion(5);
-            expect(quizPage.currentQuestionHeader.getText()).toBe('Question 5 of 7');
-            expect(quizPage.currentQuestion.getText()).toContain('Fill In: Ignore case test');
+            expect(quizPage.currentQuestionHeader.getText()).toBe('Question 5 of ' + numQuestions);
+            expect(quizPage.currentQuestion.getText()).toContain(testQuiz[4].questionHtml);
         });
 
         it('should show question submission status in the sidebar', function () {
@@ -335,41 +373,41 @@ describe('Take Quiz', function () {
             });
 
             // Submit question 1 and verify that it got marked correct
-            quizPage.submit(1);
+            submitCorrectly();
             quizPage.getSidebar().then(function (sidebar) {
-                expect(_.pluck(sidebar, 'correct')).toEqual([true, false, false, false, false, false, false]);
-                expect(_.every(_.pluck(sidebar, 'incorrect'), isFalse)).toBe(true);
+                expect(sidebar[0].correct).toBe(true);
+                expect(sidebar[0].incorrect).toBe(false);
             });
 
             // Submit question 3 and verify that it got marked incorrect
             quizPage.jumpToQuestion(3);
-            quizPage.submit('7700');
+            submitIncorrectly();
             quizPage.getSidebar().then(function (sidebar) {
-                expect(_.pluck(sidebar, 'correct')).toEqual(  [true, false, false, false, false, false, false]);
-                expect(_.pluck(sidebar, 'incorrect')).toEqual([false, false, true, false, false, false, false]);
+                expect(sidebar[2].incorrect).toBe(true);
+                expect(sidebar[2].correct).toBe(false);
             });
         });
 
         it('should show score tooltip when hovering over progress bar', function () {
             quizPage.get(testQuizId);
             quizPage.getScoreTooltip().then(function (content) {
-                expect(content).toContain('Current score: 0 / 7');
+                expect(content).toContain('Current score: 0 / ' + numQuestions);
 
                 // Submit question 1 correctly
-                quizPage.submit(1);
+                submitCorrectly();
                 return quizPage.getScoreTooltip();
             })
             .then(function (content) {
-                expect(content).toContain('Current score: 1 / 7');
+                expect(content).toContain('Current score: 1 / ' + numQuestions);
                 expect(content).toContain('Correct: 1');
 
                 // Submit question 2 incorrectly
                 quizPage.nextButton.click();
-                quizPage.submit(3);
+                submitIncorrectly();
                 return quizPage.getScoreTooltip();
             })
             .then(function (content) {
-                expect(content).toContain('Current score: 1 / 7');
+                expect(content).toContain('Current score: 1 / ' + numQuestions);
                 expect(content).toContain('Incorrect: 1');
             });
         });
@@ -378,32 +416,18 @@ describe('Take Quiz', function () {
     it('should be able to finish quiz after submitting all the questions', function () {
         quizPage.get(testQuizId);
 
-        // Submit question 1
-        quizPage.submit(1);
-        quizPage.nextButton.click();
+        // Submit all questions correctly except #3
+        for (var i = 0; i < numQuestions; ++i) {
+            if (i === 2) {
+                submitIncorrectly()
+            } else {
+                submitCorrectly();
+            }
 
-        // Submit question 2
-        quizPage.submit(2);
-        quizPage.nextButton.click();
-
-        // Submit question 3 - incorrectly
-        quizPage.submit('7700');
-        quizPage.nextButton.click();
-
-        // Submit question 4
-        quizPage.submit('30');
-        quizPage.nextButton.click();
-
-        // Submit question 5
-        quizPage.submit('Answer');
-        quizPage.nextButton.click();
-
-        // Submit question 6
-        quizPage.submit('ANSWER');
-        quizPage.nextButton.click();
-
-        // Submit question 7
-        quizPage.submit('18,000 feet');
+            // Don't click Next if this is the last question - perform some additional validations first.
+            if (i !== numQuestions - 1)
+                quizPage.nextButton.click();
+        }
 
         // Verify the Finish button is visible
         expect(quizPage.nextButton.isDisplayed()).toBe(true);
@@ -414,8 +438,9 @@ describe('Take Quiz', function () {
         expect(quizPage.summaryContainer.isDisplayed()).toBe(true);
 
         // Verify the score is correct
-        expect(quizPage.summaryScore.getText()).toBe('6 / 7');
-        expect(quizPage.summaryScore.getText()).toBe('6 / 7');
-        expect(quizPage.summaryScorePercent.getText()).toContain('85.7%');
+        expect(quizPage.summaryScore.getText()).toBe((numQuestions - 1) + ' / ' + (numQuestions));
+        var score = 100 * (numQuestions - 1) / (numQuestions);
+        score = +score.toFixed(1);
+        expect(quizPage.summaryScorePercent.getText()).toContain(score);
     });
 });

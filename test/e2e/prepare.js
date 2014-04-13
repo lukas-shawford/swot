@@ -12,6 +12,7 @@
  *
  */
 
+var _ = require('underscore');
 var Q = require('q');
 var mongoose = require('mongoose');
 var User = require('../../lib/user');
@@ -19,6 +20,9 @@ var Quiz = require('../../lib/quiz');
 var Question = require('../../lib/question').Question;
 var FillInQuestion = require('../../lib/questions/fillIn').FillInQuestion;
 var MultipleChoiceQuestion = require('../../lib/questions/multipleChoice').MultipleChoiceQuestion;
+
+// Load the sample quiz
+var sampleQuiz = require('./sampleQuizzes/VFROperations.json');
 
 // Extend mongoose with promises
 require('../../lib/util/mongoosePromises');
@@ -49,62 +53,18 @@ Q.ninvoke(mongoose, 'connect', MONGODB_URL)
     return Q.ninvoke(Quiz, 'createQuiz', 'VFR Operations', user);
 })
 .then(function (quiz) {
-    quiz.questions.push(new MultipleChoiceQuestion({
-        questionHtml: 'What is the capital of North Dakota?',
-        choices: [
-            'Pierre',
-            'Bismarck',
-            'Helena',
-            'Des Moines'
-        ],
-        correctAnswerIndex: 1
-    }));
-    quiz.questions.push(new MultipleChoiceQuestion({
-        questionHtml: 'What color identifies the normal flap operating range?',
-        choices: [
-            'Yellow',
-            'Black',
-            'White',
-            'Green'
-        ],
-        correctAnswerIndex: 2
-    }));
-    quiz.questions.push(new FillInQuestion({
-        questionHtml: 'What is the default squawk code of VFR aircraft in the United States?',
-        answer: '1200',
-        ignoreCase: true,
-        alternativeAnswers: []
-    }));
-    quiz.questions.push(new FillInQuestion({
-        questionHtml: 'An operable mode C transponder is required within how many nautical miles of the primary Class B airport?',
-        answer: '30',
-        ignoreCase: true,
-        alternativeAnswers: []
-    }));
-    quiz.questions.push(new FillInQuestion({
-        questionHtml: 'Fill In: Ignore case test',
-        answer: 'Answer',
-        ignoreCase: true,
-        alternativeAnswers: []
-    }));
-    quiz.questions.push(new FillInQuestion({
-        questionHtml: 'Fill In: Case sensitive',
-        answer: 'ANSWER',
-        ignoreCase: false,
-        alternativeAnswers: []
-    }));
-    quiz.questions.push(new FillInQuestion({
-        questionHtml: 'At what altitude does class A airspace begin?',
-        answer: '18,000 feet',
-        ignoreCase: true,
-        alternativeAnswers: [
-            '18000 feet',
-            '18,000 ft',
-            '18,000ft',
-            '18000',
-            '18,000'
-        ]
-    }));
+    _.each(sampleQuiz, function (question) {
+        switch (question.type) {
+            case 'FillInQuestion':
+                quiz.questions.push(new FillInQuestion(question));
+                break;
+            case 'MultipleChoiceQuestion':
+                quiz.questions.push(new MultipleChoiceQuestion(question));
+                break;
+            default:
+                throw 'Invalid question type in sample quiz: ' + question.type;
+        }
+    });
     return quiz.qsave();
 })
 .then(function () {

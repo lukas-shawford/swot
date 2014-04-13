@@ -9,6 +9,7 @@ var QuizPage = function () {
     this.quizName = element(by.id('title'));
 
     // Question header
+    this.questionHeaderRegex = /Question (\d+) of (\d+)/;
     this.currentQuestionHeader = element(by.css('.header .current'));
     this.nextLink = element(by.id('next'));
     this.prevLink = element(by.id('prev'));
@@ -71,6 +72,34 @@ var QuizPage = function () {
     this.jumpToQuestion = function (number) {
         return this.showSidebar().then(function () {
             return element(by.repeater('question in questions').row(number-1).column('question')).click();
+        });
+    };
+
+    /**
+     * Helper method for getting the current question number, based on the contents of the current question
+     * header. Returns a promise.
+     */
+    this.getCurrentQuestionNumber = function () {
+        return page.currentQuestionHeader.getText().then(function (header) {
+            if (!page.questionHeaderRegex.test(header)) {
+                throw 'Question header does not match the regular expression ' + page.questionHeaderRegex + ' .';
+            }
+            var match = header.match(page.questionHeaderRegex);
+            return parseInt(match[1]);
+        });
+    };
+
+    /**
+     * Helper method for getting the number of questions in the quiz, based on the contents of the current question
+     * header. Returns a promise.
+     */
+    this.getNumQuestionsFromHeader = function () {
+        return page.currentQuestionHeader.getText().then(function (header) {
+            if (!page.questionHeaderRegex.test(header)) {
+                throw 'Question header does not match the regular expression ' + page.questionHeaderRegex + ' .';
+            }
+            var match = header.match(page.questionHeaderRegex);
+            return parseInt(match[2]);
         });
     };
 
