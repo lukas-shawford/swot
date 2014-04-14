@@ -139,6 +139,11 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     });
 
     $scope.removeQuestion = function (index) {
+
+        // To prevent jumpiness after removing the last question, clear the min-height immediately.
+        // (See $scope.updateFormHeight for longer explanation of what this is about.)
+        $('form[name="editQuizForm"]').css('min-height', '');
+
         $scope.quiz.questions.splice(index, 1);
         $scope.editQuizForm.$setDirty();
     };
