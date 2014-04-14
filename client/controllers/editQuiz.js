@@ -301,6 +301,31 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
         }
     };
 
+    /**
+     * Workaround to prevent the page from jumping around when reordering questions.
+     *
+     * When reordering questions, we hide the original question list and create a shadow list in its place
+     * (see above, in $scope.sortableOptions). This tearing up of the DOM can cause the scrollbar to jump
+     * if we're trying to move a question that's down toward the bottom of the list (because the page
+     * temporarily shrinks). We prevent this by setting a min-height on the entire form (and constantly
+     * keeping it updated - see the $scope.$watchCollection call below).
+     *
+     * This isn't pretty nor performant, but less drastic solutions have failed. I'm not sure why, but
+     * trying to set the min-height when beginning a drag operation (in the 'start' handler for
+     * sortableOptions, for instance) didn't work. Also, setting the min-height on the
+     * <div class="question-list-container"> or even the <ul> containing the questions didn't work
+     * either.
+     */
+    $scope.updateFormHeight = function () {
+        var $form = $('form[name="editQuizForm"]');
+
+        // Clear the height (allows the form to shrink if questions are deleted)
+        $form.css('min-height', '');
+
+        // Re-measure the height and lock it in.
+        $form.css('min-height', $form.outerHeight() + 'px');
+    };
+
     // Question Editor (ckeditor)
     // --------------------------
 
@@ -393,5 +418,14 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     if ($scope.quiz._id) { $scope.load(); }
     else { $scope.finishedLoading = true; }
 
+
+    // Watches
+    // -------
+
+    // Watch for any changes within the quiz. Trigger autosave if anything changes.
     $scope.$watch('quiz', $debounce($scope.autosave, 1000), true);
+
+    // Watch for changes in the questions array and update the form height if any questions are
+    // added or removed.
+    $scope.$watchCollection('quiz.questions', $debounce($scope.updateFormHeight, 800));
 });
