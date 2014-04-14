@@ -258,6 +258,12 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
                 clone.animate( { left: position.left, top:position.top }, 500);
             });
         },
+        sort: function (e, ui) {
+            // Show question number within placeholder
+            var $list = $(ui.item).closest('.ui-sortable');
+            var position = $list.children("li:not(.exclude-me, .ui-sortable-placeholder)").index(ui.placeholder)+1;
+            $(ui.placeholder).data('clone').html('<div class="placeholder-number">' + position + '</div>');
+        },
         stop: function (e, ui) {
 
             // Mark the quiz as dirty, but only if the order of questions has actually changed.
