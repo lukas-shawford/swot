@@ -50,8 +50,16 @@ angular.module('swot').directive('editquestion', function ($timeout) {
                     // container becomes visible before initializing. Also, add a slight timeout so that opening
                     // the settings panel is visually smooth instead of jumpy.
                     // http://dev.ckeditor.com/ticket/11789
+                    //
+                    // Note: This also notifies the editQuiz controller to update the min-height of the form.
+                    // The intent of this is to prevent the page from jumping when reordering questions. See
+                    // longer explanation in editQuiz.js (in the updateFormHeight method).
                     $timeout(function () {
                         scope.$emit('settingsOpened');
+                    }, 250);
+                } else {
+                    $timeout(function () {
+                        scope.$emit('settingsClosed');
                     }, 250);
                 }
             };

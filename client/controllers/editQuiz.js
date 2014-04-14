@@ -31,6 +31,13 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             $timeout(function () {
                 $scope.finishedLoading = true;
             }, 1);
+
+            // Prevent jumpiness when reordering questions. (See $scope.updateFormHeight for longer
+            // explanation of what this is about. Note that we also update min-height from within
+            // the $scope.$watchCollection() call at the bottom, but if the quiz was slow to load,
+            // then the min-height value will be incorrect because it was set too early - hence, set
+            // it here after an additional delay.)
+            $timeout($scope.updateFormHeight, 1200);
             
         }, function (error) {
             $scope.showError('An error occurred while loading the quiz: \n' + error);
@@ -443,6 +450,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     // added or removed.
     $scope.$watchCollection('quiz.questions', $debounce($scope.updateFormHeight, 800));
 
-    // Opening the settings on any question also affects the total height of the form.
+    // Opening/closing the settings on any question also affects the total height of the form.
     $scope.$on('settingsOpened', $scope.updateFormHeight);
+    $scope.$on('settingsClosed', $scope.updateFormHeight);
 });
