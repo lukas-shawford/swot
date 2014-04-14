@@ -188,6 +188,9 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
             // actually changed.
             $scope.questionsCopyOnStartReorder = $scope.quiz.questions.slice(0);
 
+            // Remove focus from any input elements (should make any open ckeditor toolbars disappear)
+            $(ui.item).find('input, textarea, [contentEditable]').blur();
+
             // Set the placeholder height to match the question's actual (outer) height.
             ui.placeholder.height(ui.item.outerHeight());
 
@@ -439,4 +442,7 @@ angular.module('swot').controller('EditQuizCtrl', function (quiz, $scope, $timeo
     // Watch for changes in the questions array and update the form height if any questions are
     // added or removed.
     $scope.$watchCollection('quiz.questions', $debounce($scope.updateFormHeight, 800));
+
+    // Opening the settings on any question also affects the total height of the form.
+    $scope.$on('settingsOpened', $scope.updateFormHeight);
 });
