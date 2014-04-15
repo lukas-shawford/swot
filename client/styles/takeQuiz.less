@@ -11,18 +11,18 @@
     }
 }
 
+#quiz-sidebar {
+    @media(min-width:992px) {
+        .make-md-column(3);
+        .make-lg-column(2);
+    }
+}
+
 .quiz-container {
     .make-row();
 
-    // Move the entire container up a bit on mobile
-    @media(max-width:767px) { margin-top: -50px; }
-
-    .sidebar {
-        @media(min-width:992px) {
-            .make-md-column(3);
-            .make-lg-column(2);
-        }        
-    }
+    // Move the entire container down a bit for any screens larger than mobile
+    @media(min-width:768px) { margin-top: 20px; }
 
     .main {
         .make-md-column(9);

@@ -8,7 +8,7 @@ block content
 
         .row.row-offcanvas.row-offcanvas-left
 
-            #quiz-sidebar.sidebar.sidebar-offcanvas.col-xs-6(ng-if="questions.length > 0")
+            #quiz-sidebar.sidebar-offcanvas.col-xs-6(ng-if="questions.length > 0")
                 .list-group(ng-model="questions")
                     a.sidebar-question.list-group-item(href="#", ng-repeat="question in questions"
                         ng-click="jumpToQuestion($index)", ng-class="{active: (!showingSummary && $index === currentQuestionIndex)}")
