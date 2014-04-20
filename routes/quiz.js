@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var moment = require('moment');
-var mongoose = require('mongoose');
+var mongoose = require('mongoose-q')();
 var User = require('../lib/user');
 var Quiz = require('../lib/quiz').Quiz;
 var Question = require('../lib/question').Question;
@@ -11,24 +11,30 @@ var ObjectId = mongoose.Types.ObjectId;
 
 exports.quizzes = function (req, res) {
     // Fetch user's quizzes
-    User.findOne({ _id: req.user._id }).populate('quizzes').exec(function (err, user) {
-        if (err) {
-            req.flash('error', 'An error occurred loading the quizzes.');
-            user.quizzes = [];
-        }
-
-        // Convert dates to readable form
-        var quizzes = _.map(user.quizzes, function (quiz) {
-            var quiz = quiz.toObject();
-            quiz.dateCreated = moment(quiz.dateCreated).format('MMMM YYYY');
-            return quiz;
+    var quizzes = [];
+    User.findOne({ _id: req.user._id }).populate('quizzes').execQ()
+        .then(function (user) {
+            // Convert dates to readable form
+            quizzes = _.map(user.quizzes, function (quiz) {
+                var quiz = quiz.toObject();
+                quiz.dateCreated = moment(quiz.dateCreated).format('MMMM YYYY');
+                return quiz;
+            });
+        })
+        .fail(function (err) {
+            console.error(err);
+            quizzes = [];
+            res.locals.message = {
+                type: 'error',
+                message: 'An error occurred loading the quizzes.'
+            };
+        })
+        .fin(function () {
+            res.render('quizzes', {
+                title: 'My Quizzes',
+                quizzes: quizzes
+            });
         });
-
-        res.render('quizzes', {
-            title: 'My Quizzes',
-            quizzes: quizzes
-        });
-    });
 };
 
 exports.quiz = function (req, res) {

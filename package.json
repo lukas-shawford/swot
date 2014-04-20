@@ -21,7 +21,8 @@
     "fs-extra": "~0.8.1",
     "execSync": "~1.0.1-pre",
     "q": "~1.0.0",
-    "less-middleware": "~0.1.15"
+    "less-middleware": "~0.1.15",
+    "mongoose-q": "0.0.9"
   },
   "devDependencies": {
     "chai": "~1.8.1",

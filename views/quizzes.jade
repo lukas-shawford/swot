@@ -1,11 +1,10 @@
 extends layout
 
 block content
+    if (message)
+        div.alert.alert-danger
+            p !{message.message}
     .my-quizzes.container
-        if (message)
-                div.alert(class="#{message.type}")
-                    p !{message.msg}
-
         if quizzes.length > 0
             #quizzes.quizzes.list-group
                 each quiz in quizzes
