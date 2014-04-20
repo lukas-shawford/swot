@@ -32,6 +32,8 @@ Once these prerequisites are met, building and launching swot should be fairly s
 
 The app should now be running on port 3000.  You should be able to connect to http://localhost:3000 using the browser and see a login screen (there isn't really an actual home page yet). Click register at the top right and create an account, after which you should be able to create and take quizzes.
 
+**Note:** During development, you can instead run `grunt nodemon` to launch the app using [nodemon](https://github.com/remy/nodemon). This will automatically restart the server whenever any files are changed.
+
 
 ### Running Tests
 

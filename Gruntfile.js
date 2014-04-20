@@ -27,6 +27,22 @@ module.exports = function(grunt) {
             }
         },
 
+        // Use nodemon for development to automatically restart the server if any files are changed.
+        // TODO: Reorganize directory structure so that all server files are in a 'server' subdirectory.
+        // Then, specify a 'watch' filter below. This way, we don't unnecessarily restart the server when
+        // client-side files are changed.
+        nodemon: {
+            dev: {
+                script: 'server.js',
+                options: {
+                    env: {
+                        PORT: 3000,
+                        MONGODB_URL: 'localhost:27017/swot'
+                    }
+                }
+            }
+        },
+
         shell: {
 
             // Launch the application
@@ -94,6 +110,7 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-env');
     grunt.loadNpmTasks('grunt-shell-spawn');
+    grunt.loadNpmTasks('grunt-nodemon');
 
     // Tasks
     // -----
