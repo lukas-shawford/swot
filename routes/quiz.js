@@ -2,7 +2,7 @@ var _ = require('underscore');
 var moment = require('moment');
 var mongoose = require('mongoose');
 var User = require('../lib/user');
-var Quiz = require('../lib/quiz');
+var Quiz = require('../lib/quiz').Quiz;
 var Question = require('../lib/question').Question;
 var FillInQuestion = require('../lib/questions/fillIn').FillInQuestion;
 var MultipleChoiceQuestion = require('../lib/questions/multipleChoice').MultipleChoiceQuestion;
@@ -128,7 +128,7 @@ exports.create = function (req, res, next) {
     delete data._id;
     if (!data.name) { data.name = "New Quiz"; }
 
-    Quiz.createQuiz(data.name, req.user, function (err, quiz) {
+    Quiz.createQuiz({ name: data.name }, req.user, function (err, quiz) {
         if (err) {
             return res.json({
                 success: false,

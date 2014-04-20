@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var async = require('async');
 var _ = require('underscore');
 var User = require('../../lib/user');
-var Quiz = require('../../lib/quiz');
+var Quiz = require('../../lib/quiz').Quiz;
 var Question = require('../../lib/question').Question;
 var FillInQuestion = require('../../lib/questions/fillIn').FillInQuestion;
 
@@ -142,6 +142,48 @@ describe('quiz', function () {
                     message: "Invalid question index."
                 });
             });
+        });
+
+        describe("Organizational Hierarchy", function () {
+            var testUser;
+
+            before(function (done) {
+                // Save a reference to the test user
+                User.findOne({ _id: testUserId }, function (err, user) {
+                    if (err) throw err;
+                    testUser = user;
+                    done();
+                });
+            });
+
+            it("should be able to associate a quiz with a subject and a topic", function (done) {
+                Quiz.createQuiz({
+                    name: 'My Test Quiz about Mongoose',
+                    subject: 'Programming',
+                    topic: 'Databases'
+                }, testUser, function (err, quiz) {
+                    expect(err).to.be.null;
+                    expect(quiz).to.exist;
+
+                    expect(quiz.subject).to.equal('Programming');
+                    expect(quiz.topic).to.equal('Databases');
+                    done();
+                });
+            });
+
+            it('should default in "General" for subject and topic if left blank', function (done) {
+                Quiz.createQuiz({
+                    name: 'My Test Quiz about Something'
+                }, testUser, function (err, quiz) {
+                    expect(err).to.be.null;
+                    expect(quiz).to.exist;
+
+                    expect(quiz.subject).to.equal('General');
+                    expect(quiz.topic).to.equal('General');
+                    done();
+                });
+            });
+
         });
     });
 });

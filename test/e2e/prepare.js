@@ -16,7 +16,7 @@ var _ = require('underscore');
 var Q = require('q');
 var mongoose = require('mongoose');
 var User = require('../../lib/user');
-var Quiz = require('../../lib/quiz');
+var Quiz = require('../../lib/quiz').Quiz;
 var Question = require('../../lib/question').Question;
 var FillInQuestion = require('../../lib/questions/fillIn').FillInQuestion;
 var MultipleChoiceQuestion = require('../../lib/questions/multipleChoice').MultipleChoiceQuestion;
@@ -50,7 +50,7 @@ Q.ninvoke(mongoose, 'connect', MONGODB_URL)
 })
 .then(function (user) {
     console.log('Creating sample quiz...');
-    return Q.ninvoke(Quiz, 'createQuiz', 'VFR Operations', user);
+    return Q.ninvoke(Quiz, 'createQuiz', { name: 'VFR Operations' }, user);
 })
 .then(function (quiz) {
     _.each(sampleQuiz, function (question) {
