@@ -66,11 +66,17 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+// ----------------------------------------------------------------------------
 // Routes
+// ----------------------------------------------------------------------------
+
+// Home
 app.get('/', function(req, res) {
-	if (req.isAuthenticated()) { res.redirect('/quizzes'); }
-	else { res.redirect('/login'); }
+    if (req.isAuthenticated()) { res.redirect('/quizzes'); }
+    else { res.redirect('/login'); }
 });
+
+// Registration/Login
 app.get('/register', register.form);
 app.post('/register', register.submit);
 app.get('/login', login.form);
@@ -78,6 +84,8 @@ app.post('/login', passport.authenticate('local', { successRedirect: '/quizzes',
                                                     failureRedirect: '/login',
                                                     failureFlash: true }));
 app.get('/logout', login.logout);
+
+// Quizzes
 app.get('/quizzes', quiz.quizzes);
 app.get('/create', quiz.createForm);
 app.post('/create', quiz.create);
@@ -86,9 +94,21 @@ app.get('/load', quiz.load);
 app.post('/save', quiz.save);
 app.post('/delete', quiz.deleteQuiz);
 app.get('/quiz/:id', quiz.quiz);
+app.get('/export', quiz.exportJson);
+
+// Questions
 app.get('/questions', quiz.questions);
 app.post('/submit', quiz.submitQuestion);
-app.get('/export', quiz.exportJson);
+
+// Subjects
+app.post('/subjects', quiz.addSubject);
+app.patch('/subjects/:id', quiz.updateSubject);
+
+// Topics
+app.patch('/topics/:id', quiz.updateTopic);
+
+// ----------------------------------------------------------------------------
+
 
 // Start the server
 http.createServer(app).listen(app.get('port'), function(){

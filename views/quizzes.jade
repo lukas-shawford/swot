@@ -1,29 +1,80 @@
 extends layout
 
 block content
-    if (message)
-        div.alert.alert-danger
-            p !{message.message}
-    .my-quizzes.container
-        if quizzes.length > 0
-            #quizzes.quizzes.list-group
-                each quiz in quizzes
-                    .quiz.list-group-item
-                        .quiz-header.list-group-item-heading
-                            h4.quiz-name= quiz.name
-                            span.num-questions (#{quiz.questions.length} question#{quiz.questions.length === 1 ? '' : 's'})
-                            p.list-group-item-text Created #{quiz.dateCreated}
-                        .quiz-actions
-                            if quiz.questions.length > 0
-                                a.btn.btn-primary(href="/quiz/" + quiz._id)
-                                    span.glyphicon.glyphicon-circle-arrow-right
-                                    | Take the Quiz
-                            a.btn.btn-info.edit-quiz-btn(href="/edit/" + quiz._id)
+    .my-quizzes(ng-app="swot", ng-controller="MyQuizzesCtrl"
+        ng-init="quizzes= #{JSON.stringify(quizzes)}; subjects= #{JSON.stringify(subjects)}; init();")
+        .row
+
+            // Subjects sidebar
+            #sidebar.sidebar.subjects-sidebar.col-sm-4.col-md-3
+                .subjects-label Subjects:
+                ul.quizzes.nav.nav-pills.nav-stacked
+                    li(ng-repeat="subject in subjects", ng-class="{active: (subject === currentPage)}", ng-click="selectPage(subject, $event)")
+                        a(href="#") {{subject.name}}
+                            i.toggle-subpages.glyphicon(ng-class="{'glyphicon-chevron-down': subject.isExpanded, 'glyphicon-chevron-right': !subject.isExpanded}"
+                                ng-hide="subject.topics.length === 0")
+                        ul.nav.nav-stacked.nav-pills(collapse="!subject.isExpanded")
+                            li(ng-repeat="topic in subject.topics", ng-class="{active: (topic === currentPage)}", ng-click="selectPage(topic, $event)")
+                                a(href="#") {{topic.name}}
+                button.btn.btn-sm(ng-click="addSubject('def')")
+                    span.glyphicon.glyphicon-plus
+                    | Add
+
+            // Main content
+            .col-sm-8.col-sm-offset-4.col-md-9.col-md-offset-3.main
+
+                /////////
+                div.alert.alert-info
+                    {{currentPage}}
+                /////////
+
+                // Error messages
+                if (message)
+                    div.alert.alert-danger
+                        p !{message.message}
+
+                .quizzes-container
+
+                    // Subject header
+                    .my-quizzes-header.section-header
+                        .current-subject.section-name-container
+                            h1.subject-name.section-name(editable-text="currentSubject.name", e-form="btnEditSubject"
+                                onbeforesave="updateSubjectName(currentSubject, $data)") {{currentSubject.name}}
+                        .subject-actions.section-actions
+                            button.btn.btn-xs.btn-info(type="button", ng-click="btnEditSubject.$show()")
                                 span.glyphicon.glyphicon-pencil
                                 | Edit
-        else
-            p
-                | You currently have no quizzes.
-        div: a#create.btn.btn-success(href="/create")
-            span.glyphicon.glyphicon-plus
-            | Create a Quiz
+
+                    // Topics
+                    .topics-container
+                        .topic.section(ng-repeat="topic in currentSubject.topics")
+
+                            // Topic header
+                            .topic-header.section-header
+                                .topic-name-container.section-name-container
+                                    h3.topic-name.section-name(editable-text="topic.name", e-form="textBtnForm"
+                                        onbeforesave="updateTopicName(topic, $data)") {{topic.name}}
+                                .topic-actions.section-actions
+                                    button.btn.btn-xs.btn-info(type="button", ng-click="textBtnForm.$show()")
+                                        span.glyphicon.glyphicon-pencil
+                                        | Edit
+
+                            // Topic quizzes
+                            .topic-quizzes.section-body.list-group
+                                .quiz.list-group-item(ng-repeat="quiz in quizzes | filter: {topic: topic._id}")
+                                    .quiz-info.list-group-item-heading
+                                        a.quiz-name(href="/quiz/{{quiz._id}}") {{quiz.name}}
+                                        //span.num-questions ({quiz.numQuestions}} question#{quiz.numQuestions === 1 ? '' : 's'})
+                                        p.list-group-item-text Created {{quiz.dateCreated}}
+                                    .quiz-actions
+                                        a.btn.btn-xs.btn-info.edit-quiz-btn(href="/edit/{{quiz._id}}")
+                                            span.glyphicon.glyphicon-pencil
+                                            | Edit
+
+                    // Create Quiz button
+                    a.create-quiz.btn.btn-success(href="/create")
+                        span.glyphicon.glyphicon-plus
+                        | Create Quiz
+
+block scripts
+    script(src="/controllers/myQuizzes.js")

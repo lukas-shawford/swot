@@ -1,8 +1,12 @@
+var util = require('util');
 var _ = require('underscore');
+var Q = require('q');
 var moment = require('moment');
 var mongoose = require('mongoose-q')();
 var User = require('../lib/user');
 var Quiz = require('../lib/quiz').Quiz;
+var Subject = require('../lib/quiz').Subject;
+var Topic = require('../lib/quiz').Topic;
 var Question = require('../lib/question').Question;
 var FillInQuestion = require('../lib/questions/fillIn').FillInQuestion;
 var MultipleChoiceQuestion = require('../lib/questions/multipleChoice').MultipleChoiceQuestion;
@@ -10,20 +14,46 @@ var MultipleChoiceQuestion = require('../lib/questions/multipleChoice').Multiple
 var ObjectId = mongoose.Types.ObjectId;
 
 exports.quizzes = function (req, res) {
-    // Fetch user's quizzes
+    // Fetch user's quizzes, subjects, and topics
     var quizzes = [];
-    User.findOne({ _id: req.user._id }).populate('quizzes').execQ()
+    var subjects = [];
+    User.findOne({ _id: req.user._id }).lean().populate('quizzes subjects').execQ()
         .then(function (user) {
-            // Convert dates to readable form
+
             quizzes = _.map(user.quizzes, function (quiz) {
-                var quiz = quiz.toObject();
+                quiz.numQuestions = quiz.questions.length;
+
+                // Convert dates to readable form
                 quiz.dateCreated = moment(quiz.dateCreated).format('MMMM YYYY');
-                return quiz;
+
+                // Keep only the properties we care about to lessen the amount of data to transmit.
+                return _.pick(quiz, '_id', 'name', 'dateCreated', 'numQuestions', 'topic');
+            });
+
+            // Add "General" to the list of subjects if it isn't already in there.
+            if (_.where(user.subjects, {name: "General"}).length === 0) {
+
+            }
+
+            // Get the topics for each subject
+            return Q.all(_.map(user.subjects, function (subject) {
+                return Topic.findQ({ subject: subject }).then(function (topics) {
+                    subject.topics = _.map(topics, function (topic) {
+                        return _.pick(topic, '_id', 'name');
+                    });
+                    return subject;
+                });
+            }))
+            .then(function (results) {
+                subjects = _.map(results, function (subject) {
+                    return _.pick(subject, '_id', 'name', 'topics');
+                })
             });
         })
         .fail(function (err) {
             console.error(err);
             quizzes = [];
+            subjects = [];
             res.locals.message = {
                 type: 'error',
                 message: 'An error occurred loading the quizzes.'
@@ -32,7 +62,8 @@ exports.quizzes = function (req, res) {
         .fin(function () {
             res.render('quizzes', {
                 title: 'My Quizzes',
-                quizzes: quizzes
+                quizzes: quizzes,
+                subjects: subjects
             });
         });
 };
@@ -292,6 +323,45 @@ exports.deleteQuiz = function (req, res, next) {
         }
         return res.json({ success: true });
     });
+};
+
+exports.addSubject = function (req, res, next) {
+    Subject.createSubject(req.body, req.user)
+        .then(function (subject) {
+            if (!subject) { throw new Error("Failed to create new subject"); }
+            res.location('/subjects/' + subject._id);
+            return res.json(201, subject.toObject());
+        })
+        .fail(function (err) {
+            console.error(err);
+            return res.json(500, { error: "An error occurred while creating the subject." });
+        });
+};
+
+exports.updateSubject = function (req, res, next) {
+    // TODO: Validate owner
+    Subject.findByIdAndUpdateQ(req.params.id, req.body)
+        .then(function (subject) {
+            if (subject) { return res.send(204); }
+            else { return res.send(404); }
+        })
+        .fail(function (err) {
+            console.error(err);
+            return res.json(500, { error: "An error occurred while updating the subject." });
+        });
+};
+
+exports.updateTopic = function (req, res, next) {
+    // TODO: Validate owner
+    Topic.findByIdAndUpdateQ(req.params.id, req.body)
+        .then(function (topic) {
+            if (topic) { return res.send(204); }
+            else { res.send(404); }
+        })
+        .fail(function (err) {
+            console.error(err);
+            return res.json(500, { error: "An error occurred while updating the topic." });
+        });
 };
 
 exports.exportJson = function (req, res, next) {

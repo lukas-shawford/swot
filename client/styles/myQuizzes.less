@@ -2,42 +2,79 @@
  * My Quizzes
  * ---------- */
 
-.my-quizzes.container {
-    max-width: 40em;
-    margin: 0 auto;
-}
+@import "../vendor/flexbox.less/flexbox.less";
 
-.quizzes {
+.my-quizzes {
 
-    .quiz {
-        .make-row();
-        .quiz-header {
-            .make-sm-column(6);
-        }
-        .quiz-actions {
-            .make-sm-column(6);
-        }
+    .quizzes-container {
+        max-width: 40em;
+        margin: 0 auto 2em;
     }
 
-    .quiz-name {
-        display: inline;
-        margin-right: 6px;
+    .subjects-label {
+        margin: 8px 4px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #777;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
-    .num-questions {
-        @media(max-width:450px) { display: block; }
+    // Generic container for both subjects and topics
+    .section {
+        .flexbox();
+        .flex-flow(row wrap);
+        margin: 10px 0 40px;
     }
 
-    .quiz-actions {
-        a {
-            margin: 2px 4px 4px 0;
+    // Generic header for both subjects and topics
+    .section-header {
+        .flex(@spec: 2013; @grow: 1; @shrink: 1; @basis: 100%);
+        .flexbox();
+        margin: 10px 0 25px 0;
+        border-bottom: 2px solid #428bca;
 
-            @media(max-width:767px) {
-                display: block;
-                max-width: 200px;
+        .section-name-container {
+            .flex(@spec: 2013; @grow: 1; @shrink: 0; @basis: auto);
+
+            .section-name {
+                margin: 0 0 -2px 0;
+                padding-bottom: 5px;
+                color: black;
+                border-bottom: 0;
             }
         }
 
-        @media(min-width:768px) { text-align: right; }
+        .section-actions {
+            .flex(@spec: 2013; @grow: 0; @shrink: 1; @basis: auto);
+            .align-self(center);
+            margin-right: 15px;
+        }
     }
+
+    .section-body {
+        .flex(@spec: 2013; @grow: 1; @shrink: 1; @basis: 100%);
+    }
+
+    .quiz {
+        .flexbox();
+        .quiz-info {
+            .flex(@spec: 2013; @grow: 1; @shrink: 0; @basis: auto);
+            .quiz-name {
+                font-size: 16pt;
+            }
+        }
+        .quiz-actions {
+            .flex(@spec: 2013; @grow: 0; @shrink: 1; @basis: auto);
+        }
+    }
+}
+
+.subjects-sidebar {
+    max-width: 300px;
+    .quizzes {
+        margin-bottom: 12px;
+    }
+
+    .toggle-subpages { float: right; }
 }
