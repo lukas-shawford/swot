@@ -72,9 +72,29 @@
 
 .subjects-sidebar {
     max-width: 300px;
-    .quizzes {
+    .subjects {
         margin-bottom: 12px;
     }
 
-    .toggle-subpages { float: right; }
+    .item-actions {
+        float: right;
+
+        .action {
+            margin-left: 8px;
+            font-size: 12px;
+        }
+
+        .action.edit {
+            padding: 2px 4px;
+            border: 1px solid transparent;
+        }
+
+        .action.edit:hover {
+            border: 1px solid #888;
+            border-radius: 3px;
+        }
+    }
+
+    .item .action.edit { visibility: hidden; }
+    .item > a:hover .action.edit { visibility: visible; }
 }

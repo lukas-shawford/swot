@@ -16,7 +16,9 @@ app.config(['$httpProvider', function ($httpProvider) {
     };
 }]);
 
-app.run(function (editableOptions) {
+app.run(function (editableOptions, editableThemes) {
     // Set options for angular-xeditable
     editableOptions.theme = 'bs3';
+    editableThemes.bs3.inputClass = 'input-sm';
+    editableThemes.bs3.buttonsClass = 'btn-sm';
 });

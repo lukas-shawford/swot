@@ -8,14 +8,24 @@ block content
             // Subjects sidebar
             #sidebar.sidebar.subjects-sidebar.col-sm-4.col-md-3
                 .subjects-label Subjects:
-                ul.quizzes.nav.nav-pills.nav-stacked
-                    li(ng-repeat="subject in subjects", ng-class="{active: (subject === currentPage)}", ng-click="selectPage(subject, $event)")
-                        a(href="#") {{subject.name}}
-                            i.toggle-subpages.glyphicon(ng-class="{'glyphicon-chevron-down': subject.isExpanded, 'glyphicon-chevron-right': !subject.isExpanded}"
-                                ng-hide="subject.topics.length === 0")
+                ul.subjects.nav.nav-pills.nav-stacked
+                    li.item(ng-repeat="subject in subjects", ng-class="{active: (subject === currentPage)}", ng-click="selectPage(subject, $event)")
+                        a(href="#", editable-text="subject.name", e-form="btnEditSubject"
+                            onbeforesave="updateSubjectName(subject, $data)") {{subject.name}}
+                            .item-actions
+                                span.action.edit(ng-click="sidebarClickEdit(btnEditSubject, $event)")
+                                    i.glyphicon.glyphicon-pencil
+                                    | Edit
+                                i.action.toggle-subpages.glyphicon(ng-class="{'glyphicon-chevron-down': subject.isExpanded, 'glyphicon-chevron-right': !subject.isExpanded}"
+                                    ng-hide="subject.topics.length === 0")
                         ul.nav.nav-stacked.nav-pills(collapse="!subject.isExpanded")
-                            li(ng-repeat="topic in subject.topics", ng-class="{active: (topic === currentPage)}", ng-click="selectPage(topic, $event)")
-                                a(href="#") {{topic.name}}
+                            li.item(ng-repeat="topic in subject.topics", ng-class="{active: (topic === currentPage)}", ng-click="selectPage(topic, $event)")
+                                a(href="#", editable-text="topic.name", e-form="btnEditTopic"
+                                    onbeforesave="updateTopicName(topic, $data)") {{topic.name}}
+                                    .item-actions
+                                        span.action.edit(ng-click="sidebarClickEdit(btnEditTopic, $event)")
+                                            i.glyphicon.glyphicon-pencil
+                                            | Edit
                 button.btn.btn-sm(ng-click="addSubject('def')")
                     span.glyphicon.glyphicon-plus
                     | Add
@@ -36,14 +46,14 @@ block content
                 .quizzes-container
 
                     // Subject header
-                    .my-quizzes-header.section-header
-                        .current-subject.section-name-container
-                            h1.subject-name.section-name(editable-text="currentSubject.name", e-form="btnEditSubject"
-                                onbeforesave="updateSubjectName(currentSubject, $data)") {{currentSubject.name}}
-                        .subject-actions.section-actions
-                            button.btn.btn-xs.btn-info(type="button", ng-click="btnEditSubject.$show()")
-                                span.glyphicon.glyphicon-pencil
-                                | Edit
+                    //.my-quizzes-header.section-header
+                    //    .current-subject.section-name-container
+                    //        h1.subject-name.section-name(editable-text="currentSubject.name", e-form="btnEditSubject"
+                    //            onbeforesave="updateSubjectName(currentSubject, $data)") {{currentSubject.name}}
+                    //    .subject-actions.section-actions
+                    //        button.btn.btn-xs.btn-info(type="button", ng-click="btnEditSubject.$show()")
+                    //            span.glyphicon.glyphicon-pencil
+                    //            | Edit
 
                     // Topics
                     .topics-container

@@ -5,9 +5,18 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http) {
     };
 
     $scope.selectPage = function (page, $event) {
-        console.log("Selecting " + page.name)
+        if ($($event.target).parents('.editable-buttons').size() > 0) {
+            // Ignore event if it originated from angular-xeditable buttons
+            return;
+        }
+
         $scope.currentPage = page;
         $scope.currentPage.isExpanded = !$scope.currentPage.isExpanded;
+        $event.stopPropagation();
+    };
+
+    $scope.sidebarClickEdit = function (editForm, $event) {
+        editForm.$show();
         $event.stopPropagation();
     };
 
