@@ -90,21 +90,25 @@
         float: right;
 
         .action {
+            margin-top: -6px;
             margin-left: 8px;
             font-size: 12px;
-        }
-
-        .action.edit {
-            padding: 2px 4px;
+            padding: 6px 4px;
             border: 1px solid transparent;
             border-radius: 3px;
         }
 
-        .action.edit:hover {
+        .action:hover {
             border: 1px solid #888;
         }
 
         .dropdown > .open > a { background-color: transparent; }
+
+        // Hack to get the hover outline to work (since the span has no content)
+        .action.toggle-subpages {
+            padding-right: 17px;
+            margin-right: -11px;
+        }
     }
 
     .nav-item .editable-wrap {
