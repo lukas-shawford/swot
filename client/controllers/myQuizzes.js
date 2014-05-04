@@ -20,6 +20,10 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http) {
     };
 
     $scope.updateSubjectName = function (subject, name) {
+        if ($scope.isBlank(name)) {
+            return "Please enter a name."
+        }
+
         return $http({
             url: '/subjects/' + subject._id,
             method: "PATCH",
@@ -32,6 +36,10 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http) {
     };
 
     $scope.updateTopicName = function (topic, name) {
+        if ($scope.isBlank(name)) {
+            return "Please enter a name."
+        }
+
         return $http({
             url: '/topics/' + topic._id,
             method: "PATCH",
@@ -45,5 +53,9 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http) {
 
     $scope.addSubject = function (name) {
         return $http.post('/subjects', { name: name });
+    };
+
+    $scope.isBlank = function (str) {
+        return (!str || /^\s*$/.test(str));
     };
 });
