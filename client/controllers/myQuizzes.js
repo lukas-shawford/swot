@@ -11,7 +11,6 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http) {
         }
 
         $scope.currentPage = page;
-        $scope.currentPage.isExpanded = !$scope.currentPage.isExpanded;
         $event.stopPropagation();
     };
 

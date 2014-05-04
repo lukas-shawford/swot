@@ -72,8 +72,18 @@
 
 .subjects-sidebar {
     max-width: 300px;
+
     .subjects {
         margin-bottom: 12px;
+
+        .item.active > .nav-item > .subject-name {
+            color: white;
+        }
+
+        .item.active .action > a {
+            color: #E6E6E6;
+            text-decoration: none;
+        }
     }
 
     .item-actions {
@@ -87,14 +97,33 @@
         .action.edit {
             padding: 2px 4px;
             border: 1px solid transparent;
+            border-radius: 3px;
         }
 
         .action.edit:hover {
             border: 1px solid #888;
-            border-radius: 3px;
+        }
+
+        .dropdown > .open > a { background-color: transparent; }
+    }
+
+    .nav-item .editable-wrap {
+        margin: -6px -11px;
+
+        + .item-actions {
+            display: none;
+        }
+        
+        .editable-input {
+            max-width: 60%;
+        }
+
+        .editable-buttons {
+            button { padding: 5px; }
         }
     }
 
-    .item .action.edit { visibility: hidden; }
-    .item > a:hover .action.edit { visibility: visible; }
+    //.item .action.edit { visibility: hidden; }
+    //.item.active:hover .action.edit { visibility: visible; }
+    //.item > a:hover .action.edit { visibility: visible; }
 }

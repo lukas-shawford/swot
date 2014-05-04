@@ -10,20 +10,25 @@ block content
                 .subjects-label Subjects:
                 ul.subjects.nav.nav-pills.nav-stacked
                     li.item(ng-repeat="subject in subjects", ng-class="{active: (subject === currentPage)}", ng-click="selectPage(subject, $event)")
-                        a(href="#", editable-text="subject.name", e-form="btnEditSubject"
-                            onbeforesave="updateSubjectName(subject, $data)") {{subject.name}}
-                            .item-actions
-                                span.action.edit(ng-click="sidebarClickEdit(btnEditSubject, $event)")
-                                    i.glyphicon.glyphicon-pencil
-                                    | Edit
-                                i.action.toggle-subpages.glyphicon(ng-class="{'glyphicon-chevron-down': subject.isExpanded, 'glyphicon-chevron-right': !subject.isExpanded}"
-                                    ng-hide="subject.topics.length === 0")
-                        ul.nav.nav-stacked.nav-pills(collapse="!subject.isExpanded")
+                        div.nav-item
+                            a.subject-name(href="#", editable-text="subject.name", e-form="btnEditSubject", onbeforesave="updateSubjectName(subject, $data)") {{subject.name}}
+                            span.item-actions
+                                span.dropdown(dropdown)
+                                    span.action.edit(ng-show="subject === currentPage")
+                                        a.dropdown-toggle(href="#")
+                                            i.glyphicon.glyphicon-pencil
+                                            | Edit
+                                        ul.dropdown-menu.pull-right(role="menu")
+                                            li: a(href="#", ng-click="btnEditSubject.$show()") Rename
+                                            li: a(href="#") Another action
+                                    i.action.toggle-subpages.glyphicon(ng-click="subject.isCollapsed = !subject.isCollapsed", ng-hide="subject.topics.length === 0"
+                                        ng-class="{'glyphicon-chevron-down': !subject.isCollapsed, 'glyphicon-chevron-right': subject.isCollapsed}")
+                        ul.nav.nav-stacked.nav-pills(collapse="subject.isCollapsed")
                             li.item(ng-repeat="topic in subject.topics", ng-class="{active: (topic === currentPage)}", ng-click="selectPage(topic, $event)")
                                 a(href="#", editable-text="topic.name", e-form="btnEditTopic"
                                     onbeforesave="updateTopicName(topic, $data)") {{topic.name}}
                                     .item-actions
-                                        span.action.edit(ng-click="sidebarClickEdit(btnEditTopic, $event)")
+                                        span.action.edit(ng-show="topic === currentPage", ng-click="sidebarClickEdit(btnEditTopic, $event)")
                                             i.glyphicon.glyphicon-pencil
                                             | Edit
                 button.btn.btn-sm(ng-click="addSubject('def')")
@@ -35,7 +40,7 @@ block content
 
                 /////////
                 div.alert.alert-info
-                    {{currentPage}}
+                    | {{currentPage}}
                 /////////
 
                 // Error messages
