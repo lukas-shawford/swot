@@ -6,7 +6,8 @@ var app = angular.module('swot', [
     'confirmExit',
     'ngDebounce',
     'ngAnimate',
-    'xeditable'
+    'xeditable',
+    'angularBootstrapNavTree'
 ]);
 
 app.config(['$httpProvider', function ($httpProvider) {
