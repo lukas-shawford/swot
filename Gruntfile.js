@@ -60,7 +60,7 @@ module.exports = function(grunt) {
 
             // Run mocha unit tests
             mocha: {
-                command: "mocha test/unit"
+                command: "mocha --recursive test/unit"
             },
 
             // Start selenium server (used for end-to-end tests)

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "test": "mocha test/unit"
+    "test": "mocha --recursive test/unit"
   },
   "dependencies": {
     "express": "3.4.5",
