@@ -1,0 +1,34 @@
+<ul class="topics nav nav-list nav-pills nav-stacked abn-tree">
+
+    <li ng-repeat="row in tree_rows | filter:{visible:true} track by row.branch.uid"
+        ng-animate="'abn-tree-animate'"
+        ng-class="'level-' + {{ row.level }} + (row.branch.selected ? ' active':'')"
+        class="abn-tree-row item">
+
+        <div class="nav-item" ng-click="user_clicks_branch(row.branch)">
+
+            <a href="#" editable-text="row.label"
+               e-form="btnEditRow" onbeforesave="user_renames_row(row, $data)"
+               class="topic-name">
+
+                <span class="indented tree-label">{{ row.label }} </span>
+            </a>
+
+            <span class="topic-actions">
+                <span dropdown class="dropdown">
+                    <span class="action edit">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="glyphicon glyphicon-pencil"></i>
+                            Edit
+                        </a>
+                        <ul class="dropdown-menu pull-right" role="menu">
+                            <li><a href="#" ng-click="btnEditRow.$show()">Rename</a></li>
+                            <li><a href="#">Another action</a></li>
+                        </ul>
+                    </span>
+                </span>
+                <i ng-class="row.tree_icon" ng-click="row.branch.expanded = !row.branch.expanded" class="indented tree-icon action toggle-subpages"> </i>
+            </span>
+        </div>
+    </li>
+</ul>

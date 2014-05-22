@@ -46,19 +46,25 @@ describe('quiz', function () {
 
                     Quiz.createQuiz({
                         name: 'My Test Quiz'
-                    }, user, function (err, quiz) {
-                        expect(err).to.be.null;
-                        expect(quiz).to.exist;
-                        testQuizId = quiz._id;
+                    }, user)
+                        .then(function (result) {
+                            var quiz = result[0];
+                            var user = result[1];
+                            expect(quiz).to.exist;
+                            expect(user._id.toString()).to.equal(testUserId.toString());
+                            testQuizId = quiz._id;
 
-                        // Ensure quiz is associated with the user
-                        expect(quiz.createdBy.toString()).to.equal(testUserId.toString());  // Check quiz.createdBy
-                        User.findOne({ _id: testUserId }, function (err, user) {           // Check User.quizzes (need to reload document first because it's out of sync)
-                            if (err) throw err;
-                            expect(user.quizzes).to.contain(testQuizId);
-                            done();
-                        });
-                    });
+                            // Ensure quiz is associated with the user
+                            expect(quiz.createdBy.toString()).to.equal(testUserId.toString());  // Check quiz.createdBy
+                            User.findOne({ _id: testUserId }, function (err, user) {           // Check User.quizzes (need to reload document first because it's out of sync)
+                                if (err) throw err;
+                                expect(user.quizzes).to.contain(testQuizId);
+                                done();
+                            });
+                        })
+                        .catch(function (err) {
+                            throw err;
+                        }).done();
                 });
             });
         });
@@ -142,48 +148,6 @@ describe('quiz', function () {
                     message: "Invalid question index."
                 });
             });
-        });
-
-        describe("Organizational Hierarchy", function () {
-            var testUser;
-
-            before(function (done) {
-                // Save a reference to the test user
-                User.findOne({ _id: testUserId }, function (err, user) {
-                    if (err) throw err;
-                    testUser = user;
-                    done();
-                });
-            });
-
-            it("should be able to associate a quiz with a subject and a topic", function (done) {
-                Quiz.createQuiz({
-                    name: 'My Test Quiz about Mongoose',
-                    subject: 'Programming',
-                    topic: 'Databases'
-                }, testUser, function (err, quiz) {
-                    expect(err).to.be.null;
-                    expect(quiz).to.exist;
-
-                    expect(quiz.subject).to.equal('Programming');
-                    expect(quiz.topic).to.equal('Databases');
-                    done();
-                });
-            });
-
-            it('should default in "General" for subject and topic if left blank', function (done) {
-                Quiz.createQuiz({
-                    name: 'My Test Quiz about Something'
-                }, testUser, function (err, quiz) {
-                    expect(err).to.be.null;
-                    expect(quiz).to.exist;
-
-                    expect(quiz.subject).to.equal('General');
-                    expect(quiz.topic).to.equal('General');
-                    done();
-                });
-            });
-
         });
     });
 });

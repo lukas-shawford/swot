@@ -5,7 +5,7 @@ var moment = require('moment');
 var mongoose = require('mongoose-q')();
 var User = require('../lib/user');
 var Quiz = require('../lib/quiz').Quiz;
-var Subject = require('../lib/quiz').Subject;
+var QuizService = require('../lib/quiz/quizService');
 var Topic = require('../lib/quiz').Topic;
 var Question = require('../lib/question').Question;
 var FillInQuestion = require('../lib/questions/fillIn').FillInQuestion;
@@ -14,10 +14,40 @@ var MultipleChoiceQuestion = require('../lib/questions/multipleChoice').Multiple
 var ObjectId = mongoose.Types.ObjectId;
 
 exports.quizzes = function (req, res) {
-    // Fetch user's quizzes, subjects, and topics
+    // Fetch user's quizzes and topics
+    var topics = [];
+    Q(User.findById(req.user._id).lean().exec())
+        .then(function (user) {
+            return QuizService.getQuizzesAndTopics(user);
+        })
+        .then(function (result) {
+            // TO DO: Strip off anything we're not interested in. (e.g., we're sending the entirety
+            // of each quiz, including all the questions, right now - even though we're only displaying
+            // the name).
+            topics = result;
+        })
+        .catch(function (err) {
+            console.error(err);
+            topics = [];
+            res.locals.message = {
+                type: 'error',
+                message: 'An error occurred loading the quizzes.'
+            };
+        })
+        .finally(function () {
+            res.render('quizzes', {
+                title: 'My Quizzes',
+                topics: topics
+            });
+        });
+};
+
+/*
+exports.quizzes = function (req, res) {
+    // Fetch user's quizzes and topics
     var quizzes = [];
-    var subjects = [];
-    User.findOne({ _id: req.user._id }).lean().populate('quizzes subjects').execQ()
+    var topics = [];
+    User.findOne({ _id: req.user._id }).lean().populate('quizzes topics').execQ()
         .then(function (user) {
 
             quizzes = _.map(user.quizzes, function (quiz) {
@@ -30,10 +60,8 @@ exports.quizzes = function (req, res) {
                 return _.pick(quiz, '_id', 'name', 'dateCreated', 'numQuestions', 'topic');
             });
 
-            // Add "General" to the list of subjects if it isn't already in there.
-            if (_.where(user.subjects, {name: "General"}).length === 0) {
-
-            }
+            // Convert flat list of topics into a nested structure
+            topics = User.getTopicsHierarchy();
 
             // Get the topics for each subject
             return Q.all(_.map(user.subjects, function (subject) {
@@ -67,6 +95,7 @@ exports.quizzes = function (req, res) {
             });
         });
 };
+*/
 
 exports.quiz = function (req, res) {
     Quiz.findOne({ _id: req.params.id }, function (err, quiz) {
@@ -160,21 +189,23 @@ exports.createForm = function (req, res) {
     res.render('edit', { title: 'Create Quiz', message: req.flash('error') });
 };
 
-exports.create = function (req, res, next) {
+exports.create = function (req, res) {
     var data = req.body;
     delete data._id;
     if (!data.name) { data.name = "New Quiz"; }
 
-    Quiz.createQuiz({ name: data.name }, req.user, function (err, quiz) {
-        if (err) {
+    Quiz.createQuiz({ name: data.name }, req.user)
+        .then(function (quiz) {
+            updateQuiz(quiz, req, res, true);
+        })
+        .catch(function (err) {
+            console.error(err);
             return res.json({
                 success: false,
-                message: err.toString()
+                message: "An error occurred creating the quiz"
             });
-        }
-
-        updateQuiz(quiz, req, res, true);
-    });
+        })
+        .done();
 };
 
 exports.edit = function (req, res) {
@@ -349,6 +380,10 @@ exports.updateSubject = function (req, res, next) {
             console.error(err);
             return res.json(500, { error: "An error occurred while updating the subject." });
         });
+};
+
+exports.deleteSubject = function (req, res, next) {
+    // TODO: Validate owner
 };
 
 exports.updateTopic = function (req, res, next) {

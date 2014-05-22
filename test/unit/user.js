@@ -1,9 +1,11 @@
+var Q = require('q');
 var expect = require('chai').expect;
 var mongoose = require('mongoose');
 var async = require('async');
 var _ = require('underscore');
 var User = require('../../lib/user');
 var Quiz = require('../../lib/quiz').Quiz;
+var Topic = require('../../lib/quiz').Topic;
 
 var MONGODB_URL = process.env.MONGODB_TEST_URL || 'localhost:27017/swot_test';
 
@@ -120,32 +122,23 @@ describe('userDb', function () {
             var users = _.map(['stephanie@example.com', 'barbara@example.com'],
                 function (email) { return { email: email, password: 'test' };
             });
-            async.map(users, User.createUser.bind(User), function (err, results) {
-                if (err) throw err;
-                stephanie = results[0];
-                barbara = results[1];
 
+            return Q.all([
+                Q.nbind(User.createUser, User)({ email: 'stephanie@example.com', password: 'test' }),
+                Q.nbind(User.createUser, User)({ email: 'barbara@example.com', password: 'test' })
+            ]).spread(function (_stephanie, _barbara) {
                 // Create 2 test quizzes, one owned by stephanie, and the other by barbara
-                async.map([ stephanie, barbara ], Quiz.createQuiz.bind(Quiz, 'test quiz'), function (err, results) {
-                    if (err) throw err;
-                    stephanieQuiz = results[0];
-                    barbaraQuiz = results[1];
+                return Q.all([
+                    Quiz.createQuiz({ name: 'Test Quiz' }, _stephanie),
+                    Quiz.createQuiz({ name: 'Test Quiz' }, _barbara)
+                ]);
+            }).spread(function (_stephanieResult, _barbaraResult) {
+                stephanieQuiz = _stephanieResult[0];
+                stephanie = _stephanieResult[1];
 
-                    // Reload and update the users as they are now out of sync with the db
-                    var updateUser = function (user, cb) {
-                        User.findOne({ _id: user._id }, function (err, user) {
-                            cb(err, user)
-                        });
-                    };
-                    async.parallel([
-                        function (cb) { updateUser(stephanie, function (err, user) { stephanie = user; cb(err); }) },
-                        function (cb) { updateUser(barbara,   function (err, user) { barbara = user;   cb(err); }) }
-                    ], function (err) {
-                        if (err) throw err;
-                        done();
-                    });
-                });
-            });
+                barbaraQuiz = _barbaraResult[0];
+                barbara = _barbaraResult[1];
+            }).done(done, function (err) { throw err; });
         });
 
         it('should return true if user owns quiz', function () {

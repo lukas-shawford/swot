@@ -12,6 +12,7 @@
         scope: {
           treeData: '=',
           onSelect: '&',
+          onRename: '&',
           initialSelection: '@',
           treeControl: '='
         },
@@ -104,6 +105,14 @@
           scope.user_clicks_branch = function(branch) {
             if (branch !== selected_branch) {
               return select_branch(branch);
+            }
+          };
+          scope.user_renames_row = function(row, newName) {
+            if (scope.onRename != null) {
+                return scope.onRename({
+                    branch: row.branch,
+                    newName: newName
+                });
             }
           };
           get_parent = function(child) {

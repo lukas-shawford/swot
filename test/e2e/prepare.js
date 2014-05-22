@@ -50,7 +50,7 @@ Q.ninvoke(mongoose, 'connect', MONGODB_URL)
 })
 .then(function (user) {
     console.log('Creating sample quiz...');
-    return Q.ninvoke(Quiz, 'createQuiz', { name: 'VFR Operations' }, user);
+    return Quiz.createQuiz({ name: 'VFR Operations' }, user);
 })
 .then(function (quiz) {
     _.each(sampleQuiz, function (question) {

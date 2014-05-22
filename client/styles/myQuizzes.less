@@ -11,7 +11,7 @@
         margin: 0 auto 2em;
     }
 
-    .subjects-label {
+    .topics-label {
         margin: 8px 4px 12px;
         font-size: 12px;
         font-weight: 700;
@@ -70,51 +70,53 @@
     }
 }
 
-.subjects-sidebar {
+.topics-sidebar {
     max-width: 300px;
 
-    .subjects {
+    .topics {
         margin-bottom: 12px;
 
-        .item.active > .nav-item > .subject-name {
+        .item .action > a {
+            text-decoration: none;
+            padding: 5px 2px;
+            border: 1px solid transparent;
+            border-radius: 3px;
+        }
+
+        .item.active > .nav-item > .topic-name {
             color: white;
         }
 
         .item.active .action > a {
             color: #E6E6E6;
-            text-decoration: none;
         }
     }
 
-    .item-actions {
+    .topic-actions {
         float: right;
 
         .action {
             margin-top: -6px;
             margin-left: 8px;
             font-size: 12px;
+            /*
             padding: 6px 4px;
             border: 1px solid transparent;
             border-radius: 3px;
+            */
         }
 
-        .action:hover {
+        .action > a:hover {
             border: 1px solid #888;
         }
 
         .dropdown > .open > a { background-color: transparent; }
-
-        // Hack to get the hover outline to work (since the span has no content)
-        .action.toggle-subpages {
-            padding-right: 17px;
-            margin-right: -11px;
-        }
     }
 
     .nav-item .editable-wrap {
         margin: -6px -11px;
 
-        + .item-actions {
+        + .topic-actions {
             display: none;
         }
         
@@ -133,6 +135,7 @@
             color: #a94442;
             padding: 4px 6px;
             max-width: 94%;
+            white-space: normal;
         }
     }
 
