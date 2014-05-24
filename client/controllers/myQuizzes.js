@@ -1,6 +1,7 @@
-angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http) {
+angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $timeout) {
     $scope.init = function () {
         $scope.topics = $scope.topics || [];
+        $scope.topicTree = {};
         $scope.initTopicTree();
     };
 
@@ -17,7 +18,7 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http) {
             return node;
         };
 
-        $scope.topicTree = _.map($scope.topics, transformTopicNode);
+        $scope.topicTreeData = _.map($scope.topics, transformTopicNode);
     };
 
     /*
@@ -44,15 +45,30 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http) {
         }).then(function (response) {
             return true;
         }, function (response) {
-            return response.data.error || "Service unavaiable. Please try again later.";
+            return response.data.error || "Oops, something went wrong! Please try again later.";
         });
     };
 
-    /*
-    $scope.addSubject = function (name) {
-        return $http.post('/subjects', { name: name });
+    $scope.addTopic = function (name) {
+        name = name || "New Topic";
+        return $http({
+            url: '/topics',
+            method: "POST",
+            data: { name: name }
+        }).then(function (response) {
+            // Add the new branch to the topic tree
+            var newBranch = $scope.topicTree.add_root_branch({
+                label: response.data.name,
+                data: response.data
+            });
+            // Rename the newly added branch after the element has been created.
+            $timeout(function () {
+                angular.element($('#' + newBranch.uid)).scope().btnEditRow.$show();
+            });
+        }, function (response) {
+            bootbox.alert(response.data.error || "Oops, something went wrong! Please try again later.");
+        });
     };
-    */
 
     $scope.isBlank = function (str) {
         return (!str || /^\s*$/.test(str));

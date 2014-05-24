@@ -356,25 +356,47 @@ exports.deleteQuiz = function (req, res, next) {
     });
 };
 
-exports.addSubject = function (req, res, next) {
-    Subject.createSubject(req.body, req.user)
-        .then(function (subject) {
-            if (!subject) { throw new Error("Failed to create new subject"); }
-            res.location('/subjects/' + subject._id);
-            return res.json(201, subject.toObject());
+/**
+ * Validates that the given user owns the topic with the specified ID, and if so, retrieves the
+ * topic document from the database. Note that for verifying ownership, this method validates
+ * both that the topic is present in the user.topics array, and that topic.createdBy matches the
+ * user ID. If *either* is false, this will return null.
+ * @param topicId The Topic ID
+ * @param user The user to validate against
+ * @returns Promise that resolves to a topic document if the topic ID is valid and the user owns
+ * the topic. Otherwise, a promise that resolves to null.
+ */
+function getTopicAndVerifyOwnership (topicId, user) {
+    return Q.fcall(function () {
+        if (!_.find(user.topics, function (topic) { return topic.equals(topicId); })) {
+            return null;
+        }
+
+        return Topic.findByIdQ(topicId).then(function (topic) {
+            return (topic && topic.createdBy.equals(user._id)) ? topic : null;
+        });
+    });
+}
+
+exports.getTopic = function (req, res) {
+    return getTopicAndVerifyOwnership(req.params.id, req.user)
+        .then(function (topic) {
+            if (!topic) { return res.send(404); }
+            return res.json(200, topic.toObject());
         })
         .catch(function (err) {
             console.error(err.stack);
-            return res.json(500, { error: "An error occurred while creating the subject." });
+            return res.send(500);
         });
 };
 
-exports.updateSubject = function (req, res, next) {
-    // TODO: Validate owner
-    Subject.findByIdAndUpdateQ(req.params.id, req.body)
-        .then(function (subject) {
-            if (subject) { return res.send(204); }
-            else { return res.send(404); }
+exports.addTopic = function (req, res) {
+    Topic.createTopic(req.body, req.user)
+        .then(function (result) {
+            var topic = result[0];
+            if (!topic) { throw new Error("Failed to create new topic"); }
+            res.location('/topics/' + topic._id);
+            return res.json(201, topic.toObject());
         })
         .catch(function (err) {
             console.error(err.stack);
@@ -382,16 +404,16 @@ exports.updateSubject = function (req, res, next) {
         });
 };
 
-exports.deleteSubject = function (req, res, next) {
-    // TODO: Validate owner
-};
-
-exports.updateTopic = function (req, res, next) {
-    // TODO: Validate owner
-    Topic.findByIdAndUpdateQ(req.params.id, req.body)
+exports.updateTopic = function (req, res) {
+    return getTopicAndVerifyOwnership(req.params.id, req.user)
         .then(function (topic) {
-            if (topic) { return res.send(204); }
-            else { res.send(404); }
+            if (!topic) { return res.send(404); }
+            delete req.body.createdBy;
+            delete req.body.dateCreated;
+            return topic.update(req.body).exec()
+                .then(function (topic) {
+                    return res.send(204);
+                });
         })
         .catch(function (err) {
             console.error(err.stack);

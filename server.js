@@ -100,11 +100,9 @@ app.get('/export', quiz.exportJson);
 app.get('/questions', quiz.questions);
 app.post('/submit', quiz.submitQuestion);
 
-// Subjects
-app.post('/subjects', quiz.addSubject);
-app.patch('/subjects/:id', quiz.updateSubject);
-
 // Topics
+app.get('/topics/:id', quiz.getTopic);
+app.post('/topics', quiz.addTopic);
 app.patch('/topics/:id', quiz.updateTopic);
 
 // ----------------------------------------------------------------------------
