@@ -19,7 +19,7 @@
                     treeControl: '='
                 },
                 link: function (scope, element, attrs) {
-                    var error, expand_all_parents, expand_level, for_all_ancestors, for_each_branch, get_parent, n, on_treeData_change, select_branch, selected_branch, tree;
+                    var error, expand_all_parents, expand_level, for_all_ancestors, for_each_branch, get_parent, n, on_treeData_change, select_branch, selected_branch, tree, guid;
                     error = function (s) {
                         console.log('ERROR:' + s);
                         debugger;
@@ -50,6 +50,12 @@
                             return;
                         }
                     }
+                    guid = function () {
+                        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                            return v.toString(16);
+                        });
+                    };
                     for_each_branch = function (f) {
                         var do_f, root_branch, _i, _len, _ref, _results;
                         do_f = function (branch, level) {
@@ -147,7 +153,7 @@
                         var add_branch_to_list, root_branch, _i, _len, _ref, _results;
                         for_each_branch(function (b, level) {
                             if (!b.uid) {
-                                return b.uid = "" + Math.random();
+                                return b.uid = guid();
                             }
                         });
                         console.log('UIDs are set.');
