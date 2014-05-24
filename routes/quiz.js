@@ -27,7 +27,7 @@ exports.quizzes = function (req, res) {
             topics = result;
         })
         .catch(function (err) {
-            console.error(err);
+            console.error(err.stack);
             topics = [];
             res.locals.message = {
                 type: 'error',
@@ -78,8 +78,8 @@ exports.quizzes = function (req, res) {
                 })
             });
         })
-        .fail(function (err) {
-            console.error(err);
+        .catch(function (err) {
+            console.error(err.stack);
             quizzes = [];
             subjects = [];
             res.locals.message = {
@@ -199,7 +199,7 @@ exports.create = function (req, res) {
             updateQuiz(quiz, req, res, true);
         })
         .catch(function (err) {
-            console.error(err);
+            console.error(err.stack);
             return res.json({
                 success: false,
                 message: "An error occurred creating the quiz"
@@ -363,8 +363,8 @@ exports.addSubject = function (req, res, next) {
             res.location('/subjects/' + subject._id);
             return res.json(201, subject.toObject());
         })
-        .fail(function (err) {
-            console.error(err);
+        .catch(function (err) {
+            console.error(err.stack);
             return res.json(500, { error: "An error occurred while creating the subject." });
         });
 };
@@ -376,9 +376,9 @@ exports.updateSubject = function (req, res, next) {
             if (subject) { return res.send(204); }
             else { return res.send(404); }
         })
-        .fail(function (err) {
-            console.error(err);
-            return res.json(500, { error: "An error occurred while updating the subject." });
+        .catch(function (err) {
+            console.error(err.stack);
+            return res.json(500, { error: "An error occurred while creating the topic." });
         });
 };
 
@@ -393,9 +393,9 @@ exports.updateTopic = function (req, res, next) {
             if (topic) { return res.send(204); }
             else { res.send(404); }
         })
-        .fail(function (err) {
-            console.error(err);
-            return res.json(500, { error: "An error occurred while updating the topic." });
+        .catch(function (err) {
+            console.error(err.stack);
+            return res.send(500);
         });
 };
 
