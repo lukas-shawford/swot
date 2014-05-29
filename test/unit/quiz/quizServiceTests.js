@@ -1,9 +1,10 @@
+var Q = require('q');
 var chai = require('chai');
 var expect = chai.expect;
 var mongoose = require('mongoose');
 var async = require('async');
 var _ = require('underscore');
-var quizService = require('../../../lib/quiz/quizService');
+var QuizService = require('../../../lib/quiz/quizService');
 var User = require('../../../lib/user');
 var Quiz = require('../../../lib/quiz').Quiz;
 var Topic = require('../../../lib/quiz').Topic;
@@ -39,87 +40,55 @@ describe('quizService', function () {
         var hierarchy;
 
         before(function (done) {
-
-            // Create a test user, and create the following hierarchy of topics/quizzes:
-            //
-            // |- Underwater Basket Weaving (Topic)
-            // |- Flying (Topic)
-            // |  |- Night Flying (Quiz)
-            // |  |- Weather (Quiz)
-            // |  |- Regulations (Topic)
-            // |- Programming (Topic)
-            // |  |- Algorithms & Data Structures (Quiz)
-            // |  |- Security (Quiz)
-            // |  |- Web Development (Topic)
-            // |  |  |- HTML (Quiz)
-            // |  |  |- CSS (Quiz)
-            // |  |  |- JavaScript (Quiz)
-            // |  |- C#.NET (Topic)
-
             User.createUser({
                 email: 'hernando@example.com',
                 password: 'letmein'
             }, function (err, user) {
                 if (err) throw err;
-                return Topic.createTopic({ name: "Underwater Basket Weaving", parent: null }, user)
-                    .then(function (result) {
-                        topics['Underwater Basket Weaving'] = result[0];
-                        return Topic.createTopic({ name: "Flying", parent: null }, result[1])
-                    })
-                    .then(function (result) {
-                        topics['Flying'] = result[0];
-                        return Quiz.createQuiz({ name: "Night Flying", topic: topics['Flying'] }, result[1]);
-                    })
-                    .then(function (result) {
-                        quizzes['Night Flying'] = result[0];
-                        return Quiz.createQuiz({ name: "Weather", topic: topics['Flying'] }, result[1]);
-                    })
-                    .then(function (result) {
-                        quizzes['Weather'] = result[0];
-                        return Topic.createTopic({ name: "Regulations", parent: topics['Flying'] }, result[1]);
-                    })
-                    .then(function (result) {
-                        topics['Regulations'] = result[0];
-                        return Topic.createTopic({ name: "Programming", parent: null }, result[1]);
-                    })
-                    .then(function (result) {
-                        topics['Programming'] = result[0];
-                        return Quiz.createQuiz({ name: "Algorithms & Data Structures", topic: topics['Programming'] }, result[1]);
-                    })
-                    .then(function (result) {
-                        quizzes['Algorithms & Data Structures'] = result[0];
-                        return Quiz.createQuiz({ name: "Security", topic: topics['Programming'] }, result[1]);
-                    })
-                    .then(function (result) {
-                        quizzes['Security'] = result[0];
-                        return Topic.createTopic({ name: "Web Development", parent: topics['Programming'] }, result[1]);
-                    })
-                    .then(function (result) {
-                        topics['Web Development'] = result[0];
-                        return Quiz.createQuiz({ name: "HTML", topic: topics['Web Development'] }, result[1]);
-                    })
-                    .then(function (result) {
-                        quizzes['HTML'] = result[0];
-                        return Quiz.createQuiz({ name: "CSS", topic: topics['Web Development'] }, result[1]);
-                    })
-                    .then(function (result) {
-                        quizzes['CSS'] = result[0];
-                        return Quiz.createQuiz({ name: "JavaScript", topic: topics['Web Development'] }, result[1]);
-                    })
-                    .then(function (result) {
-                        quizzes['JavaScript'] = result[0];
-                        return Topic.createTopic({ name: "C#.NET", parent: topics['Programming'] }, result[1]);
-                    })
-                    .then(function (result) {
-                        topics['C#.NET'] = result[0];
-                        testUser = result[1];
-                        return quizService.getQuizzesAndTopics(testUser);
-                    })
-                    .then(function (result) {
-                        hierarchy = result;
-                        return;
-                    })
-                    .done(done, function (err) { throw err; });
+                testUser = user;
+
+                return QuizService.importTopicTree(user, [
+                    { name: 'Underwater Basket Weaving', quizzes: [], subtopics: [] },
+                    {
+                        name: 'Flying',
+                        quizzes: [
+                            { name: 'Night Flying', questions: [] },
+                            { name: 'Weather', questions: [] }
+                        ],
+                        subtopics: [
+                            { name: 'Regulations', quizzes: [] }
+                        ]
+                    },
+                    {
+                        name: 'Programming',
+                        quizzes: [
+                            { name: 'Algorithms & Data Structures', questions: [] },
+                            { name: 'Security', questions: [] }
+                        ],
+                        subtopics: [
+                            {
+                                name: 'Web Development',
+                                quizzes: [
+                                    { name: 'HTML', questions: [] },
+                                    { name: 'CSS', questions: [] },
+                                    { name: 'JavaScript', questions: [] }
+                                ]
+                            },
+                            {
+                                name: 'C#.NET',
+                                quizzes: []
+                            }
+                        ]
+                    }
+                ], null).then(function () {
+                    // Update user doc
+                    return User.findById(testUser._id).exec();
+                }).then(function (user) {
+                    testUser = user;
+                    return QuizService.getQuizzesAndTopics(testUser);
+                }).then(function (result) {
+                    hierarchy = result;
+                }).done(function () { done(); });
             });
         });
 
@@ -165,6 +134,320 @@ describe('quizService', function () {
             var programmingTopic = _.findWhere(hierarchy, { name: 'Programming' });
             var csharpSubtopic = _.findWhere(programmingTopic.subtopics, { name: 'C#.NET' });
             expect(csharpSubtopic.quizzes).to.be.empty;
+        });
+    });
+
+    describe('deleteTopic', function () {
+        var testUser;
+        var topics = {};
+        var quizzes = {};
+        var hierarchy;
+
+        before(function (done) {
+            User.createUser({
+                email: 'ferdinand@example.com',
+                password: 'letmein'
+            }, function (err, user) {
+                if (err) throw err;
+                testUser = user;
+
+                return QuizService.importTopicTree(user, [
+                    {
+                        name: 'Science',
+                        quizzes: [
+                            { name: 'The Scientific Method', questions: [] },
+                            { name: 'The Ethics of Scientific Research', questions: [] }
+                        ],
+                        subtopics: [
+                            {
+                                name: 'Physics',
+                                quizzes: [
+                                    { name: 'Physics 101', questions: [] }
+                                ],
+                                subtopics: [
+                                    {
+                                        name: 'Quantum Mechanics',
+                                        quizzes: [
+                                            { name: 'Introduction to Quantum Mechanics', questions: [] }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                name: 'Chemistry',
+                                subtopics: [
+                                    {
+                                        name: 'Organic Chemistry',
+                                        quizzes: [
+                                            { name: 'Introduction to Organic Chemistry', questions: [] }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Philosophy',
+                        quizzes: [
+                            { name: 'Introduction to Philosophy', questions: [] }
+                        ],
+                        subtopics: [
+                            {
+                                name: 'Logic and Reasoning',
+                                quizzes: []
+                            },
+                            {
+                                name: 'Metaphysics',
+                                quizzes: [
+                                    { name: 'Cosmology and Cosmogony', questions: [] },
+                                    { name: 'Determinism and Free Will', questions: [] }
+                                ]
+                            }
+                        ]
+                    },
+                    { name: 'Underwater Basket Weaving', quizzes: [], subtopics: [] }
+                ], null).then(function () {
+                    // Update user doc
+                    return User.findById(testUser._id).exec();
+                }).then(function (user) {
+                    testUser = user;
+                    return QuizService.getQuizzesAndTopics(testUser);
+                }).then(function (result) {
+                    hierarchy = result;
+                    return;
+                }).done(function () { done(); });
+            });
+        });
+
+        it('should successfully delete leaf topics and their quizzes', function (done) {
+            var scienceTopic = _.findWhere(hierarchy, { name: 'Science' });
+            var chemistrySubtopic = _.findWhere(scienceTopic.subtopics, { name: 'Chemistry' });
+
+            // Here's the topic we will be deleting
+            var organicChemistrySubtopic = _.findWhere(chemistrySubtopic.subtopics, { name: 'Organic Chemistry' });
+
+            // Make sure quiz within the topic initially exists
+            var introToOrganicChemistry = _.findWhere(organicChemistrySubtopic.quizzes, { name: 'Introduction to Organic Chemistry' });
+            return Q(Quiz.findById(introToOrganicChemistry._id).exec())
+                .then(function (quiz) {
+                    expect(quiz).to.exist;
+                    return Topic.findById(organicChemistrySubtopic._id).exec();
+                })
+                .then(function (topic) {
+                    // Delete the topic
+                    return QuizService.deleteTopic(topic)
+                })
+                .then(function () {
+                    // Update user doc
+                    return User.findById(testUser._id).exec();
+                })
+                .then(function (user) {
+                    testUser = user;
+
+                    // Retrieve new quiz/topic hierarchy
+                    return QuizService.getQuizzesAndTopics(testUser);
+                })
+                .then(function (hierarchy) {
+                    var scienceTopic = _.findWhere(hierarchy, { name: 'Science' });
+                    var chemistrySubtopic = _.findWhere(scienceTopic.subtopics, { name: 'Chemistry' });
+                    var organicChemistrySubtopic = _.findWhere(chemistrySubtopic.subtopics, { name: 'Organic Chemistry' });
+
+                    // Make sure topic got deleted
+                    expect(organicChemistrySubtopic).to.be.undefined;
+
+                    // Also make sure quiz got deleted
+                    return Quiz.findById(introToOrganicChemistry._id).exec()
+                })
+                .then(function (quiz) {
+                    expect(quiz).not.to.exist;
+                })
+                .done(function () { done(); });
+        });
+
+        it('should successfully delete root topics, and all their subtopics and quizzes', function (done) {
+            var philosophyTopic = _.findWhere(hierarchy, { name: 'Philosophy' });
+            var introToPhilosophyQuiz = _.findWhere(philosophyTopic.quizzes, { name: 'Introduction to Philosophy' });
+            var logicSubtopic = _.findWhere(philosophyTopic.subtopics, { name: 'Logic and Reasoning' });
+            var metaphysicsSubtopic = _.findWhere(philosophyTopic.subtopics, { name: 'Metaphysics' });
+            var cosmologyQuiz = _.findWhere(metaphysicsSubtopic.quizzes, { name: 'Cosmology and Cosmogony' });
+            var determinismQuiz = _.findWhere(metaphysicsSubtopic.quizzes, { name: 'Determinism and Free Will' });
+
+            // Define utility functions for checking if a topic/quiz exists in the DB
+            var topicExists = function (topic) { return Topic.findById(topic._id).exec().then(function (doc) { return !!doc; }); };
+            var quizExists = function (quiz) { return Quiz.findById(quiz._id).exec().then(function (doc) { return !!doc; }); };
+
+            // Make sure all of the above topics/quizzes initially exist.
+            var topics = [philosophyTopic, logicSubtopic, metaphysicsSubtopic];
+            var quizzes = [introToPhilosophyQuiz, cosmologyQuiz, determinismQuiz];
+            return Q.all(_.map(topics, topicExists).concat(_.map(quizzes, quizExists)))
+                .then(function (result) {
+                    expect(result).to.eql([ true, true, true, true, true, true ]);
+
+                    // Find and delete the root topic
+                    return Topic.findById(philosophyTopic._id).exec().then(function (topic) {
+                        return QuizService.deleteTopic(topic)
+                    });
+                })
+                .then(function (result) {
+                    // Make sure result is the deleted document
+                    expect(result.name).to.equal('Philosophy');
+
+                    // Make sure all of the prior topics/quizzes no longer exist in the DB
+                    return Q.all(_.map(topics, topicExists).concat(_.map(quizzes, quizExists)))
+                })
+                .then(function (result) {
+                    expect(result).to.eql([ false, false, false, false, false, false ]);
+
+                    // Update user doc
+                    return User.findById(testUser._id).exec();
+                })
+                .then(function (user) {
+                    testUser = user;
+
+                    // Retrieve the new quiz/topic hierarchy and make sure the philosophy topic is
+                    // no longer present in the top-level topics list.
+                    return QuizService.getQuizzesAndTopics(testUser);
+                })
+                .then(function (hierarchy) {
+                    var philosophyTopic = _.findWhere(hierarchy, { name: 'Philosophy' });
+                    expect(philosophyTopic).to.be.undefined;
+                })
+                .done(function () { done(); });
+        });
+    });
+
+    describe('importTopicTree', function () {
+        var testUser;
+        var topics = {};
+        var quizzes = {};
+        var hierarchy;
+
+        before(function (done) {
+
+            User.createUser({
+                email: 'pendergast@example.com',
+                password: 'letmein'
+            }, function (err, user) {
+                if (err) throw err;
+                testUser = user;
+
+                return QuizService.importTopicTree(user, [
+                    {
+                        name: 'Science',
+                        quizzes: [
+                            { name: 'The Scientific Method', questions: [] },
+                            { name: 'The Ethics of Scientific Research', questions: [] }
+                        ],
+                        subtopics: [
+                            {
+                                name: 'Physics',
+                                quizzes: [
+                                    { name: 'Physics 101', questions: [] }
+                                ],
+                                subtopics: [
+                                    {
+                                        name: 'Quantum Mechanics',
+                                        quizzes: [
+                                            { name: 'Introduction to Quantum Mechanics', questions: [] }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                name: 'Chemistry',
+                                subtopics: [
+                                    {
+                                        name: 'Organic Chemistry',
+                                        quizzes: [
+                                            { name: 'Introduction to Organic Chemistry', questions: [] }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Philosophy',
+                        quizzes: [
+                            { name: 'Introduction to Philosophy', questions: [] }
+                        ],
+                        subtopics: [
+                            { name: 'Logic and Reasoning', quizzes: [] },
+                            { name: 'Metaphysics', quizzes: [] }
+                        ]
+                    },
+                    { name: 'Underwater Basket Weaving', quizzes: [], subtopics: [] }
+                ], null).then(function () {
+                    // Update user doc
+                    return User.findById(testUser._id).exec();
+                }).then(function (user) {
+                    testUser = user;
+                    return QuizService.getQuizzesAndTopics(testUser);
+                }).then(function (result) {
+                    hierarchy = result;
+                    return;
+                }).done(function () { done(); });
+            });
+        });
+
+        it('should import top-level topics', function () {
+            var topLevelTopics = _.pluck(hierarchy, 'name');
+            expect(topLevelTopics).to.eql([ 'Science', 'Philosophy', 'Underwater Basket Weaving' ]);
+        });
+
+        it('should import quizzes for top-level topics', function () {
+            var scienceTopic = _.findWhere(hierarchy, { name: 'Science' });
+            var scienceQuizzes = _.pluck(scienceTopic.quizzes, 'name');
+            expect(scienceQuizzes).to.eql([ 'The Scientific Method', 'The Ethics of Scientific Research' ]);
+
+            var philosophyTopic = _.findWhere(hierarchy, { name: 'Philosophy' });
+            var philosophyQuizzes = _.pluck(philosophyTopic.quizzes, 'name');
+            expect(philosophyQuizzes).to.eql([ 'Introduction to Philosophy' ]);
+        });
+
+        it('should import empty topics correctly', function () {
+            var underwaterBasketWeaving = _.findWhere(hierarchy, { name: 'Underwater Basket Weaving' });
+            expect(underwaterBasketWeaving.subtopics).to.be.empty;
+            expect(underwaterBasketWeaving.quizzes).to.be.empty;
+        });
+
+        it('should import subtopics correctly', function () {
+            var scienceTopic = _.findWhere(hierarchy, { name: 'Science' });
+            var scienceSubtopics = _.pluck(scienceTopic.subtopics, 'name');
+            expect(scienceSubtopics).to.eql([ 'Physics', 'Chemistry' ]);
+
+            var philosophyTopic = _.findWhere(hierarchy, { name: 'Philosophy' });
+            var philosophySubtopics = _.pluck(philosophyTopic.subtopics, 'name');
+            expect(philosophySubtopics).to.eql([ 'Logic and Reasoning', 'Metaphysics' ]);
+        });
+
+        it('should import quizzes for subtopics', function () {
+            var scienceTopic = _.findWhere(hierarchy, { name: 'Science' });
+            var physicsSubtopic = _.findWhere(scienceTopic.subtopics, { name: 'Physics' });
+            var physicsQuizzes = _.pluck(physicsSubtopic.quizzes, 'name');
+            expect(physicsQuizzes).to.eql([ 'Physics 101' ]);
+        });
+
+        it('should import subtopics without quizzes correctly', function () {
+            var scienceTopic = _.findWhere(hierarchy, { name: 'Science' });
+            var chemistrySubtopic = _.findWhere(scienceTopic.subtopics, { name: 'Chemistry' });
+            var chemistryQuizzes = _.pluck(chemistrySubtopic.quizzes, 'name');
+            expect(chemistryQuizzes).to.be.empty;
+        });
+
+        it('should import sub-subtopics correctly', function () {
+            var scienceTopic = _.findWhere(hierarchy, { name: 'Science' });
+            var chemistrySubtopic = _.findWhere(scienceTopic.subtopics, { name: 'Chemistry' });
+            var chemistrySubtopics = _.pluck(chemistrySubtopic.subtopics, 'name');
+            expect(chemistrySubtopics).to.eql([ 'Organic Chemistry' ]);
+        });
+
+        it('should import sub-subtopics quizzes correctly', function () {
+            var scienceTopic = _.findWhere(hierarchy, { name: 'Science' });
+            var chemistrySubtopic = _.findWhere(scienceTopic.subtopics, { name: 'Chemistry' });
+            var organicChemistrySubtopic = _.findWhere(chemistrySubtopic.subtopics, { name: 'Organic Chemistry' });
+            var organicChemistryQuizzes = _.pluck(organicChemistrySubtopic.quizzes, 'name');
+            expect(organicChemistryQuizzes).to.eql([ 'Introduction to Organic Chemistry' ]);
         });
     });
 });
