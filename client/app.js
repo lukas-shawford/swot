@@ -4,6 +4,7 @@ var app = angular.module('swot', [
     'ui.sortable',
     'focus',
     'confirmExit',
+    'confirmButton',
     'ngDebounce',
     'ngAnimate',
     'xeditable',

@@ -32,7 +32,7 @@
  * This was borrowed and slightly modified from here:
  * http://wegnerdesign.com/blog/angular-js-directive-tutorial-on-attribute-bootstrap-confirm-button/
  */
-angular.module('swot').directive('confirmButton', function ($document, $parse) {
+angular.module( 'confirmButton', [] ).directive('confirmButton', function($document, $parse) {
     return {
         restrict: 'A',
         scope: {
