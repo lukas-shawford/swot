@@ -195,11 +195,14 @@ exports.create = function (req, res) {
     if (!data.name) { data.name = "New Quiz"; }
 
     Quiz.createQuiz({ name: data.name }, req.user)
-        .then(function (quiz) {
+        .then(function (result) {
+            var quiz = result[0];
             updateQuiz(quiz, req, res, true);
         })
         .catch(function (err) {
             console.error(err.stack);
+            // TODO: When converting this over to REST, no need to include the message (it's repetitive)
+            // Just send a 500 response. The client already prepends "An error occured while saving the quiz".
             return res.json({
                 success: false,
                 message: "An error occurred creating the quiz"
