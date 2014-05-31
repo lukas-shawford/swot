@@ -11,7 +11,8 @@ block content
 
                 abn-tree#topics(tree-data="topicTreeData", template-url="/partials/topicsSidebar.html", icon-leaf=""
                     icon-expand="glyphicon glyphicon-chevron-right", icon-collapse="glyphicon glyphicon-chevron-down"
-                    on-rename="renameTopic(branch.data, newName)", tree-control="topicTree")
+                    on-rename="renameTopic(branch.data, newName)", on-delete="deleteTopic(branch.data, branch)"
+                    tree-control="topicTree")
 
                 button.btn.btn-sm(ng-click="addTopic('New Topic')")
                     span.glyphicon.glyphicon-plus

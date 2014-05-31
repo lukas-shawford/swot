@@ -70,6 +70,21 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
         });
     };
 
+    $scope.deleteTopic = function (topic, branch) {
+        bootbox.confirm('Are you sure you want to delete this topic? All quizzes and subtopics ' +
+            'will also be deleted.', function (result) {
+                if (!result) { return; }
+                return $http.delete('/topics/' + topic._id).then(function (response) {
+                    if (branch) {
+                        $scope.topicTree.remove_branch(branch);
+                    }
+                    bootbox.alert("The topic has been successfully deleted.");
+                }, function (response) {
+                    bootbox.alert(response.data.error || "Oops, something went wrong! Please try again later.");
+                });
+            });
+    };
+
     $scope.isBlank = function (str) {
         return (!str || /^\s*$/.test(str));
     };

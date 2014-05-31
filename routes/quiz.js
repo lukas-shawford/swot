@@ -437,6 +437,21 @@ exports.updateTopic = function (req, res) {
         .done();
 };
 
+exports.deleteTopic = function (req, res) {
+    return getTopicAndVerifyOwnership(req.params.id, req.user)
+        .then(function (topic) {
+            if (!topic) { return res.send(404); }
+            return QuizService.deleteTopic(topic).then(function () {
+                return res.send(200);
+            });
+        })
+        .catch(function (err) {
+            console.error(err.stack || err);
+            return res.send(500);
+        })
+        .done();
+};
+
 exports.exportJson = function (req, res, next) {
 
     // TODO: Error handling / validation is very similar - refactor shared logic.

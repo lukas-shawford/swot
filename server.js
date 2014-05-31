@@ -95,6 +95,7 @@ app.post('/save', quiz.save);
 app.post('/delete', quiz.deleteQuiz);
 app.get('/quiz/:id', quiz.quiz);
 app.get('/export', quiz.exportJson);
+app.delete('/quizzes/:id', quiz.deleteQuiz);
 
 // Questions
 app.get('/questions', quiz.questions);
@@ -104,6 +105,7 @@ app.post('/submit', quiz.submitQuestion);
 app.get('/topics/:id', quiz.getTopic);
 app.post('/topics', quiz.addTopic);
 app.patch('/topics/:id', quiz.updateTopic);
+app.delete('/topics/:id', quiz.deleteTopic);
 
 // ----------------------------------------------------------------------------
 

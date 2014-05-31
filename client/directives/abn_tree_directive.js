@@ -15,6 +15,7 @@
                     treeData: '=',
                     onSelect: '&',
                     onRename: '&',
+                    onDelete: '&',
                     initialSelection: '@',
                     treeControl: '='
                 },
@@ -120,6 +121,13 @@
                             return scope.onRename({
                                 branch: row.branch,
                                 newName: newName
+                            });
+                        }
+                    };
+                    scope.user_deletes_row = function (row) {
+                        if (scope.onDelete != null) {
+                            return scope.onDelete({
+                                branch: row.branch
                             });
                         }
                     };
@@ -478,7 +486,7 @@
                                     }
                                 }
                             };
-                            return tree.select_prev_branch = function (b) {
+                            tree.select_prev_branch = function (b) {
                                 var prev;
                                 if (b == null) {
                                     b = selected_branch;
@@ -491,6 +499,20 @@
                                     }
                                 }
                             };
+                            tree.remove_branch = function (branch) {
+                                branch = branch || selected_branch;
+                                if (branch) {
+                                    var parent;
+                                    if (branch.parent_uid) {
+                                        parent = tree.get_parent_branch(branch).children;
+                                    } else {
+                                        parent = scope.treeData;
+                                    }
+                                    var index = parent.indexOf(branch);
+                                    parent.splice(index, 1);
+                                }
+                            };
+                            return tree;
                         }
                     }
                 }
