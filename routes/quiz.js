@@ -27,7 +27,7 @@ exports.quizzes = function (req, res) {
             topics = result;
         })
         .catch(function (err) {
-            console.error(err.stack);
+            console.error(err.stack || err);
             topics = [];
             res.locals.message = {
                 type: 'error',
@@ -39,7 +39,8 @@ exports.quizzes = function (req, res) {
                 title: 'My Quizzes',
                 topics: topics
             });
-        });
+        })
+        .done();
 };
 
 /*
@@ -79,7 +80,7 @@ exports.quizzes = function (req, res) {
             });
         })
         .catch(function (err) {
-            console.error(err.stack);
+            console.error(err.stack || err);
             quizzes = [];
             subjects = [];
             res.locals.message = {
@@ -200,7 +201,7 @@ exports.create = function (req, res) {
             updateQuiz(quiz, req, res, true);
         })
         .catch(function (err) {
-            console.error(err.stack);
+            console.error(err.stack || err);
             // TODO: When converting this over to REST, no need to include the message (it's repetitive)
             // Just send a 500 response. The client already prepends "An error occured while saving the quiz".
             return res.json({
@@ -388,9 +389,10 @@ exports.getTopic = function (req, res) {
             return res.json(200, topic.toObject());
         })
         .catch(function (err) {
-            console.error(err.stack);
+            console.error(err.stack || err);
             return res.send(500);
-        });
+        })
+        .done();
 };
 
 exports.addTopic = function (req, res) {
@@ -402,9 +404,10 @@ exports.addTopic = function (req, res) {
             return res.json(201, topic.toObject());
         })
         .catch(function (err) {
-            console.error(err.stack);
+            console.error(err.stack || err);
             return res.json(500, { error: "An error occurred while creating the topic." });
-        });
+        })
+        .done();
 };
 
 exports.updateTopic = function (req, res) {
@@ -419,9 +422,10 @@ exports.updateTopic = function (req, res) {
                 });
         })
         .catch(function (err) {
-            console.error(err.stack);
+            console.error(err.stack || err);
             return res.send(500);
-        });
+        })
+        .done();
 };
 
 exports.exportJson = function (req, res, next) {
