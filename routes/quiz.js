@@ -331,34 +331,43 @@ function updateQuiz(quiz, req, res, includeId) {
     });
 }
 
-exports.deleteQuiz = function (req, res, next) {
-    var data = req.body;
-    var quizId = data._id;
-
-    if (!quizId) {
-        return res.json({
-            success: false,
-            message: "Quiz ID is missing."
-        });
-    }
-
-    if (!req.user.ownsQuiz(quizId)) {
-        return res.json({
-            success: false,
-            message: 'Invalid quiz.'
-        });
-    }
-
-    Quiz.remove({ _id: quizId }, function (err) {
-        if (err) {
-            return res.json({
-                success: false,
-                message: err.toString()
+exports.deleteQuiz = function (req, res) {
+    return getQuizAndVerifyOwnership(req.params.id, req.user)
+        .then(function (quiz) {
+            if (!quiz) { return res.send(404); }
+            return QuizService.deleteQuiz(quiz).then(function () {
+                return res.send(200);
             });
-        }
-        return res.json({ success: true });
-    });
+        })
+        .catch(function (err) {
+            console.error(err.stack || err);
+            return res.send(500);
+        })
+        .done();
 };
+
+/**
+ * Validates that the given user owns the quiz with the specified ID, and if so, retrieves the
+ * quiz document from the database. Note that for verifying ownership, this method validates
+ * both that the quiz is present in the user.quizzes array, and that quiz.createdBy matches the
+ * user ID. If *either* is false, this will return null.
+ * @param quizId The Quiz ID
+ * @param user The user to validate against
+ * @returns Promise that resolves to a quiz document if the quiz ID is valid and the user owns
+ * the quiz. Otherwise, a promise that resolves to null.
+ */
+function getQuizAndVerifyOwnership (quizId, user) {
+    return Q.fcall(function () {
+        if (!_.find(user.quizzes, function (quiz) { return quiz.equals(quizId); })) {
+            return null;
+        }
+
+        return Quiz.findById(quizId).exec()
+            .then(function (quiz) {
+                return (quiz && quiz.createdBy.equals(user._id)) ? quiz : null;
+            });
+    });
+}
 
 /**
  * Validates that the given user owns the topic with the specified ID, and if so, retrieves the
