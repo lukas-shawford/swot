@@ -5,6 +5,7 @@ var async = require('async');
 var _ = require('underscore');
 var User = require('../../lib/user');
 var Quiz = require('../../lib/quiz').Quiz;
+var QuizService = require('../../lib/quiz/quizService');
 var Topic = require('../../lib/quiz').Topic;
 
 var MONGODB_URL = process.env.MONGODB_TEST_URL || 'localhost:27017/swot_test';
@@ -151,8 +152,8 @@ describe('userDb', function () {
             ]).spread(function (_stephanie, _barbara) {
                 // Create 2 test quizzes, one owned by stephanie, and the other by barbara
                 return Q.all([
-                    Quiz.createQuiz({ name: 'Test Quiz' }, _stephanie),
-                    Quiz.createQuiz({ name: 'Test Quiz' }, _barbara)
+                    QuizService.createQuiz({ name: 'Test Quiz' }, _stephanie),
+                    QuizService.createQuiz({ name: 'Test Quiz' }, _barbara)
                 ]);
             }).spread(function (_stephanieResult, _barbaraResult) {
                 stephanieQuiz = _stephanieResult[0];

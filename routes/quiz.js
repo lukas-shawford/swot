@@ -195,7 +195,7 @@ exports.create = function (req, res) {
     delete data._id;
     if (!data.name) { data.name = "New Quiz"; }
 
-    Quiz.createQuiz({ name: data.name }, req.user)
+    QuizService.createQuiz({ name: data.name }, req.user)
         .then(function (result) {
             var quiz = result[0];
             updateQuiz(quiz, req, res, true);
@@ -405,7 +405,7 @@ exports.getTopic = function (req, res) {
 };
 
 exports.addTopic = function (req, res) {
-    Topic.createTopic(req.body, req.user)
+    QuizService.createTopic(req.body, req.user)
         .then(function (result) {
             var topic = result[0];
             if (!topic) { throw new Error("Failed to create new topic"); }
