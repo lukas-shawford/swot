@@ -1,3 +1,4 @@
+var Q = require('q');
 var chai = require('chai');
 var expect = chai.expect;
 var mongoose = require('mongoose');
@@ -7,6 +8,7 @@ var User = require('../../lib/user');
 var Quiz = require('../../lib/quiz').Quiz;
 var Question = require('../../lib/question').Question;
 var FillInQuestion = require('../../lib/questions/fillIn').FillInQuestion;
+var MultipleChoiceQuestion = require('../../lib/questions/multipleChoice').MultipleChoiceQuestion;
 
 var MONGODB_URL = process.env.MONGODB_TEST_URL || 'localhost:27017/swot_test';
 chai.Assertion.includeStack = true;
@@ -36,6 +38,7 @@ describe('quiz', function () {
         var testQuizId;
 
         describe('createQuiz', function () {
+
             it('should be able to create a quiz and associate it with a user.', function (done) {
                 User.createUser({
                     email: 'test@example.com',
@@ -66,6 +69,43 @@ describe('quiz', function () {
                             throw err;
                         }).done();
                 });
+            });
+
+            it('should save questions when creating a quiz', function (done) {
+                Q(User.findById(testUserId).exec())
+                    .then(function (user) {
+                        return Quiz.createQuiz({
+                            name: 'Night Flying',
+                            questions: [
+                                new FillInQuestion({
+                                    questionHtml: "What is the name of the photoreceptors in the retina of the eye that allow for color as well as detail vision?",
+                                    answer: "cones",
+                                    alternativeAnswers: ["cone"]
+                                }),
+                                new FillInQuestion({
+                                    questionHtml: "During a constant rate turn, you tilt your head down " +
+                                        "to change a fuel tank. The rapid head movement creates an overwhelming " +
+                                        "sensation of rotating, turning, or accelerating in a " +
+                                        "different direction. What is this illusion called?",
+                                    answer: "Coriolis Illusion",
+                                    ignoreCase: true,
+                                    alternativeAnswers: [
+                                        'coriolis',
+                                        'the coriolis illusion'
+                                    ]
+                                })
+                            ]
+                        }, user);
+                    })
+                    .then(function (result) {
+                        var quiz = result[0];
+                        expect(quiz.questions).to.have.length(2);
+                        expect(quiz.questions[0]).to.be.an.instanceof(FillInQuestion);
+                        expect(quiz.questions[0].answer).to.equal('cones');
+                        expect(quiz.questions[1]).to.be.an.instanceof(FillInQuestion);
+                        expect(quiz.questions[1].answer).to.equal('Coriolis Illusion');
+                    })
+                    .done(function () { done(); });
             });
         });
 
