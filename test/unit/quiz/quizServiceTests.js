@@ -8,6 +8,7 @@ var QuizService = require('../../../lib/quiz/quizService');
 var User = require('../../../lib/user');
 var Quiz = require('../../../lib/quiz').Quiz;
 var Topic = require('../../../lib/quiz').Topic;
+var FillInQuestion = require('../../../lib/questions/fillIn').FillInQuestion;
 
 var MONGODB_URL = process.env.MONGODB_TEST_URL || 'localhost:27017/swot_test';
 chai.Assertion.includeStack = true;
@@ -52,7 +53,28 @@ describe('quizService', function () {
                     {
                         name: 'Flying',
                         quizzes: [
-                            { name: 'Night Flying', questions: [] },
+                            {
+                                name: 'Night Flying',
+                                questions: [
+                                    new FillInQuestion({
+                                        questionHtml: "What is the name of the photoreceptors in the retina of the eye that allow for color as well as detail vision?",
+                                        answer: "cones",
+                                        alternativeAnswers: ["cone"]
+                                    }),
+                                    new FillInQuestion({
+                                        questionHtml: "During a constant rate turn, you tilt your head down " +
+                                            "to change a fuel tank. The rapid head movement creates an overwhelming " +
+                                            "sensation of rotating, turning, or accelerating in a " +
+                                            "different direction. What is this illusion called?",
+                                        answer: "Coriolis Illusion",
+                                        ignoreCase: true,
+                                        alternativeAnswers: [
+                                            'coriolis',
+                                            'the coriolis illusion'
+                                        ]
+                                    })
+                                ]
+                            },
                             { name: 'Weather', questions: [] }
                         ],
                         subtopics: [
@@ -134,6 +156,13 @@ describe('quizService', function () {
             var programmingTopic = _.findWhere(hierarchy, { name: 'Programming' });
             var csharpSubtopic = _.findWhere(programmingTopic.subtopics, { name: 'C#.NET' });
             expect(csharpSubtopic.quizzes).to.be.empty;
+        });
+
+        it('should set quiz.numQuestions to the number of questions in the quiz instead of returning the full questions list', function () {
+            var flyingTopic = _.findWhere(hierarchy, { name: 'Flying' });
+            var nightFlyingQuiz = _.findWhere(flyingTopic.quizzes, { name: 'Night Flying' });
+            expect(nightFlyingQuiz.numQuestions).to.equal(2);
+            expect(nightFlyingQuiz.questions).to.be.undefined;
         });
     });
 
