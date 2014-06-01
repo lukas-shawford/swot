@@ -120,7 +120,8 @@ describe('quizService', function () {
 
         it('should load top-level topics correctly', function () {
             var topLevelTopics = _.pluck(hierarchy, 'name');
-            expect(topLevelTopics).to.eql([ 'Underwater Basket Weaving', 'Flying', 'Programming' ]);
+            // Note: "General" topic is created automatically when creating a new user
+            expect(topLevelTopics).to.eql([ 'General', 'Underwater Basket Weaving', 'Flying', 'Programming' ]);
         });
 
         it('should set subtopics and quizzes to empty arrays if there are no subtopics or quizzes for a topic', function () {
@@ -433,7 +434,8 @@ describe('quizService', function () {
 
         it('should import top-level topics', function () {
             var topLevelTopics = _.pluck(hierarchy, 'name');
-            expect(topLevelTopics).to.eql([ 'Science', 'Philosophy', 'Underwater Basket Weaving' ]);
+            // Note: "General" topic is created automatically when creating a new user
+            expect(topLevelTopics).to.eql([ 'General', 'Science', 'Philosophy', 'Underwater Basket Weaving' ]);
         });
 
         it('should import quizzes for top-level topics', function () {

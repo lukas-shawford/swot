@@ -52,6 +52,24 @@ describe('userDb', function () {
                 })
                 .done(function () { done(); });
         });
+
+        it('should create a topic called "General" when creating a new user', function (done) {
+            return User.createUser({
+                    email: 'wuggles@example.com',
+                    password: 'wugglewuggle'
+                })
+                .then(function (user) {
+                    expect(user.topics).to.have.length(1);
+                    var topic = user.topics[0];
+                    return Topic.findById(topic).exec();
+                })
+                .then(function (topic) {
+                    expect(topic).to.exist;
+                    expect(topic.name).to.equal("General");
+                })
+                .done(function () { done(); });
+        });
+
     });
 
     describe('findByEmail', function () {
