@@ -371,24 +371,17 @@ function getQuizAndVerifyOwnership (quizId, user) {
 
 /**
  * Validates that the given user owns the topic with the specified ID, and if so, retrieves the
- * topic document from the database. Note that for verifying ownership, this method validates
- * both that the topic is present in the user.topics array, and that topic.createdBy matches the
- * user ID. If *either* is false, this will return null.
+ * topic document from the database.
  * @param topicId The Topic ID
  * @param user The user to validate against
  * @returns Promise that resolves to a topic document if the topic ID is valid and the user owns
  * the topic. Otherwise, a promise that resolves to null.
  */
 function getTopicAndVerifyOwnership (topicId, user) {
-    return Q.fcall(function () {
-        if (!_.find(user.topics, function (topic) { return topic.equals(topicId); })) {
-            return null;
-        }
-
-        return Topic.findByIdQ(topicId).then(function (topic) {
+    return Q(Topic.findById(topicId).exec())
+        .then(function (topic) {
             return (topic && topic.createdBy.equals(user._id)) ? topic : null;
         });
-    });
 }
 
 exports.getTopic = function (req, res) {
