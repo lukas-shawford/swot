@@ -26,12 +26,13 @@ exports.submit = function (req, res, next) {
             password: data.password
         });
 
-        User.createUser(user, function (err, user) {
-            if (err) return next(err);
+        return User.createUser(user).done(function (user) {
             req.login(user, function (err) {
                 if (err) return next(err);
                 res.redirect('/');
             });
+        }, function (err) {
+            return next(err);
         });
     });
 };

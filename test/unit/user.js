@@ -23,39 +23,44 @@ describe('userDb', function () {
     describe('createUser', function () {
 
         it('should be able to find user after creating one.', function (done) {
-            User.createUser({
-                email: 'tobi@example.com',
-                password: 'i am secret'
-            }, function (err, user) {
-                if (err) throw err;
-                User.findByEmail('tobi@example.com', function (err, user) {
-                    expect(err).to.be.null;
-                    expect(user).to.exist;
-                    done();
-                });
-            });
+            return User.createUser({
+                    email: 'tobi@example.com',
+                    password: 'i am secret'
+                })
+                .then(function (user) {
+                    User.findByEmail('tobi@example.com', function (err, user) {
+                        expect(err).to.be.null;
+                        expect(user).to.exist;
+                        done();
+                    });
+                })
+                .done();
         });
 
         it('should not be able to create multiple users with same email.', function (done) {
             User.createUser({
-                email: 'tobi@example.com',
-                password: 'i am secret'
-            }, function (err, user) {
-                expect(err).to.not.be.null;
-                expect(err.message).to.equal('An account with that email already exists.');
-                expect(user).to.be.undefined;
-                done();
-            });
+                    email: 'tobi@example.com',
+                    password: 'i am secret'
+                })
+                .then(function (user) {
+                    throw new Error("Oops - user was created, even though another user with that " +
+                        "same email already exists. This should *not* have been allowed to happen!");
+                })
+                .catch(function (err) {
+                    expect(err).to.not.be.null;
+                    expect(err.message).to.equal('An account with that email already exists.');
+                })
+                .done(function () { done(); });
         });
     });
 
     describe('findByEmail', function () {
 
         before(function (done) {
-            User.createUser({
+            return User.createUser({
                 email: 'bob@example.com',
                 password: 'something'
-            }, done);
+            }).done(function () { done(); });
         });
 
         it('should be able to find user with matching email', function (done) {
@@ -81,11 +86,10 @@ describe('userDb', function () {
         var albert;
 
         before(function (done) {
-            User.createUser({
+            return User.createUser({
                 email: 'albert@example.com',
                 password: 'letmein'
-            }, function (err, user) {
-                if (err) throw err;
+            }).done(function (user) {
                 albert = user;
                 done();
             });
@@ -124,8 +128,8 @@ describe('userDb', function () {
             });
 
             return Q.all([
-                Q.nbind(User.createUser, User)({ email: 'stephanie@example.com', password: 'test' }),
-                Q.nbind(User.createUser, User)({ email: 'barbara@example.com', password: 'test' })
+                User.createUser({ email: 'stephanie@example.com', password: 'test' }),
+                User.createUser({ email: 'barbara@example.com', password: 'test' })
             ]).spread(function (_stephanie, _barbara) {
                 // Create 2 test quizzes, one owned by stephanie, and the other by barbara
                 return Q.all([
@@ -138,7 +142,7 @@ describe('userDb', function () {
 
                 barbaraQuiz = _barbaraResult[0];
                 barbara = _barbaraResult[1];
-            }).done(done, function (err) { throw err; });
+            }).done(function () { done(); });
         });
 
         it('should return true if user owns quiz', function () {

@@ -43,7 +43,7 @@ Q.ninvoke(mongoose, 'connect', MONGODB_URL)
 })
 .then(function () {
     console.log('Setting up test user...');
-    return Q.ninvoke(User, 'createUser', {
+    return User.createUser({
         email: 'test@example.com',
         password: 'tester'
     });

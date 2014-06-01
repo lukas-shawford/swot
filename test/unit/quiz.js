@@ -24,21 +24,20 @@ describe('quiz', function () {
         mongoose.connect(MONGODB_URL);
 
         // Delete all users and quizzes so we start off with a clean slate, and create a test user
-        User.remove({}, function (err) {
-            if (err) throw err;
-            Quiz.remove({}, function (err) {
-                if (err) throw err;
-
-                User.createUser({
+        return Q(User.remove({}).exec())
+            .then(function () {
+                return Quiz.remove({}).exec();
+            })
+            .then(function () {
+                return User.createUser({
                     email: 'test@example.com',
                     password: 'tester'
-                }, function (err, user) {
-                    if (err) throw err;
-                    testUserId = user._id;
-                    done();
                 });
-            });
-        });
+            })
+            .then(function (user) {
+                testUserId = user._id;
+            })
+            .done(function () { done(); });
     });
 
     after(function () {
@@ -93,6 +92,7 @@ describe('quiz', function () {
         });
 
         it('should verify parent topic belongs to same user when creating a subtopic', function (done) {
+            var topic;
             Q(User.findById(testUserId).exec())
                 .then(function (user) {
                     return Topic.createTopic({
@@ -100,44 +100,49 @@ describe('quiz', function () {
                     }, user);
                 })
                 .then(function (result) {
-                    var topic = result[0];
-                    User.createUser({
+                    topic = result[0];
+                    return User.createUser({
                         email: 'mallory@example.com',
                         password: 'tester'
-                    }, function (err, mallory) {
-                        if (err) throw err;
-                        return Topic.createTopic({
-                            name: "Mallory's Topic",
-                            parent: topic
-                        }, mallory).then(function (result) {
-                            throw new Error("Oops - subtopic was created even though parent topic is " +
-                                "not owned by the user. This should *not* have been allowed to happen!");
-                        }).catch(function (err) {
-                            expect(err.message).to.equal("Failed to create subtopic: parent topic not owned by user.");
-                        }).done(function () { done(); });
                     });
                 })
-                .done();
+                .then(function (mallory) {
+                    return Topic.createTopic({
+                        name: "Mallory's Topic",
+                        parent: topic
+                    }, mallory);
+                })
+                .then(function (result) {
+                    throw new Error("Oops - subtopic was created even though parent topic is " +
+                        "not owned by the user. This should *not* have been allowed to happen!");
+                })
+                .catch(function (err) {
+                    expect(err.message).to.equal("Failed to create subtopic: parent topic not owned by user.");
+                })
+                .done(function () { done(); });
         });
 
         it('should ignore createdBy from the data param and instead use the user param', function (done) {
+            var user;
             Q(User.findById(testUserId).exec())
-                .then(function (user) {
-                    User.createUser({
+                .then(function (_user) {
+                    user = _user;
+                    return User.createUser({
                         email: 'someoneelse@example.com',
                         password: 'tester'
-                    }, function (err, someoneElse) {
-                        if (err) throw err;
-                        return Topic.createTopic({
-                            name: "Literature",
-                            createdBy: someoneElse
-                        }, user).then(function (result) {
-                            var topic = result[0];
-                            expect(topic.createdBy.toString()).to.equal(testUserId.toString());
-                        }).done(function () { done(); });
                     });
                 })
-                .done();
+                .then(function (someoneElse) {
+                    return Topic.createTopic({
+                        name: "Literature",
+                        createdBy: someoneElse
+                    }, user);
+                })
+                .then(function (result) {
+                    var topic = result[0];
+                    expect(topic.createdBy.toString()).to.equal(testUserId.toString());
+                })
+                .done(function () { done(); });
         });
 
         it('should ignore dateCreated from the data param and instead use the current date', function (done) {
@@ -223,23 +228,26 @@ describe('quiz', function () {
         });
 
         it('should ignore createdBy from the data param and instead use the user param', function (done) {
+            var user;
             Q(User.findById(testUserId).exec())
-                .then(function (user) {
-                    User.createUser({
+                .then(function (_user) {
+                    user = _user;
+                    return User.createUser({
                         email: 'someoneelse2@example.com',
                         password: 'tester'
-                    }, function (err, someoneElse) {
-                        if (err) throw err;
-                        return Quiz.createQuiz({
-                            name: "Literature",
-                            createdBy: someoneElse
-                        }, user).then(function (result) {
-                            var quiz = result[0];
-                            expect(quiz.createdBy.toString()).to.equal(testUserId.toString());
-                        }).done(function () { done(); });
                     });
                 })
-                .done();
+                .then(function (someoneElse) {
+                    return Quiz.createQuiz({
+                        name: "Literature",
+                        createdBy: someoneElse
+                    }, user);
+                })
+                .then(function (result) {
+                    var quiz = result[0];
+                    expect(quiz.createdBy.toString()).to.equal(testUserId.toString());
+                })
+                .done(function () { done(); });
         });
 
         it('should ignore dateCreated from the data param and instead use the current date', function (done) {

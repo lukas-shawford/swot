@@ -41,77 +41,81 @@ describe('quizService', function () {
         var hierarchy;
 
         before(function (done) {
-            User.createUser({
-                email: 'hernando@example.com',
-                password: 'letmein'
-            }, function (err, user) {
-                if (err) throw err;
-                testUser = user;
+            return User.createUser({
+                    email: 'hernando@example.com',
+                    password: 'letmein'
+                })
+                .then(function (user) {
+                    testUser = user;
 
-                return QuizService.importTopicTree(user, [
-                    { name: 'Underwater Basket Weaving', quizzes: [], subtopics: [] },
-                    {
-                        name: 'Flying',
-                        quizzes: [
-                            {
-                                name: 'Night Flying',
-                                questions: [
-                                    new FillInQuestion({
-                                        questionHtml: "What is the name of the photoreceptors in the retina of the eye that allow for color as well as detail vision?",
-                                        answer: "cones",
-                                        alternativeAnswers: ["cone"]
-                                    }),
-                                    new FillInQuestion({
-                                        questionHtml: "During a constant rate turn, you tilt your head down " +
-                                            "to change a fuel tank. The rapid head movement creates an overwhelming " +
-                                            "sensation of rotating, turning, or accelerating in a " +
-                                            "different direction. What is this illusion called?",
-                                        answer: "Coriolis Illusion",
-                                        ignoreCase: true,
-                                        alternativeAnswers: [
-                                            'coriolis',
-                                            'the coriolis illusion'
-                                        ]
-                                    })
-                                ]
-                            },
-                            { name: 'Weather', questions: [] }
-                        ],
-                        subtopics: [
-                            { name: 'Regulations', quizzes: [] }
-                        ]
-                    },
-                    {
-                        name: 'Programming',
-                        quizzes: [
-                            { name: 'Algorithms & Data Structures', questions: [] },
-                            { name: 'Security', questions: [] }
-                        ],
-                        subtopics: [
-                            {
-                                name: 'Web Development',
-                                quizzes: [
-                                    { name: 'HTML', questions: [] },
-                                    { name: 'CSS', questions: [] },
-                                    { name: 'JavaScript', questions: [] }
-                                ]
-                            },
-                            {
-                                name: 'C#.NET',
-                                quizzes: []
-                            }
-                        ]
-                    }
-                ], null).then(function () {
+                    return QuizService.importTopicTree(user, [
+                        { name: 'Underwater Basket Weaving', quizzes: [], subtopics: [] },
+                        {
+                            name: 'Flying',
+                            quizzes: [
+                                {
+                                    name: 'Night Flying',
+                                    questions: [
+                                        new FillInQuestion({
+                                            questionHtml: "What is the name of the photoreceptors in the retina of the eye that allow for color as well as detail vision?",
+                                            answer: "cones",
+                                            alternativeAnswers: ["cone"]
+                                        }),
+                                        new FillInQuestion({
+                                            questionHtml: "During a constant rate turn, you tilt your head down " +
+                                                "to change a fuel tank. The rapid head movement creates an overwhelming " +
+                                                "sensation of rotating, turning, or accelerating in a " +
+                                                "different direction. What is this illusion called?",
+                                            answer: "Coriolis Illusion",
+                                            ignoreCase: true,
+                                            alternativeAnswers: [
+                                                'coriolis',
+                                                'the coriolis illusion'
+                                            ]
+                                        })
+                                    ]
+                                },
+                                { name: 'Weather', questions: [] }
+                            ],
+                            subtopics: [
+                                { name: 'Regulations', quizzes: [] }
+                            ]
+                        },
+                        {
+                            name: 'Programming',
+                            quizzes: [
+                                { name: 'Algorithms & Data Structures', questions: [] },
+                                { name: 'Security', questions: [] }
+                            ],
+                            subtopics: [
+                                {
+                                    name: 'Web Development',
+                                    quizzes: [
+                                        { name: 'HTML', questions: [] },
+                                        { name: 'CSS', questions: [] },
+                                        { name: 'JavaScript', questions: [] }
+                                    ]
+                                },
+                                {
+                                    name: 'C#.NET',
+                                    quizzes: []
+                                }
+                            ]
+                        }
+                    ], null);
+                })
+                .then(function () {
                     // Update user doc
                     return User.findById(testUser._id).exec();
-                }).then(function (user) {
+                })
+                .then(function (user) {
                     testUser = user;
                     return QuizService.getQuizzesAndTopics(testUser);
-                }).then(function (result) {
+                })
+                .then(function (result) {
                     hierarchy = result;
-                }).done(function () { done(); });
-            });
+                })
+                .done(function () { done(); });
         });
 
         it('should load top-level topics correctly', function () {
@@ -174,78 +178,82 @@ describe('quizService', function () {
 
         before(function (done) {
             User.createUser({
-                email: 'ferdinand@example.com',
-                password: 'letmein'
-            }, function (err, user) {
-                if (err) throw err;
-                testUser = user;
+                    email: 'ferdinand@example.com',
+                    password: 'letmein'
+                })
+                .then(function (user) {
+                    testUser = user;
 
-                return QuizService.importTopicTree(user, [
-                    {
-                        name: 'Science',
-                        quizzes: [
-                            { name: 'The Scientific Method', questions: [] },
-                            { name: 'The Ethics of Scientific Research', questions: [] }
-                        ],
-                        subtopics: [
-                            {
-                                name: 'Physics',
-                                quizzes: [
-                                    { name: 'Physics 101', questions: [] }
-                                ],
-                                subtopics: [
-                                    {
-                                        name: 'Quantum Mechanics',
-                                        quizzes: [
-                                            { name: 'Introduction to Quantum Mechanics', questions: [] }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                name: 'Chemistry',
-                                subtopics: [
-                                    {
-                                        name: 'Organic Chemistry',
-                                        quizzes: [
-                                            { name: 'Introduction to Organic Chemistry', questions: [] }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Philosophy',
-                        quizzes: [
-                            { name: 'Introduction to Philosophy', questions: [] }
-                        ],
-                        subtopics: [
-                            {
-                                name: 'Logic and Reasoning',
-                                quizzes: []
-                            },
-                            {
-                                name: 'Metaphysics',
-                                quizzes: [
-                                    { name: 'Cosmology and Cosmogony', questions: [] },
-                                    { name: 'Determinism and Free Will', questions: [] }
-                                ]
-                            }
-                        ]
-                    },
-                    { name: 'Underwater Basket Weaving', quizzes: [], subtopics: [] }
-                ], null).then(function () {
+                    return QuizService.importTopicTree(user, [
+                        {
+                            name: 'Science',
+                            quizzes: [
+                                { name: 'The Scientific Method', questions: [] },
+                                { name: 'The Ethics of Scientific Research', questions: [] }
+                            ],
+                            subtopics: [
+                                {
+                                    name: 'Physics',
+                                    quizzes: [
+                                        { name: 'Physics 101', questions: [] }
+                                    ],
+                                    subtopics: [
+                                        {
+                                            name: 'Quantum Mechanics',
+                                            quizzes: [
+                                                { name: 'Introduction to Quantum Mechanics', questions: [] }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: 'Chemistry',
+                                    subtopics: [
+                                        {
+                                            name: 'Organic Chemistry',
+                                            quizzes: [
+                                                { name: 'Introduction to Organic Chemistry', questions: [] }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            name: 'Philosophy',
+                            quizzes: [
+                                { name: 'Introduction to Philosophy', questions: [] }
+                            ],
+                            subtopics: [
+                                {
+                                    name: 'Logic and Reasoning',
+                                    quizzes: []
+                                },
+                                {
+                                    name: 'Metaphysics',
+                                    quizzes: [
+                                        { name: 'Cosmology and Cosmogony', questions: [] },
+                                        { name: 'Determinism and Free Will', questions: [] }
+                                    ]
+                                }
+                            ]
+                        },
+                        { name: 'Underwater Basket Weaving', quizzes: [], subtopics: [] }
+                    ], null);
+                })
+                .then(function () {
                     // Update user doc
                     return User.findById(testUser._id).exec();
-                }).then(function (user) {
+                })
+                .then(function (user) {
                     testUser = user;
                     return QuizService.getQuizzesAndTopics(testUser);
-                }).then(function (result) {
+                })
+                .then(function (result) {
                     hierarchy = result;
                     return;
-                }).done(function () { done(); });
-            });
+                })
+                .done(function () { done(); });
         });
 
         it('should successfully delete leaf topics and their quizzes', function (done) {
@@ -353,70 +361,74 @@ describe('quizService', function () {
 
         before(function (done) {
 
-            User.createUser({
-                email: 'pendergast@example.com',
-                password: 'letmein'
-            }, function (err, user) {
-                if (err) throw err;
-                testUser = user;
+            return User.createUser({
+                    email: 'pendergast@example.com',
+                    password: 'letmein'
+                })
+                .then(function (user) {
+                    testUser = user;
 
-                return QuizService.importTopicTree(user, [
-                    {
-                        name: 'Science',
-                        quizzes: [
-                            { name: 'The Scientific Method', questions: [] },
-                            { name: 'The Ethics of Scientific Research', questions: [] }
-                        ],
-                        subtopics: [
-                            {
-                                name: 'Physics',
-                                quizzes: [
-                                    { name: 'Physics 101', questions: [] }
-                                ],
-                                subtopics: [
-                                    {
-                                        name: 'Quantum Mechanics',
-                                        quizzes: [
-                                            { name: 'Introduction to Quantum Mechanics', questions: [] }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                name: 'Chemistry',
-                                subtopics: [
-                                    {
-                                        name: 'Organic Chemistry',
-                                        quizzes: [
-                                            { name: 'Introduction to Organic Chemistry', questions: [] }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Philosophy',
-                        quizzes: [
-                            { name: 'Introduction to Philosophy', questions: [] }
-                        ],
-                        subtopics: [
-                            { name: 'Logic and Reasoning', quizzes: [] },
-                            { name: 'Metaphysics', quizzes: [] }
-                        ]
-                    },
-                    { name: 'Underwater Basket Weaving', quizzes: [], subtopics: [] }
-                ], null).then(function () {
+                    return QuizService.importTopicTree(user, [
+                        {
+                            name: 'Science',
+                            quizzes: [
+                                { name: 'The Scientific Method', questions: [] },
+                                { name: 'The Ethics of Scientific Research', questions: [] }
+                            ],
+                            subtopics: [
+                                {
+                                    name: 'Physics',
+                                    quizzes: [
+                                        { name: 'Physics 101', questions: [] }
+                                    ],
+                                    subtopics: [
+                                        {
+                                            name: 'Quantum Mechanics',
+                                            quizzes: [
+                                                { name: 'Introduction to Quantum Mechanics', questions: [] }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    name: 'Chemistry',
+                                    subtopics: [
+                                        {
+                                            name: 'Organic Chemistry',
+                                            quizzes: [
+                                                { name: 'Introduction to Organic Chemistry', questions: [] }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            name: 'Philosophy',
+                            quizzes: [
+                                { name: 'Introduction to Philosophy', questions: [] }
+                            ],
+                            subtopics: [
+                                { name: 'Logic and Reasoning', quizzes: [] },
+                                { name: 'Metaphysics', quizzes: [] }
+                            ]
+                        },
+                        { name: 'Underwater Basket Weaving', quizzes: [], subtopics: [] }
+                    ], null);
+                })
+                .then(function () {
                     // Update user doc
                     return User.findById(testUser._id).exec();
-                }).then(function (user) {
+                })
+                .then(function (user) {
                     testUser = user;
                     return QuizService.getQuizzesAndTopics(testUser);
-                }).then(function (result) {
+                })
+                .then(function (result) {
                     hierarchy = result;
                     return;
-                }).done(function () { done(); });
-            });
+                })
+                .done(function () { done(); });
         });
 
         it('should import top-level topics', function () {
