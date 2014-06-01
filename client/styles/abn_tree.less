@@ -94,14 +94,14 @@ ul.nav.abn-tree {
      * Use a loop to generate a set of rules that look like this:
      *
      *     .level-1 {
-     *         .indented {
+     *         .indented, .editable-wrap {
      *             position: relative;
      *             left: 0px;
      *         }
      *     }
      *
      *     .level-2 {
-     *         .indented {
+     *         .indented, .editable-wrap {
      *             position: relative;
      *             left: 20px;
      *         }
@@ -112,7 +112,7 @@ ul.nav.abn-tree {
      */
     .loop (@index) when (@index > 0) {
         .level-@{index} {
-            .indented {
+            .indented, .editable-wrap {
                 position: relative;
                 left: (@abn-branch-indent * (@index - 1));
             }
