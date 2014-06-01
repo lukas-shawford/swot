@@ -6,6 +6,7 @@ var async = require('async');
 var _ = require('underscore');
 var User = require('../../lib/user');
 var Quiz = require('../../lib/quiz').Quiz;
+var Topic = require('../../lib/quiz').Topic;
 var Question = require('../../lib/question').Question;
 var FillInQuestion = require('../../lib/questions/fillIn').FillInQuestion;
 var MultipleChoiceQuestion = require('../../lib/questions/multipleChoice').MultipleChoiceQuestion;
@@ -15,16 +16,27 @@ chai.Assertion.includeStack = true;
 
 describe('quiz', function () {
 
+    var testUserId;
+    var testQuizId;
+
     before(function (done) {
         this.timeout(5000);
         mongoose.connect(MONGODB_URL);
 
-        // Delete all users and quizzes so we start off with a clean slate
+        // Delete all users and quizzes so we start off with a clean slate, and create a test user
         User.remove({}, function (err) {
             if (err) throw err;
             Quiz.remove({}, function (err) {
                 if (err) throw err;
-                done();
+
+                User.createUser({
+                    email: 'test@example.com',
+                    password: 'tester'
+                }, function (err, user) {
+                    if (err) throw err;
+                    testUserId = user._id;
+                    done();
+                });
             });
         });
     });
@@ -33,42 +45,50 @@ describe('quiz', function () {
         mongoose.connection.close();
     });
 
-    var testUserId;
-    var testQuizId;
+    describe('createTopic', function () {
 
+        it('should be able to create a topic and associate it with a user', function (done) {
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    return Topic.createTopic({
+                        name: "Philosophy"
+                    }, user);
+                })
+                .then(function (result) {
+                    var topic = result[0];
+                    expect(topic).to.exist;
+                    expect(topic.name).to.equal('Philosophy');
+                    expect(topic.createdBy.toString()).to.equal(testUserId.toString());
+                })
+                .done(function () { done(); });
+        });
+    });
 
     describe('createQuiz', function () {
 
         it('should be able to create a quiz and associate it with a user.', function (done) {
-            User.createUser({
-                email: 'test@example.com',
-                password: 'tester'
-            }, function (err, user) {
-                if (err) throw err;
-                testUserId = user._id;
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    return Quiz.createQuiz({
+                        name: 'My Test Quiz'
+                    }, user);
+                })
+                .then(function (result) {
+                    var quiz = result[0];
+                    var user = result[1];
+                    expect(quiz).to.exist;
+                    expect(user._id.toString()).to.equal(testUserId.toString());
+                    testQuizId = quiz._id;
 
-                Quiz.createQuiz({
-                    name: 'My Test Quiz'
-                }, user)
-                    .then(function (result) {
-                        var quiz = result[0];
-                        var user = result[1];
-                        expect(quiz).to.exist;
-                        expect(user._id.toString()).to.equal(testUserId.toString());
-                        testQuizId = quiz._id;
+                    // Ensure quiz is associated with the user
+                    expect(quiz.createdBy.toString()).to.equal(testUserId.toString());  // Check quiz.createdBy
+                    User.findOne({ _id: testUserId }, function (err, user) {           // Check User.quizzes (need to reload document first because it's out of sync)
+                        if (err) throw err;
+                        expect(user.quizzes).to.contain(testQuizId);
+                    });
+                })
+                .done(function () { done(); });
 
-                        // Ensure quiz is associated with the user
-                        expect(quiz.createdBy.toString()).to.equal(testUserId.toString());  // Check quiz.createdBy
-                        User.findOne({ _id: testUserId }, function (err, user) {           // Check User.quizzes (need to reload document first because it's out of sync)
-                            if (err) throw err;
-                            expect(user.quizzes).to.contain(testQuizId);
-                            done();
-                        });
-                    })
-                    .catch(function (err) {
-                        throw err;
-                    }).done();
-            });
         });
 
         it('should save questions when creating a quiz', function (done) {
