@@ -63,6 +63,63 @@ describe('quiz', function () {
                 .done(function () { done(); });
         });
 
+        it('should verify parent topic exists when creating a subtopic', function (done) {
+            var testUser;
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    testUser = user;
+                    return Topic.createTopic({
+                        name: "Parent"
+                    }, testUser);
+                })
+                .then(function (result) {
+                    var parentTopic = result[0];
+                    return Topic.findByIdAndRemove(parentTopic._id).exec();
+                })
+                .then(function (deletedTopic) {
+                    return Topic.createTopic({
+                        name: "Orphan",
+                        parent: deletedTopic
+                    }, testUser);
+                })
+                .then(function (result) {
+                    throw new Error("Oops - subtopic was created even though parent topic does " +
+                        "not exist anymore. This should *not* have been allowed to happen!");
+                })
+                .catch(function (err) {
+                    expect(err.message).to.equal("Parent topic not found.");
+                })
+                .done(function () { done(); });
+        });
+
+        it('should verify parent topic belongs to same user when creating a subtopic', function (done) {
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    return Topic.createTopic({
+                        name: "Test Topic"
+                    }, user);
+                })
+                .then(function (result) {
+                    var topic = result[0];
+                    User.createUser({
+                        email: 'mallory@example.com',
+                        password: 'tester'
+                    }, function (err, mallory) {
+                        if (err) throw err;
+                        return Topic.createTopic({
+                            name: "Mallory's Topic",
+                            parent: topic
+                        }, mallory).then(function (result) {
+                            throw new Error("Oops - subtopic was created even though parent topic is " +
+                                "not owned by the user. This should *not* have been allowed to happen!");
+                        }).catch(function (err) {
+                            expect(err.message).to.equal("Failed to create subtopic: parent topic not owned by user.");
+                        }).done(function () { done(); });
+                    });
+                })
+                .done();
+        });
+
         it('should ignore createdBy from the data param and instead use the user param', function (done) {
             Q(User.findById(testUserId).exec())
                 .then(function (user) {
@@ -80,6 +137,7 @@ describe('quiz', function () {
                         }).done(function () { done(); });
                     });
                 })
+                .done();
         });
 
         it('should ignore dateCreated from the data param and instead use the current date', function (done) {
@@ -181,6 +239,7 @@ describe('quiz', function () {
                         }).done(function () { done(); });
                     });
                 })
+                .done();
         });
 
         it('should ignore dateCreated from the data param and instead use the current date', function (done) {
