@@ -6,7 +6,9 @@
 
 */
 
-
+// Amount by which to indent each level in the tree. The root branches will not be indented.
+// Also, note that the maximum supported level of nesting is 9 (which includes the root level).
+@abn-branch-indent: 20px;
 
 /* ------------------------------------------
 AngularJS Animations...
@@ -85,39 +87,42 @@ ul.abn-tree i.indented {
 .abn-tree {
   cursor: pointer;
 }
-ul.nav.abn-tree .level-1 .indented {
-  position: relative;
-  left: 0px;
-}
-ul.nav.abn-tree .level-2 .indented {
-  position: relative;
-  left: 20px;
-}
-ul.nav.abn-tree .level-3 .indented {
-  position: relative;
-  left: 40px;
-}
-ul.nav.abn-tree .level-4 .indented {
-  position: relative;
-  left: 60px;
-}
-ul.nav.abn-tree .level-5 .indented {
-  position: relative;
-  left: 80px;
-}
-ul.nav.abn-tree .level-6 .indented {
-  position: relative;
-  left: 100px;
-}
-ul.nav.nav-list.abn-tree .level-7 .indented {
-  position: relative;
-  left: 120px;
-}
-ul.nav.nav-list.abn-tree .level-8 .indented {
-  position: relative;
-  left: 140px;
-}
-ul.nav.nav-list.abn-tree .level-9 .indented {
-  position: relative;
-  left: 160px;
+
+ul.nav.abn-tree {
+
+    /*
+     * Use a loop to generate a set of rules that look like this:
+     *
+     *     .level-1 {
+     *         .indented {
+     *             position: relative;
+     *             left: 0px;
+     *         }
+     *     }
+     *
+     *     .level-2 {
+     *         .indented {
+     *             position: relative;
+     *             left: 20px;
+     *         }
+     *     }
+     *
+     * For each level, the indentation should increase by @abn-branch-indent pixels. This should go through
+     * level 9, the maximum supported level of nesting.
+     */
+    .loop (@index) when (@index > 0) {
+        .level-@{index} {
+            .indented {
+                position: relative;
+                left: (@abn-branch-indent * (@index - 1));
+            }
+        }
+        .loop((@index - 1));
+    }
+
+    /* stop the loop upon reaching level 0 */
+    .loop (@index) when (@index <= 0) {}
+
+    /* Use the loop mixin to generate the rules for .level-1 through .level-9 */
+    .loop(9);
 }
