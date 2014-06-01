@@ -14,8 +14,7 @@
                 scope: {
                     treeData: '=',
                     onSelect: '&',
-                    onRename: '&',
-                    onDelete: '&',
+                    onBranchAction: '&',
                     initialSelection: '@',
                     treeControl: '='
                 },
@@ -116,18 +115,12 @@
                             return select_branch(branch);
                         }
                     };
-                    scope.user_renames_row = function (row, newName) {
-                        if (scope.onRename != null) {
-                            return scope.onRename({
-                                branch: row.branch,
-                                newName: newName
-                            });
-                        }
-                    };
-                    scope.user_deletes_row = function (row) {
-                        if (scope.onDelete != null) {
-                            return scope.onDelete({
-                                branch: row.branch
+                    scope.on_branch_action = function (action, branch, data) {
+                        if (scope.onBranchAction != null) {
+                            return scope.onBranchAction({
+                                action: action,
+                                branch: branch,
+                                data: data
                             });
                         }
                     };

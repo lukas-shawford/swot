@@ -9,7 +9,7 @@
         <div class="nav-item" ng-click="user_clicks_branch(row.branch)">
 
             <a href="#" editable-text="row.label"
-               e-form="btnEditRow" onbeforesave="user_renames_row(row, $data)"
+               e-form="btnEditRow" onbeforesave="on_branch_action('rename', row.branch, $data)"
                class="topic-name">
 
                 <span class="indented tree-label">{{ row.label }} </span>
@@ -24,7 +24,7 @@
                         </a>
                         <ul class="dropdown-menu pull-right" role="menu">
                             <li><a href="#" ng-click="btnEditRow.$show()">Rename</a></li>
-                            <li><a href="#" ng-click="user_deletes_row(row)">Delete</a></li>
+                            <li><a href="#" ng-click="on_branch_action('delete', row.branch)">Delete</a></li>
                         </ul>
                     </span>
                 </span>

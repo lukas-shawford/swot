@@ -70,6 +70,17 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
         });
     };
 
+    $scope.onBranchAction = function (action, branch, data) {
+        switch (action) {
+            case 'rename':
+                return $scope.renameTopic(branch.data, data);
+            case 'delete':
+                return $scope.deleteTopic(branch.data, branch);
+            default:
+                console.error("Unsupported action \"" + action + "\" performed on branch: " + branch);
+        }
+    };
+
     $scope.deleteTopic = function (topic, branch) {
         bootbox.confirm('Are you sure you want to delete this topic? All quizzes and subtopics ' +
             'will also be deleted.', function (result) {
