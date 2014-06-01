@@ -33,7 +33,7 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
     };
     */
 
-    $scope.renameTopic = function (topic, name) {
+    $scope.renameTopic = function (topic, name, branch) {
         if ($scope.isBlank(name)) {
             return "Please enter a name."
         }
@@ -43,6 +43,8 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
             method: "PATCH",
             data: { name: name }
         }).then(function (response) {
+            topic.name = name;
+            branch.label = name;
             return true;
         }, function (response) {
             return response.data.error || "Oops, something went wrong! Please try again later.";
@@ -73,7 +75,7 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
     $scope.onBranchAction = function (action, branch, data) {
         switch (action) {
             case 'rename':
-                return $scope.renameTopic(branch.data, data);
+                return $scope.renameTopic(branch.data, data, branch);
             case 'delete':
                 return $scope.deleteTopic(branch.data, branch);
             default:
