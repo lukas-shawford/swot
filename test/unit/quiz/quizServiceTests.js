@@ -47,11 +47,12 @@ describe('quizService', function () {
             });
         });
 
-        it('should be able to create a quiz and associate it with a user.', function (done) {
+        it('should be able to create a quiz and associate it with a user', function (done) {
             Q(User.findById(testUserId).exec())
                 .then(function (user) {
                     return QuizService.createQuiz({
-                        name: 'My Test Quiz'
+                        name: 'My Test Quiz',
+                        topic: user.topics[0]
                     }, user);
                 })
                 .then(function (result) {
@@ -77,6 +78,7 @@ describe('quizService', function () {
                 .then(function (user) {
                     return QuizService.createQuiz({
                         name: 'Night Flying',
+                        topic: user.topics[0],
                         questions: [
                             new FillInQuestion({
                                 questionHtml: "What is the name of the photoreceptors in the retina of the eye that allow for color as well as detail vision?",
@@ -109,6 +111,66 @@ describe('quizService', function () {
                 .done(function () { done(); });
         });
 
+        it('should verify topic exists when creating a quiz', function (done) {
+            var testUser;
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    testUser = user;
+                    return QuizService.createTopic({
+                        name: "Parent"
+                    }, testUser);
+                })
+                .then(function (result) {
+                    var parentTopic = result[0];
+                    return Topic.findByIdAndRemove(parentTopic._id).exec();
+                })
+                .then(function (deletedTopic) {
+                    return QuizService.createQuiz({
+                        name: "Orphan",
+                        topic: deletedTopic
+                    }, testUser);
+                })
+                .then(function (result) {
+                    throw new Error("Oops - quiz was created even though topic does " +
+                        "not exist anymore. This should *not* have been allowed to happen!");
+                })
+                .catch(function (err) {
+                    expect(err.message).to.equal("Topic not found.");
+                })
+                .done(function () { done(); });
+        });
+
+        it('should verify topic is owned by user when creating a quiz', function (done) {
+            var topic;
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    return QuizService.createTopic({
+                        name: "Test Topic"
+                    }, user);
+                })
+                .then(function (result) {
+                    topic = result[0];
+                    return User.createUser({
+                        email: 'mallory2@example.com',
+                        password: 'tester'
+                    });
+                })
+                .then(function (mallory) {
+                    return QuizService.createQuiz({
+                        name: "Mallory's Quiz",
+                        topic: topic
+                    }, mallory);
+                })
+                .then(function (result) {
+                    throw new Error("Oops - quiz was created even though topic is " +
+                        "not owned by the user. This should *not* have been allowed to happen!");
+                })
+                .catch(function (err) {
+                    expect(err.message).to.equal("Failed to create quiz: topic is not owned by user.");
+                })
+                .done(function () { done(); });
+        });
+
         it('should ignore createdBy from the data param and instead use the user param', function (done) {
             var user;
             Q(User.findById(testUserId).exec())
@@ -122,6 +184,7 @@ describe('quizService', function () {
                 .then(function (someoneElse) {
                     return QuizService.createQuiz({
                         name: "Literature",
+                        topic: user.topics[0],
                         createdBy: someoneElse
                     }, user);
                 })
@@ -137,6 +200,7 @@ describe('quizService', function () {
                 .then(function (user) {
                     return QuizService.createQuiz({
                         name: "History",
+                        topic: user.topics[0],
                         dateCreated: new Date(2005, 5, 24)
                     }, user);
                 })

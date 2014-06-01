@@ -51,7 +51,7 @@ Q.ninvoke(mongoose, 'connect', MONGODB_URL)
 })
 .then(function (user) {
     console.log('Creating sample quiz...');
-    return QuizService.createQuiz({ name: 'VFR Operations' }, user);
+    return QuizService.createQuiz({ name: 'VFR Operations', topic: user.topics[0] }, user);
 })
 .then(function (quiz) {
     _.each(sampleQuiz, function (question) {

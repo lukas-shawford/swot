@@ -152,8 +152,8 @@ describe('userDb', function () {
             ]).spread(function (_stephanie, _barbara) {
                 // Create 2 test quizzes, one owned by stephanie, and the other by barbara
                 return Q.all([
-                    QuizService.createQuiz({ name: 'Test Quiz' }, _stephanie),
-                    QuizService.createQuiz({ name: 'Test Quiz' }, _barbara)
+                    QuizService.createQuiz({ name: 'Test Quiz', topic: _stephanie.topics[0] }, _stephanie),
+                    QuizService.createQuiz({ name: 'Test Quiz', topic: _barbara.topics[0] }, _barbara)
                 ]);
             }).spread(function (_stephanieResult, _barbaraResult) {
                 stephanieQuiz = _stephanieResult[0];

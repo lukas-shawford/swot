@@ -53,7 +53,8 @@ describe('quiz', function () {
             Q(User.findById(testUserId).exec())
                 .then(function (user) {
                     return QuizService.createQuiz({
-                        name: 'My Test Quiz'
+                        name: 'My Test Quiz',
+                        topic: user.topics[0]
                     }, user);
                 })
                 .then(function (result) {
