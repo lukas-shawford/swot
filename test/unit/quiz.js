@@ -62,6 +62,42 @@ describe('quiz', function () {
                 })
                 .done(function () { done(); });
         });
+
+        it('should ignore createdBy from the data param and instead use the user param', function (done) {
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    User.createUser({
+                        email: 'someoneelse@example.com',
+                        password: 'tester'
+                    }, function (err, someoneElse) {
+                        if (err) throw err;
+                        return Topic.createTopic({
+                            name: "Literature",
+                            createdBy: someoneElse
+                        }, user).then(function (result) {
+                            var topic = result[0];
+                            expect(topic.createdBy.toString()).to.equal(testUserId.toString());
+                        }).done(function () { done(); });
+                    });
+                })
+        });
+
+        it('should ignore dateCreated from the data param and instead use the current date', function (done) {
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    return Topic.createTopic({
+                        name: "History",
+                        dateCreated: new Date(2005, 5, 24)
+                    }, user);
+                })
+                .then(function (result) {
+                    var topic = result[0];
+                    var today = new Date();
+                    expect(topic.dateCreated.getFullYear()).to.equal(today.getFullYear());
+                })
+                .done(function () { done(); });
+        });
+
     });
 
     describe('createQuiz', function () {
@@ -124,6 +160,41 @@ describe('quiz', function () {
                     expect(quiz.questions[0].answer).to.equal('cones');
                     expect(quiz.questions[1]).to.be.an.instanceof(FillInQuestion);
                     expect(quiz.questions[1].answer).to.equal('Coriolis Illusion');
+                })
+                .done(function () { done(); });
+        });
+
+        it('should ignore createdBy from the data param and instead use the user param', function (done) {
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    User.createUser({
+                        email: 'someoneelse2@example.com',
+                        password: 'tester'
+                    }, function (err, someoneElse) {
+                        if (err) throw err;
+                        return Quiz.createQuiz({
+                            name: "Literature",
+                            createdBy: someoneElse
+                        }, user).then(function (result) {
+                            var quiz = result[0];
+                            expect(quiz.createdBy.toString()).to.equal(testUserId.toString());
+                        }).done(function () { done(); });
+                    });
+                })
+        });
+
+        it('should ignore dateCreated from the data param and instead use the current date', function (done) {
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    return Quiz.createQuiz({
+                        name: "History",
+                        dateCreated: new Date(2005, 5, 24)
+                    }, user);
+                })
+                .then(function (result) {
+                    var quiz = result[0];
+                    var today = new Date();
+                    expect(quiz.dateCreated.getFullYear()).to.equal(today.getFullYear());
                 })
                 .done(function () { done(); });
         });
