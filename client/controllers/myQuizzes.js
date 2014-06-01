@@ -51,18 +51,29 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
         });
     };
 
-    $scope.addTopic = function (name) {
+    $scope.addTopic = function (name, parentTopic, parentBranch) {
         name = name || "New Topic";
         return $http({
             url: '/topics',
             method: "POST",
-            data: { name: name }
+            data: {
+                name: name,
+                parent: (parentTopic ? parentTopic._id : null)
+            }
         }).then(function (response) {
             // Add the new branch to the topic tree
-            var newBranch = $scope.topicTree.add_root_branch({
-                label: response.data.name,
-                data: response.data
-            });
+            var newBranch;
+            if (parentBranch) {
+                newBranch = $scope.topicTree.add_branch(parentBranch, {
+                    label: response.data.name,
+                    data: response.data
+                });
+            } else {
+                newBranch = $scope.topicTree.add_root_branch({
+                    label: response.data.name,
+                    data: response.data
+                });
+            }
             // Rename the newly added branch after the element has been created.
             $timeout(function () {
                 angular.element($('#' + newBranch.uid)).scope().btnEditRow.$show();
@@ -78,6 +89,8 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
                 return $scope.renameTopic(branch.data, data, branch);
             case 'delete':
                 return $scope.deleteTopic(branch.data, branch);
+            case 'add-subtopic':
+                return $scope.addTopic("New Topic", branch.data, branch);
             default:
                 console.error("Unsupported action \"" + action + "\" performed on branch: " + branch);
         }
