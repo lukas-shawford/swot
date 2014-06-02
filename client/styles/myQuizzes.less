@@ -73,6 +73,15 @@
 .topics-sidebar {
     max-width: 300px;
 
+    .nav > li > .topic-nav-item {
+        padding: 10px 15px 10px 5px;    // Decrease left padding a bit
+    }
+
+    .nav-item > a {
+        outline: 0;     // Remove link outline in Firefox
+        text-decoration: none;
+    }
+
     .topics {
         margin-bottom: 12px;
 
@@ -113,8 +122,25 @@
         .dropdown > .open > a { background-color: transparent; }
     }
 
+    .toggle-subtopics {
+        display: inline-block;
+        width: 20px;
+
+        .tree-icon {
+            padding: 4px 3px 3px 2px;
+            margin: -4px 2px -1px 2px;
+            border: 1px solid transparent;
+            border-radius: 3px;
+        }
+
+        .tree-icon.glyphicon:hover {
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+    }
+
     .nav-item .editable-wrap {
-        margin: -6px -11px;
+        margin: -6px 0 -6px 14px;
 
         + .topic-actions {
             display: none;

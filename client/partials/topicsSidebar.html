@@ -6,13 +6,17 @@
         ng-class="'level-' + {{ row.level }} + (row.branch.selected ? ' active':'')"
         class="abn-tree-row item">
 
-        <div class="nav-item" ng-click="user_clicks_branch(row.branch)">
+        <div class="nav-item topic-nav-item" ng-click="user_clicks_branch(row.branch)">
 
             <a href="#" editable-text="row.label"
                e-form="btnEditRow" onbeforesave="on_branch_action('rename', row.branch, $data)"
-               class="topic-name">
-
-                <span class="indented tree-label">{{ row.label }} </span>
+               class="topic-name indented">
+                <span class="toggle-subtopics">
+                    <i ng-class="row.tree_icon" ng-click="row.branch.expanded = !row.branch.expanded" class="tree-icon"> </i>
+                </span>
+                <span class="tree-label">
+                    {{ row.label }}
+                </span>
             </a>
 
             <span class="topic-actions">
@@ -29,7 +33,6 @@
                         </ul>
                     </span>
                 </span>
-                <i ng-class="row.tree_icon" ng-click="row.branch.expanded = !row.branch.expanded" class="indented tree-icon action toggle-subpages"> </i>
             </span>
         </div>
     </li>
