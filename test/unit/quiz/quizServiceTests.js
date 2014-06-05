@@ -9,6 +9,7 @@ var User = require('../../../lib/user');
 var Quiz = require('../../../lib/quiz').Quiz;
 var Topic = require('../../../lib/quiz').Topic;
 var FillInQuestion = require('../../../lib/questions/fillIn').FillInQuestion;
+var MultipleChoiceQuestion = require('../../../lib/questions/multipleChoice').MultipleChoiceQuestion;
 
 var MONGODB_URL = process.env.MONGODB_TEST_URL || 'localhost:27017/swot_test';
 chai.Assertion.includeStack = true;
@@ -31,6 +32,39 @@ describe('quizService', function () {
 
     after(function () {
         mongoose.connection.close();
+    });
+
+    describe('createQuestion', function () {
+
+        it('should instantiate FillInQuestion', function () {
+            var question = QuizService.createQuestion({
+                type: 'FillInQuestion',
+                questionHtml: "What is the name of the photoreceptors in the retina of the eye that allow for color as well as detail vision?",
+                answer: "cones",
+                alternativeAnswers: ["cone"]
+            });
+            expect(question).to.be.an.instanceof(FillInQuestion);
+        });
+
+        it('should instantiate MultipleChoiceQuestion', function () {
+            var question = QuizService.createQuestion({
+                type: 'MultipleChoiceQuestion',
+                questionHtml: '<p>What is the capital of North Dakota?</p>',
+                choices: ['Pierre', 'Bismarck', 'Des Moines', 'Helena'],
+                correctAnswerIndex: 1
+            });
+            expect(question).to.be.an.instanceof(MultipleChoiceQuestion);
+        });
+
+        it('should throw error for invalid question types', function () {
+            expect(function () {
+                QuizService.createQuestion({
+                    type: 'BadQuestionType',
+                    foo: 'bar'
+                });
+            }).to.throw(Error, /Invalid question type/);
+        });
+
     });
 
     describe('createQuiz', function () {
