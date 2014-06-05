@@ -420,7 +420,9 @@
                                     return next;
                                 } else {
                                     parent = tree.get_parent_branch(b);
-                                    return tree.get_closest_ancestor_next_sibling(parent);
+                                    if (parent) {
+                                        return tree.get_closest_ancestor_next_sibling(parent);
+                                    }
                                 }
                             };
                             tree.get_next_branch = function (b) {
