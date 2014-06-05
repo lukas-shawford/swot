@@ -145,6 +145,39 @@ describe('quizService', function () {
                 .done(function () { done(); });
         });
 
+        it('should allow questions to be plain objects and automatically instantiate the appropriate type', function (done) {
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    return QuizService.createQuiz({
+                        name: 'Night Flying',
+                        topic: user.topics[0],
+                        questions: [
+                            {
+                                type: 'FillInQuestion',
+                                questionHtml: "What is the name of the photoreceptors in the retina of the eye that allow for color as well as detail vision?",
+                                answer: "cones",
+                                alternativeAnswers: ["cone"]
+                            },
+                            {
+                                type: 'MultipleChoiceQuestion',
+                                questionHtml: '<p>What is the capital of North Dakota?</p>',
+                                choices: ['Pierre', 'Bismarck', 'Des Moines', 'Helena'],
+                                correctAnswerIndex: 1
+                            }
+                        ]
+                    }, user);
+                })
+                .then(function (result) {
+                    var quiz = result[0];
+                    expect(quiz.questions).to.have.length(2);
+                    expect(quiz.questions[0]).to.be.an.instanceof(FillInQuestion);
+                    expect(quiz.questions[0].answer).to.equal('cones');
+                    expect(quiz.questions[1]).to.be.an.instanceof(MultipleChoiceQuestion);
+                    expect(quiz.questions[1].correctAnswerIndex).to.equal(1);
+                })
+                .done(function () { done(); });
+        });
+
         it('should verify topic exists when creating a quiz', function (done) {
             var testUser;
             Q(User.findById(testUserId).exec())
