@@ -195,7 +195,7 @@ exports.create = function (req, res) {
     delete data._id;
     if (!data.name) { data.name = "New Quiz"; }
 
-    QuizService.createQuiz({ name: data.name }, req.user)
+    QuizService.createQuiz(data, req.user)
         .then(function (result) {
             var quiz = result[0];
             updateQuiz(quiz, req, res, true);
@@ -254,7 +254,7 @@ exports.load = function (req, res, next) {
 };
 
 exports.save = function (req, res, next) {
-    if (!req.body.quiz._id) {
+    if (!req.body._id) {
         return res.json({
             success: false,
             message: "Quiz ID is missing."
@@ -262,14 +262,14 @@ exports.save = function (req, res, next) {
     }
 
     // Validate that quiz is owned by user
-    if (!req.user.ownsQuiz(req.body.quiz._id)) {
+    if (!req.user.ownsQuiz(req.body._id)) {
         return res.json({
             success: false,
             message: "Invalid Quiz ID."
         });
     }
 
-    Quiz.findOne({ _id: req.body.quiz._id }, function (err, quiz) {
+    Quiz.findOne({ _id: req.body._id }, function (err, quiz) {
         if (err) {
             return res.json({
                 success: false,
@@ -283,7 +283,7 @@ exports.save = function (req, res, next) {
 
 function updateQuiz(quiz, req, res, includeId) {
     // Update quiz properties
-    quiz.name = req.body.quiz.name || "New Quiz";
+    quiz.name = req.body.name || "New Quiz";
 
     // Empty out the question list - embedded document arrays need to be saved using push()
     quiz.questions = [];
@@ -291,7 +291,7 @@ function updateQuiz(quiz, req, res, includeId) {
     // Save the questions
     var allValid = true;
     var message = null;
-    _.each(req.body.quiz.questions, function (q, index) {
+    _.each(req.body.questions, function (q, index) {
         
         var question;
         switch (q.type) {
@@ -332,7 +332,7 @@ function updateQuiz(quiz, req, res, includeId) {
 }
 
 exports.deleteQuiz = function (req, res) {
-    return getQuizAndVerifyOwnership(req.params.id, req.user)
+    return getQuizAndVerifyOwnership(req.body._id, req.user)
         .then(function (quiz) {
             if (!quiz) { return res.send(404); }
             return QuizService.deleteQuiz(quiz).then(function () {

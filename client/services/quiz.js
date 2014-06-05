@@ -10,9 +10,7 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
      *      the error message.
      */
     this.create = function (quiz, success, error) {
-        $http.post('/create',
-            { quiz: quiz }
-        ).success(function (response) {
+        $http.post('/create', quiz).success(function (response) {
             if (response.success) { success(response.id); }
             else { error(response.message); }
         }).error(function (data) {
@@ -56,8 +54,7 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
      *      the error message.
      */
     this.save = function (quiz, success, error) {
-        $http.post('/save',
-            { quiz: quiz }
+        $http.post('/save', quiz
         ).success(function (response) {
             if (response.success) { success(); }
             else { error(response.message); }
@@ -77,8 +74,7 @@ angular.module('swot').service('quiz', ['$http', function ($http) {
         $http.post('/delete',
             { _id: id }
         ).success(function (response) {
-            if (response.success) { success(); }
-            else { error(response.message); }
+            success();
         }).error(function (data) {
             error(self.getError(data));
         });
