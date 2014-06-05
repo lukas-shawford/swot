@@ -5,9 +5,11 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
         $scope.initTopicTree();
     };
 
+    /**
+     * Copies the topic data from the model, $scope.topics, and transforms it into a structure
+     * that the abn-tree directive can use for the sidebar UI, storing it in $scope.topicTreeData.
+     */
     $scope.initTopicTree = function () {
-        // Transform topics into a proper tree structure for the abn_tree directive
-
         var transformTopicNode = function transformTopicNode (topic) {
             var node = {};
             node.label = topic.name;
@@ -21,17 +23,9 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
         $scope.topicTreeData = _.map($scope.topics, transformTopicNode);
     };
 
-    /*
-    $scope.selectPage = function (page, $event) {
-        if ($($event.target).parents('.editable-buttons').size() > 0) {
-            // Ignore event if it originated from angular-xeditable buttons
-            return;
-        }
-
-        $scope.currentPage = page;
-        $event.stopPropagation();
+    $scope.selectTopic = function (topic) {
+        $scope.currentTopic = topic;
     };
-    */
 
     $scope.renameTopic = function (topic, name, branch) {
         if ($scope.isBlank(name)) {
@@ -43,8 +37,8 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
             method: "PATCH",
             data: { name: name }
         }).then(function (response) {
-            topic.name = name;
-            branch.label = name;
+            topic.name = name;      // Update model
+            branch.label = name;    // Update UI (abn-tree)
             return true;
         }, function (response) {
             return response.data.error || "Oops, something went wrong! Please try again later.";
@@ -62,18 +56,38 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
             }
         }).then(function (response) {
             // Add the new branch to the topic tree
+            var topic = response.data;
+            topic.subtopics = [];
+            topic.quizzes = [];
             var newBranch;
-            if (parentBranch) {
+
+            if (parentBranch) {     // Child subtopic
+
+                // Update UI (abn-tree)
                 newBranch = $scope.topicTree.add_branch(parentBranch, {
-                    label: response.data.name,
-                    data: response.data
+                    label: topic.name,
+                    data: topic
                 });
-            } else {
+
+                // Update model
+                parentTopic.subtopics.push(topic);
+            } else {                // Root-level topic
+
+                // Update UI (abn-tree)
                 newBranch = $scope.topicTree.add_root_branch({
-                    label: response.data.name,
-                    data: response.data
+                    label: topic.name,
+                    data: topic
                 });
+
+                // Update model
+                $scope.topics.push(topic);
             }
+
+            // If no topic was previously selected, then select it immediately. Otherwise, the
+            // placeholder message in the main content area changes to a different one, and it's
+            // distracting.
+            $scope.currentTopic = $scope.currentTopic || topic;
+
             // Rename the newly added branch after the element has been created.
             $timeout(function () {
                 angular.element($('#' + newBranch.uid)).scope().btnEditRow.$show();
@@ -84,13 +98,14 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
     };
 
     $scope.onBranchAction = function (action, branch, data) {
+        var topic = branch.data;
         switch (action) {
             case 'rename':
-                return $scope.renameTopic(branch.data, data, branch);
+                return $scope.renameTopic(topic, data, branch);
             case 'delete':
-                return $scope.deleteTopic(branch.data, branch);
+                return $scope.deleteTopic(topic, branch);
             case 'add-subtopic':
-                return $scope.addTopic("New Topic", branch.data, branch);
+                return $scope.addTopic("New Topic", topic, branch);
             default:
                 console.error("Unsupported action \"" + action + "\" performed on branch: " + branch);
         }
@@ -102,7 +117,23 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
                 if (!result) { return; }
                 return $http.delete('/topics/' + topic._id).then(function (response) {
                     if (branch) {
-                        $scope.topicTree.remove_branch(branch);
+                        // If the branch that was deleted is the currently selected branch, then we
+                        // should select another branch. Try the previous one if present, or otherwise
+                        // the next one.
+                        var shouldClearSelection = ($scope.topicTree.get_selected_branch() === branch);
+                        var anotherBranch = $scope.topicTree.get_prev_branch(branch) || $scope.topicTree.get_next_branch(branch);
+
+                        // Remove the topic from the model and the UI
+                        $scope.topicTree.remove_branch(branch);     // Update UI (abn-tree)
+                        $scope.findTopicByIdAndRemove(topic._id);   // Update model
+
+                        // Clear selection if necessary
+                        if (shouldClearSelection) {
+                            if (!anotherBranch) {
+                                $scope.currentTopic = null;
+                            }
+                            $scope.topicTree.select_branch(anotherBranch);
+                        }
                     }
                     bootbox.alert("The topic has been successfully deleted.");
                 }, function (response) {
@@ -111,7 +142,30 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
             });
     };
 
+    /**
+     * Remove the topic with the given ID from the $scope.topics tree. This updates the model
+     * only, not the UI. Use $scope.topicTree.remove_branch() to update the sidebar UI.
+     * @param id The ID of the topic document to remove
+     */
+    $scope.findTopicByIdAndRemove = function (id) {
+        return (function findTopicByIdAndRemove (root) {
+            var topics = root ? root.subtopics : $scope.topics;
+            for (var i = 0; i < topics.length; i++) {
+                if (topics[i]._id === id) {
+                    topics.splice(i, 1);
+                    return true;
+                } else {
+                    if (findTopicByIdAndRemove(topics[i])) {
+                        return true;
+                    }
+                }
+            }
+        })();
+    };
+
     $scope.isBlank = function (str) {
         return (!str || /^\s*$/.test(str));
     };
+
+    //$scope.$watch('topics', $scope.initTopicTree, true);
 });

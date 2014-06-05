@@ -6,74 +6,69 @@ block content
         .row
 
             // Topics sidebar
-            #sidebar.sidebar.topics-sidebar.col-sm-4.col-md-3
+            #sidebar.sidebar.topics-sidebar.col-sm-4.col-md-3.col-lg-2
                 .topics-label Topics:
 
-                abn-tree#topics(tree-data="topicTreeData", template-url="/partials/topicsSidebar.html", icon-leaf=""
-                    icon-expand="glyphicon glyphicon-chevron-right", icon-collapse="glyphicon glyphicon-chevron-down"
-                    on-branch-action="onBranchAction(action, branch, data)", tree-control="topicTree")
+                abn-tree#topics(ng-show="topics.length > 0", template-url="/partials/topicsSidebar.html"
+                    tree-data="topicTreeData", initial-selection="{{topics.length > 0 ? topics[0].name : ''}}"
+                    icon-leaf="", icon-expand="glyphicon glyphicon-chevron-right", icon-collapse="glyphicon glyphicon-chevron-down"
+                    on-select="selectTopic(branch.data)" on-branch-action="onBranchAction(action, branch, data)", tree-control="topicTree")
+
+                #topic-tree-placeholder.ng-cloak(ng-hide="topics.length > 0")
+                    .alert.alert-info
+                        h4 No Topics Added
+                        p: <a href="#" ng-click="addTopic('New Topic')">Click here</a> to create a new topic.
 
                 button.btn.btn-sm(ng-click="addTopic('New Topic')")
                     span.glyphicon.glyphicon-plus
                     | Add
 
             // Main content
-            .col-sm-8.col-sm-offset-4.col-md-9.col-md-offset-3.main
-
-                ///////// TEMP DEBUG
-                div.alert.alert-info
-                    | {{currentPage}}
-                div.alert.alert-info
-                    | {{topics}}
-                /////////
+            .main.col-sm-8.col-sm-offset-4.col-md-9.col-md-offset-3.col-lg-10.col-lg-offset-2
 
                 // Error messages
                 if (message)
                     div.alert.alert-danger
                         p !{message.message}
 
-                .quizzes-container
+                .quizzes-container.ng-cloak
+                    .current-topic(ng-show="currentTopic")
 
-                    // Subject header
-                    //.my-quizzes-header.section-header
-                    //    .current-subject.section-name-container
-                    //        h1.subject-name.section-name(editable-text="currentSubject.name", e-form="btnEditSubject"
-                    //            onbeforesave="updateSubjectName(currentSubject, $data)") {{currentSubject.name}}
-                    //    .subject-actions.section-actions
-                    //        button.btn.btn-xs.btn-info(type="button", ng-click="btnEditSubject.$show()")
-                    //            span.glyphicon.glyphicon-pencil
-                    //            | Edit
+                        // Topic header
+                        .my-quizzes-header.section-header
+                            .section-name-container
+                                h1.topic-name.section-name(editable-text="currentTopic.name", e-form="btnEditTopic"
+                                    onbeforesave="renameTopic(currentTopic, $data)") {{currentTopic.name}}
+                            .section-actions
+                                button.btn.btn-xs.btn-info(type="button", ng-click="btnEditTopic.$show()")
+                                    span.glyphicon.glyphicon-pencil
+                                    | Edit
 
-                    // Topics
-                    .topics-container
-                        .topic.section(ng-repeat="topic in currentSubject.topics")
-
-                            // Topic header
-                            .topic-header.section-header
-                                .topic-name-container.section-name-container
-                                    h3.topic-name.section-name(editable-text="topic.name", e-form="textBtnForm"
-                                        onbeforesave="updateTopicName(topic, $data)") {{topic.name}}
-                                .topic-actions.section-actions
-                                    button.btn.btn-xs.btn-info(type="button", ng-click="textBtnForm.$show()")
-                                        span.glyphicon.glyphicon-pencil
-                                        | Edit
-
-                            // Topic quizzes
-                            .topic-quizzes.section-body.list-group
-                                .quiz.list-group-item(ng-repeat="quiz in quizzes | filter: {topic: topic._id}")
+                        // Topic quizzes
+                        .topic-quizzes.section-body
+                            .list-group(ng-show="currentTopic.quizzes.length > 0")
+                                .quiz.list-group-item(ng-repeat="quiz in currentTopic.quizzes")
                                     .quiz-info.list-group-item-heading
                                         a.quiz-name(href="/quiz/{{quiz._id}}") {{quiz.name}}
-                                        //span.num-questions ({quiz.numQuestions}} question#{quiz.numQuestions === 1 ? '' : 's'})
-                                        p.list-group-item-text Created {{quiz.dateCreated}}
+                                        span.num-questions ({{quiz.numQuestions}} question{{quiz.numQuestions == 1 ? '' : 's'}})
+                                        p.list-group-item-text Created {{quiz.dateCreated | date: 'MMMM yyyy'}}
                                     .quiz-actions
                                         a.btn.btn-xs.btn-info.edit-quiz-btn(href="/edit/{{quiz._id}}")
                                             span.glyphicon.glyphicon-pencil
                                             | Edit
+                            .no-quizzes-placeholder(ng-hide="currentTopic.quizzes.length > 0")
+                                .alert.alert-info
+                                    p This topic has no quizzes
 
-                    // Create Quiz button
-                    a.create-quiz.btn.btn-success(href="/create")
-                        span.glyphicon.glyphicon-plus
-                        | Create Quiz
+                        // Create Quiz button
+                        a.create-quiz.btn.btn-success(href="/create?topic={{currentTopic._id}}")
+                            span.glyphicon.glyphicon-plus
+                            | Create Quiz
+
+                    .no-topics-placeholder.alert.alert-info.ng-cloak(ng-show="!currentTopic")
+                        h4 No Topic Selected
+                        p(ng-show="topics.length > 0") Select a topic on the left to add or view the quizzes in that topic.
+                        p(ng-show="topics.length == 0") Start by adding a new topic on the left
 
 block scripts
     script(src="/controllers/myQuizzes.js")
