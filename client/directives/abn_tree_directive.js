@@ -19,7 +19,19 @@
                     treeControl: '='
                 },
                 link: function (scope, element, attrs) {
-                    var error, expand_all_parents, expand_level, for_all_ancestors, for_each_branch, get_parent, n, on_treeData_change, select_branch, selected_branch, tree, guid;
+                    var error,
+                        expand_all_parents,
+                        expand_level,
+                        for_all_ancestors,
+                        for_each_branch,
+                        find_branch,
+                        get_parent,
+                        n,
+                        on_treeData_change,
+                        select_branch,
+                        selected_branch,
+                        tree,
+                        guid;
                     error = function (s) {
                         console.log('ERROR:' + s);
                         debugger;
@@ -78,6 +90,30 @@
                             _results.push(do_f(root_branch, 1));
                         }
                         return _results;
+                    };
+                    find_branch = function find_branch (predicate) {
+                        var i, n, child, topLevelNode, topLevelResult;
+                        var search_subtree = function search_subtree (root) {
+                            var result;
+                            if (predicate(root)) {
+                                return root;
+                            }
+                            for (i = 0; i < root.children.length; i++) {
+                                child = root.children[i];
+                                result = search_subtree(child);
+                                if (result) {
+                                    return result;
+                                }
+                            }
+                            return null;
+                        };
+                        for (n = 0; n < scope.treeData.length; n++) {
+                            topLevelNode = scope.treeData[n];
+                            topLevelResult = search_subtree(topLevelNode);
+                            if (topLevelResult) {
+                                return topLevelResult;
+                            }
+                        }
                     };
                     selected_branch = null;
                     select_branch = function (branch) {
@@ -507,6 +543,7 @@
                                     parent.splice(index, 1);
                                 }
                             };
+                            tree.find_branch = find_branch;
                             return tree;
                         }
                     }

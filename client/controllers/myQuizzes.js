@@ -32,6 +32,10 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
             return "Please enter a name."
         }
 
+        if (!branch) {
+            branch = $scope.getBranchByTopic(topic);
+        }
+
         return $http({
             url: '/topics/' + topic._id,
             method: "PATCH",
@@ -46,6 +50,10 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
     };
 
     $scope.addTopic = function (name, parentTopic, parentBranch) {
+        if (parentTopic && !parentBranch) {
+            parentBranch = $scope.getBranchByTopic(parentTopic);
+        }
+
         name = name || "New Topic";
         return $http({
             url: '/topics',
@@ -112,6 +120,9 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
     };
 
     $scope.deleteTopic = function (topic, branch) {
+        if (!branch) {
+            branch = $scope.getBranchByTopic(topic);
+        }
         bootbox.confirm('Are you sure you want to delete this topic? All quizzes and subtopics ' +
             'will also be deleted.', function (result) {
                 if (!result) { return; }
@@ -161,6 +172,12 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
                 }
             }
         })();
+    };
+
+    $scope.getBranchByTopic = function (topic) {
+        return $scope.topicTree.find_branch(function (branch) {
+            return branch.data === topic;
+        });
     };
 
     $scope.isBlank = function (str) {
