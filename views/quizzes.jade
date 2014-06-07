@@ -14,10 +14,9 @@ block content
                     icon-leaf="", icon-expand="glyphicon glyphicon-chevron-right", icon-collapse="glyphicon glyphicon-chevron-down"
                     on-select="selectTopic(branch.data)" on-branch-action="onBranchAction(action, branch, data)", tree-control="topicTree")
 
-                #topic-tree-placeholder.ng-cloak(ng-hide="topics.length > 0")
-                    .alert.alert-info
-                        h4 No Topics Added
-                        p: <a href="#" ng-click="addTopic('New Topic')">Click here</a> to create a new topic.
+                #topic-tree-placeholder.empty-placeholder.ng-cloak(ng-hide="topics.length > 0")
+                    h4 No Topics Added
+                    p: <a href="#" ng-click="addTopic('New Topic')">Click here</a> to create a new topic.
 
                 button.btn.btn-sm(ng-click="addTopic('New Topic')")
                     span.glyphicon.glyphicon-plus
@@ -56,19 +55,18 @@ block content
                                         a.btn.btn-xs.btn-info.edit-quiz-btn(href="/edit/{{quiz._id}}")
                                             span.glyphicon.glyphicon-pencil
                                             | Edit
-                            .no-quizzes-placeholder(ng-hide="currentTopic.quizzes.length > 0")
-                                .alert.alert-info
-                                    p This topic has no quizzes
+                            .empty-placeholder(ng-hide="currentTopic.quizzes.length > 0")
+                                | This topic has no quizzes
 
                         // Create Quiz button
                         a.create-quiz.btn.btn-success(href="/create?topic={{currentTopic._id}}")
                             span.glyphicon.glyphicon-plus
                             | Create Quiz
 
-                    .no-topics-placeholder.alert.alert-info.ng-cloak(ng-show="!currentTopic")
-                        h4 No Topic Selected
+                    .empty-placeholder.ng-cloak(ng-show="!currentTopic")
+                        h4 No topic selected
                         p(ng-show="topics.length > 0") Select a topic on the left to add or view the quizzes in that topic.
-                        p(ng-show="topics.length == 0") Start by adding a new topic on the left
+                        p(ng-show="topics.length == 0") Start by adding a new topic on the left.
 
 block scripts
     script(src="/controllers/myQuizzes.js")
