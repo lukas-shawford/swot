@@ -128,23 +128,28 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
                 if (!result) { return; }
                 return $http.delete('/topics/' + topic._id).then(function (response) {
                     if (branch) {
-                        // If the branch that was deleted is the currently selected branch, then we
-                        // should select another branch. Try the previous one if present, or otherwise
-                        // the next one.
-                        var shouldClearSelection = ($scope.topicTree.get_selected_branch() === branch);
-                        var anotherBranch = $scope.topicTree.get_prev_branch(branch) || $scope.topicTree.get_next_branch(branch);
+
+                        // If the branch that was deleted is the currently selected branch, or is an
+                        // ancestor of the currently selected branch, then we should select another
+                        // one so that we don't wind up with a deleted topic in the main content area.
+                        var currentTopicDeleted = (topic === $scope.currentTopic) ||
+                            $scope.isDescendantOf($scope.currentTopic, topic);
+                        if (currentTopicDeleted) {
+                            var parent = $scope.getParentTopic(topic);
+                            if (parent === 'root') { parent = null; }
+                            var children = parent ? parent.subtopics : $scope.topics;
+                            var i = _.indexOf(children, topic);
+                            var prev = children[i - 1],
+                                next = children[i + 1];
+                            $scope.currentTopic = prev || next || parent;
+                            if ($scope.currentTopic) {
+                                $scope.topicTree.select_branch($scope.getBranchByTopic($scope.currentTopic));
+                            }
+                        }
 
                         // Remove the topic from the model and the UI
                         $scope.topicTree.remove_branch(branch);     // Update UI (abn-tree)
                         $scope.findTopicByIdAndRemove(topic._id);   // Update model
-
-                        // Clear selection if necessary
-                        if (shouldClearSelection) {
-                            if (!anotherBranch) {
-                                $scope.currentTopic = null;
-                            }
-                            $scope.topicTree.select_branch(anotherBranch);
-                        }
                     }
                     bootbox.alert("The topic has been successfully deleted.");
                 }, function (response) {
@@ -174,6 +179,51 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
         })();
     };
 
+    /**
+     * Returns the parent topic of the given topic object. If the topic is a root level topic, then
+     * this function returns the string 'root'. If no parent can be found, then this function returns
+     * undefined.
+     */
+    $scope.getParentTopic = function (topic) {
+        if (!topic) { return; }
+        return (function getParentTopic (root) {
+            var parent = root || 'root';
+            var topics = root ? root.subtopics : $scope.topics;
+            for (var i = 0; i < topics.length; i++) {
+                if (topics[i] === topic) {
+                    return parent;
+                } else {
+                    var p = getParentTopic(topics[i]);
+                    if (p) {
+                        return p;
+                    }
+                }
+            }
+        })();
+    };
+
+    $scope.forAllDescendants = function (topic, fn) {
+        if (!topic) { return; }
+        _.each(topic.subtopics, function (subtopic) {
+            fn(subtopic);
+            $scope.forAllDescendants(subtopic, fn);
+        });
+    };
+
+    $scope.isDescendantOf = function (topic, ancestor) {
+        var ret = false;
+        $scope.forAllDescendants(ancestor, function (t) {
+            if (t === topic) {
+                ret = true;
+            }
+        });
+        return ret;
+    };
+
+    /**
+     * Given a topic object (from $scope.topics), find the matching branch object from the topic tree
+     * in the sidebar.
+     */
     $scope.getBranchByTopic = function (topic) {
         return $scope.topicTree.find_branch(function (branch) {
             return branch.data === topic;
