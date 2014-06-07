@@ -52,6 +52,11 @@
             .flex(@spec: 2013; @grow: 0; @shrink: 1; @basis: auto);
             .align-self(center);
             margin-right: 15px;
+
+            .edit-topic {
+                padding-left: 12px;
+                .caret { margin: 0 4px; }
+            }
         }
     }
 
@@ -87,41 +92,9 @@
     .topics {
         margin-bottom: 12px;
 
-        .item .action > a {
-            text-decoration: none;
-            padding: 5px 2px;
-            border: 1px solid transparent;
-            border-radius: 3px;
-        }
-
         .item.active > .nav-item > .topic-name {
             color: white;
         }
-
-        .item.active .action > a {
-            color: #E6E6E6;
-        }
-    }
-
-    .topic-actions {
-        float: right;
-
-        .action {
-            margin-top: -6px;
-            margin-left: 8px;
-            font-size: 12px;
-            /*
-            padding: 6px 4px;
-            border: 1px solid transparent;
-            border-radius: 3px;
-            */
-        }
-
-        .action > a:hover {
-            border: 1px solid #888;
-        }
-
-        .dropdown > .open > a { background-color: transparent; }
     }
 
     .toggle-subtopics {

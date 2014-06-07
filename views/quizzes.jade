@@ -18,9 +18,15 @@ block content
                     h4 No Topics Added
                     p: <a href="#" ng-click="addTopic('New Topic')">Click here</a> to create a new topic.
 
-                button.btn.btn-sm(ng-click="addTopic('New Topic')")
-                    span.glyphicon.glyphicon-plus
-                    | Add
+                .btn-group
+                    button.btn.btn-sm.btn-default(type="button", ng-click="addTopic('New Topic')")
+                        span.glyphicon.glyphicon-plus
+                        | Add
+                    button.btn.btn-sm.btn-default.dropdown-toggle(type="button", data-toggle="dropdown")
+                        span.caret
+                        span.sr-only Toggle Dropdown
+                    ul.dropdown-menu(role="menu")
+                        li: a(href="#", ng-click="addSubtopic()") Add Subtopic
 
             // Main content
             .main.col-sm-8.col-sm-offset-4.col-md-9.col-md-offset-3.col-lg-10.col-lg-offset-2
@@ -39,9 +45,13 @@ block content
                                 h1.topic-name(editable-text="currentTopic.name", e-form="btnEditTopic"
                                     onbeforesave="renameTopic(currentTopic, $data)") {{currentTopic.name}}
                             .topic-actions
-                                button.btn.btn-xs.btn-info(type="button", ng-click="btnEditTopic.$show()")
-                                    span.glyphicon.glyphicon-pencil
-                                    | Edit
+                                .btn-group
+                                    button.edit-topic.btn.btn-xs.btn-info.dropdown-toggle(type="button", data-toggle="dropdown")
+                                        | Edit
+                                        span.caret
+                                    ul.dropdown-menu(role="menu")
+                                        li: a(href="#", ng-click="btnEditTopic.$show()") Rename
+                                        li: a(href="#", ng-click="deleteTopic(currentTopic)") Delete
 
                         // Topic quizzes
                         .topic-quizzes

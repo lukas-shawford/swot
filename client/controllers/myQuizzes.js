@@ -105,6 +105,12 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
         });
     };
 
+    $scope.addSubtopic = function (parent, name) {
+        parent = parent || $scope.currentTopic;
+        name = name || "New Topic";
+        $scope.addTopic(name, parent);
+    };
+
     $scope.onBranchAction = function (action, branch, data) {
         var topic = branch.data;
         switch (action) {
