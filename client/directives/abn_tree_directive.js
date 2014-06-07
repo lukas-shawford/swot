@@ -92,9 +92,9 @@
                         return _results;
                     };
                     find_branch = function find_branch (predicate) {
-                        var i, n, child, topLevelNode, topLevelResult;
+                        var n, topLevelNode, topLevelResult;
                         var search_subtree = function search_subtree (root) {
-                            var result;
+                            var i, result, child;
                             if (predicate(root)) {
                                 return root;
                             }
