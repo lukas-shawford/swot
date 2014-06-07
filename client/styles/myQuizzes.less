@@ -25,24 +25,22 @@
         color: #666;
     }
 
-    // Generic container for both subjects and topics
-    .section {
+    .current-topic {
         .flexbox();
         .flex-flow(row wrap);
         margin: 10px 0 40px;
     }
 
-    // Generic header for both subjects and topics
-    .section-header {
+    .topic-header {
         .flex(@spec: 2013; @grow: 1; @shrink: 1; @basis: 100%);
         .flexbox();
         margin: 10px 0 25px 0;
         border-bottom: 2px solid #428bca;
 
-        .section-name-container {
+        .topic-name-container {
             .flex(@spec: 2013; @grow: 1; @shrink: 0; @basis: auto);
 
-            .section-name {
+            .topic-name {
                 margin: 0 0 -2px 0;
                 padding-bottom: 5px;
                 color: black;
@@ -50,14 +48,14 @@
             }
         }
 
-        .section-actions {
+        .topic-actions {
             .flex(@spec: 2013; @grow: 0; @shrink: 1; @basis: auto);
             .align-self(center);
             margin-right: 15px;
         }
     }
 
-    .section-body {
+    .topic-quizzes {
         .flex(@spec: 2013; @grow: 1; @shrink: 1; @basis: 100%);
     }
 

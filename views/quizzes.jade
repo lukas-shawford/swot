@@ -34,17 +34,17 @@ block content
                     .current-topic(ng-show="currentTopic")
 
                         // Topic header
-                        .my-quizzes-header.section-header
-                            .section-name-container
-                                h1.topic-name.section-name(editable-text="currentTopic.name", e-form="btnEditTopic"
+                        .my-quizzes-header.topic-header
+                            .topic-name-container
+                                h1.topic-name(editable-text="currentTopic.name", e-form="btnEditTopic"
                                     onbeforesave="renameTopic(currentTopic, $data)") {{currentTopic.name}}
-                            .section-actions
+                            .topic-actions
                                 button.btn.btn-xs.btn-info(type="button", ng-click="btnEditTopic.$show()")
                                     span.glyphicon.glyphicon-pencil
                                     | Edit
 
                         // Topic quizzes
-                        .topic-quizzes.section-body
+                        .topic-quizzes
                             .list-group(ng-show="currentTopic.quizzes.length > 0")
                                 .quiz.list-group-item(ng-repeat="quiz in currentTopic.quizzes")
                                     .quiz-info.list-group-item-heading
