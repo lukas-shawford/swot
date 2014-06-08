@@ -9,16 +9,9 @@
 // the styles based on anchors, it instead looks for the "nav-item" class.
 //
 // This is basically an exact copy of ../vendor/bootstrap/less/navs.less, but with all "a" styling
-// hooks replaced by ".nav-item".
+// hooks replaced by ".nav-item". Some additional tweaks are at the bottom of the file (look for
+// "Additional tweaks").
 //
-// - Additional tweaks for hover
-.nav-item:hover {
-    cursor: pointer;
-    > a {
-        color: @link-hover-color;
-        text-decoration: none;
-    }
-}
 // -------------------------------------------------------------------------------------------------
 
 //
@@ -262,4 +255,25 @@
     margin-top: -1px;
     // Remove the top rounded corners here since there is a hard edge above the menu
     .border-top-radius(0);
+}
+
+
+// -------------------------------------------------------------------------------------------------
+
+// Additional tweaks
+// ------------------------
+
+// Additional tweaks for hover
+.nav-item:hover {
+    cursor: pointer;
+    > a {
+        color: @link-hover-color;
+        text-decoration: none;
+    }
+}
+
+// Additional tweaks for badges
+.nav-pills>.active>.nav-item .badge {
+    color: @brand-primary;
+    background-color: #fff;
 }

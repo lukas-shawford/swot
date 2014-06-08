@@ -11,11 +11,15 @@
             <a href="#" editable-text="row.label"
                e-form="btnEditRow" onbeforesave="on_branch_action('rename', row.branch, $data)"
                class="topic-name indented">
+
                 <span class="toggle-subtopics">
                     <i ng-class="row.tree_icon" ng-click="row.branch.expanded = !row.branch.expanded" class="tree-icon"> </i>
                 </span>
-                <span class="tree-label">
-                    {{ row.label }}
+
+                <span class="tree-label">{{ row.label }}</span>
+
+                <span class="badge pull-right" ng-hide="row.branch.data.quizzes.length == 0">
+                    {{row.branch.data.quizzes.length}}
                 </span>
             </a>
         </div>
