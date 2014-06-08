@@ -49,6 +49,18 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
         });
     };
 
+    $scope.renameCurrentTopicInSidebar = function () {
+        var selected = $scope.topicTree.get_selected_branch();
+        if (selected) {
+            var el = $('#' + selected.uid);
+            if (el.size() > 0) {
+                angular.element(el).scope().btnEditRow.$show();
+            } else {
+                $scope.btnEditTopic.$show();    // fallback
+            }
+        }
+    };
+
     $scope.addTopic = function (name, parentTopic, parentBranch) {
         if (parentTopic && !parentBranch) {
             parentBranch = $scope.getBranchByTopic(parentTopic);
