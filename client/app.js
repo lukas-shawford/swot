@@ -8,7 +8,8 @@ var app = angular.module('swot', [
     'ngDebounce',
     'ngAnimate',
     'xeditable',
-    'angularBootstrapNavTree'
+    'angularBootstrapNavTree',
+    'ui.tree'
 ]);
 
 app.config(['$httpProvider', function ($httpProvider) {
