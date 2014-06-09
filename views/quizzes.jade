@@ -18,6 +18,15 @@ block content
                     h4 No Topics Added
                     p: <a href="#" ng-click="addTopic('New Topic')">Click here</a> to create a new topic.
 
+                // ui-tree experiment
+                #topic-tree(ui-tree, data-drag-delay="200")
+                    ol.nav.nav-list.nav-pills.nav-stacked(ui-tree-nodes="", ng-model="topics" id="tree-root")
+                        li(ng-repeat="topic in topics", ui-tree-node
+                            ng-class="{active: (topic === currentTopic)}"
+                            ng-include="'/partials/topicNode.html'")
+
+                button.btn(type="button", ng-click="alert(1)") Click me!
+
                 .btn-group
                     button.btn.btn-sm.btn-default(type="button", ng-click="addTopic('New Topic')")
                         span.glyphicon.glyphicon-plus

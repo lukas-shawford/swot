@@ -1,6 +1,7 @@
 angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $timeout) {
     $scope.init = function () {
         $scope.topics = $scope.topics || [];
+        $scope.currentTopic = $scope.topics[0];
         $scope.topicTree = {};
         $scope.initTopicTree();
     };
@@ -25,6 +26,10 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
 
     $scope.selectTopic = function (topic) {
         $scope.currentTopic = topic;
+    };
+
+    $scope.toggle = function(scope) {
+        scope.toggle();
     };
 
     $scope.renameTopic = function (topic, name, branch) {

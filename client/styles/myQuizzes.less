@@ -80,8 +80,25 @@
 
 .topics-sidebar {
 
+    .nav-item {
+        font-weight: normal;
+    }
+
     .nav > li > .topic-nav-item {
         padding: 10px 15px 10px 5px;    // Decrease left padding a bit
+    }
+
+    .topic-name {
+        color: #00B7FF;
+    }
+
+    .topic-nav-item.active .toggle-subtopics > a,
+    .topic-nav-item.active .topic-name {
+        color: white;
+    }
+
+    .topic-nav-item:not(.active):hover .topic-name {
+        color: #2a6496;
     }
 
     .nav-item > a {
@@ -92,26 +109,42 @@
     .topics {
         margin-bottom: 12px;
 
+        /*
         .item.active > .nav-item > .topic-name {
             color: white;
         }
+        */
     }
 
     .toggle-subtopics {
         display: inline-block;
         width: 20px;
 
-        .tree-icon {
-            padding: 4px 3px 3px 2px;
-            margin: -4px 2px -1px 2px;
+        >a {
+            display: inline-block;
             border: 1px solid transparent;
             border-radius: 3px;
+            width: 20px;
+            text-align: center;
+            margin: -2px 0;
+            padding: 0;
+
+            &:hover {
+                border: 1px solid #ccc;
+            }
         }
 
-        .tree-icon.glyphicon:hover {
+        .toggle-icon {
+            padding: 0;
+            margin: 0;
+        }
+
+        /*
+        .toggle-icon:hover {
             cursor: pointer;
             border: 1px solid #ccc;
         }
+        */
     }
 
     .nav-item .editable-wrap {
