@@ -8,7 +8,6 @@ var app = angular.module('swot', [
     'ngDebounce',
     'ngAnimate',
     'xeditable',
-    'angularBootstrapNavTree',
     'ui.tree'
 ]);
 

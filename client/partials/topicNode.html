@@ -1,13 +1,16 @@
 <div class="nav-item topic-nav-item" ui-tree-handle ng-click="selectTopic(topic)"
     ng-class="{active: (topic === currentTopic)}">
 
-    <span class="toggle-subtopics">
+    <span class="toggle-subtopics" ng-hide="renameTopicForm.$visible">
         <a ng-click="toggle(this)" ng-show="topic.subtopics.length > 0">
             <span class="toggle-icon glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span>
         </a>
     </span>
 
-    <span class="topic-name">{{topic.name}}</span>
+    <span class="topic-name" editable-text="topic.name" e-form="renameTopicForm" id="topic-{{topic._id}}"
+          onbeforesave="renameTopic(topic, $data)">
+        {{topic.name}}
+    </span>
 
     <span class="badge pull-right" ng-hide="topic.quizzes.length == 0">
         {{topic.quizzes.length}}

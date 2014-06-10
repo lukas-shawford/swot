@@ -86,6 +86,7 @@
 
     .nav > li > .topic-nav-item {
         padding: 10px 15px 10px 5px;    // Decrease left padding a bit
+        white-space: nowrap;            // Prevent wrapping editable input field to next line when editing a topic deep in the hierarchy.
     }
 
     .topic-name {
@@ -106,14 +107,8 @@
         text-decoration: none;
     }
 
-    .topics {
+    #topics {
         margin-bottom: 12px;
-
-        /*
-        .item.active > .nav-item > .topic-name {
-            color: white;
-        }
-        */
     }
 
     .toggle-subtopics {
@@ -138,25 +133,11 @@
             padding: 0;
             margin: 0;
         }
-
-        /*
-        .toggle-icon:hover {
-            cursor: pointer;
-            border: 1px solid #ccc;
-        }
-        */
     }
 
-    .nav-item .editable-wrap {
-        margin: -6px 0 -6px 14px;
-
-        + .topic-actions {
-            display: none;
-        }
-        
-        .editable-input {
-            max-width: 60%;
-        }
+    .topic-nav-item > .editable-wrap {
+        vertical-align: top;
+        margin: -6px 0 -6px 14px;  // Make editable input field line up with other topics in same level of hierarchy.
 
         .editable-buttons {
             button { padding: 5px; }
@@ -173,9 +154,12 @@
         }
     }
 
-    //.item .action.edit { visibility: hidden; }
-    //.item.active:hover .action.edit { visibility: visible; }
-    //.item > a:hover .action.edit { visibility: visible; }
+    .topic-nav-item > .topic-name-form {
+        max-width: 70px;
+        .editable-buttons > button {
+            margin: 0;
+        }
+    }
 }
 
 .empty-placeholder {
