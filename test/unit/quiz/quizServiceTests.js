@@ -1,5 +1,7 @@
 var Q = require('q');
 var chai = require('chai');
+var chaiAsPromised = require("chai-as-promised");
+chai.use(chaiAsPromised);
 var expect = chai.expect;
 var mongoose = require('mongoose');
 var async = require('async');
@@ -192,17 +194,10 @@ describe('quizService', function () {
                     return Topic.findByIdAndRemove(parentTopic._id).exec();
                 })
                 .then(function (deletedTopic) {
-                    return QuizService.createQuiz({
+                    return expect(QuizService.createQuiz({
                         name: "Orphan",
                         topic: deletedTopic
-                    }, testUser);
-                })
-                .then(function (result) {
-                    throw new Error("Oops - quiz was created even though topic does " +
-                        "not exist anymore. This should *not* have been allowed to happen!");
-                })
-                .catch(function (err) {
-                    expect(err.message).to.equal("Topic not found.");
+                    }, testUser)).to.be.rejectedWith("Topic not found.");
                 })
                 .done(function () { done(); });
         });
@@ -223,17 +218,10 @@ describe('quizService', function () {
                     });
                 })
                 .then(function (mallory) {
-                    return QuizService.createQuiz({
+                    return expect(QuizService.createQuiz({
                         name: "Mallory's Quiz",
                         topic: topic
-                    }, mallory);
-                })
-                .then(function (result) {
-                    throw new Error("Oops - quiz was created even though topic is " +
-                        "not owned by the user. This should *not* have been allowed to happen!");
-                })
-                .catch(function (err) {
-                    expect(err.message).to.equal("Failed to create quiz: topic is not owned by user.");
+                    }, mallory)).to.be.rejectedWith("Failed to create quiz: topic is not owned by user.");
                 })
                 .done(function () { done(); });
         });
