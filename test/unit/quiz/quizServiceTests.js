@@ -310,6 +310,30 @@ describe('quizService', function () {
                 .done(function () { done(); });
         });
 
+        it('should be able to create a subtopic by specifying the parent topic ID', function (done) {
+            var parentTopicId;
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    return QuizService.createTopic({
+                        name: "Philosophy"
+                    }, user);
+                })
+                .then(function (result) {
+                    var topic = result[0];
+                    parentTopicId = topic._id;
+                    return QuizService.createTopic({
+                        name: "Logic and Reasoning",
+                        parent: topic
+                    }, result[1]);
+                })
+                .then(function (result) {
+                    var subtopic = result[0];
+                    expect(subtopic).to.exist;
+                    expect(subtopic.name).to.equal('Logic and Reasoning');
+                })
+                .done(function () { done(); });
+        });
+
         it('should verify parent topic exists when creating a subtopic', function (done) {
             var testUser;
             Q(User.findById(testUserId).exec())
@@ -636,6 +660,8 @@ describe('quizService', function () {
         });
 
         it('should successfully delete leaf topics and their quizzes', function (done) {
+            // Delete the "Organic Chemistry" subtopic
+
             var scienceTopic = _.findWhere(hierarchy, { name: 'Science' });
             var chemistrySubtopic = _.findWhere(scienceTopic.subtopics, { name: 'Chemistry' });
 
@@ -681,6 +707,8 @@ describe('quizService', function () {
         });
 
         it('should successfully delete root topics, and all their subtopics and quizzes', function (done) {
+            // Delete the "Philosophy" root topic and make sure all subtopics got deleted.
+
             var philosophyTopic = _.findWhere(hierarchy, { name: 'Philosophy' });
             var introToPhilosophyQuiz = _.findWhere(philosophyTopic.quizzes, { name: 'Introduction to Philosophy' });
             var logicSubtopic = _.findWhere(philosophyTopic.subtopics, { name: 'Logic and Reasoning' });
