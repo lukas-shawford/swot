@@ -34,7 +34,8 @@
     "grunt-shell-spawn": "sergkr/grunt-shell-spawn#master",
     "grunt-env": "~0.4.1",
     "grunt-nodemon": "~0.2.1",
-    "chai-as-promised": "~4.1.1"
+    "chai-as-promised": "~4.1.1",
+    "grunt-mocha-test": "~0.11.0"
   },
   "engines": {
     "node": "0.10.x"

@@ -43,6 +43,12 @@ module.exports = function(grunt) {
             }
         },
 
+        mochaTest: {
+            test: {
+                src: ['test/unit/**/*.js']
+            }
+        },
+
         shell: {
 
             // Launch the application
@@ -56,11 +62,6 @@ module.exports = function(grunt) {
                 options: {
                     async: true
                 }
-            },
-
-            // Run mocha unit tests
-            mocha: {
-                command: "mocha --recursive test/unit"
             },
 
             // Start selenium server (used for end-to-end tests)
@@ -108,6 +109,7 @@ module.exports = function(grunt) {
     // Plugins
     // -------
 
+    grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-env');
     grunt.loadNpmTasks('grunt-shell-spawn');
     grunt.loadNpmTasks('grunt-nodemon');
@@ -143,7 +145,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test:unit',
         'Runs unit tests',
-        ['env:test', 'shell:mocha']);
+        ['env:test', 'mochaTest']);
 
     grunt.registerTask('test:e2e',
         'Runs end-to-end tests',
