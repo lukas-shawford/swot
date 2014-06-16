@@ -1,7 +1,7 @@
 var Q = require('q');
 var chai = require('chai');
-var chaiAsPromised = require("chai-as-promised");
-chai.use(chaiAsPromised);
+chai.use(require("chai-as-promised"));
+chai.use(require('chai-things'));
 var expect = chai.expect;
 var mongoose = require('mongoose');
 var async = require('async');
@@ -649,12 +649,7 @@ describe('quizService', function () {
 
         it('should successfully delete leaf topics and their quizzes', function (done) {
             // Delete the "Organic Chemistry" subtopic
-
-            var scienceTopic = _.findWhere(hierarchy, { name: 'Science' });
-            var chemistrySubtopic = _.findWhere(scienceTopic.subtopics, { name: 'Chemistry' });
-
-            // Here's the topic we will be deleting
-            var organicChemistrySubtopic = _.findWhere(chemistrySubtopic.subtopics, { name: 'Organic Chemistry' });
+            var organicChemistrySubtopic = QuizService.searchHierarchyByName(hierarchy, 'Organic Chemistry')[0];
 
             // Make sure quiz within the topic initially exists
             var introToOrganicChemistry = _.findWhere(organicChemistrySubtopic.quizzes, { name: 'Introduction to Organic Chemistry' });
@@ -678,12 +673,10 @@ describe('quizService', function () {
                     return QuizService.getQuizzesAndTopics(testUser);
                 })
                 .then(function (hierarchy) {
-                    var scienceTopic = _.findWhere(hierarchy, { name: 'Science' });
-                    var chemistrySubtopic = _.findWhere(scienceTopic.subtopics, { name: 'Chemistry' });
-                    var organicChemistrySubtopic = _.findWhere(chemistrySubtopic.subtopics, { name: 'Organic Chemistry' });
+                    var result = QuizService.searchHierarchyByName(hierarchy, 'Organic Chemistry');
 
                     // Make sure topic got deleted
-                    expect(organicChemistrySubtopic).to.be.undefined;
+                    expect(result).to.be.empty;
 
                     // Also make sure quiz got deleted
                     return Quiz.findById(introToOrganicChemistry._id).exec()
@@ -885,6 +878,100 @@ describe('quizService', function () {
             var organicChemistrySubtopic = _.findWhere(chemistrySubtopic.subtopics, { name: 'Organic Chemistry' });
             var organicChemistryQuizzes = _.pluck(organicChemistrySubtopic.quizzes, 'name');
             expect(organicChemistryQuizzes).to.eql([ 'Introduction to Organic Chemistry' ]);
+        });
+    });
+
+    describe('searchHierarchyByName', function (done) {
+
+        var testUser;
+        var topics = {};
+        var quizzes = {};
+        var hierarchy;
+
+        before(function (done) {
+
+            return User.createUser({
+                email: 'searchHierarchyByName@example.com',
+                password: 'letmein'
+            })
+                .then(function (user) {
+                    testUser = user;
+
+                    return QuizService.importTopicTree(user, [
+                        {
+                            name: 'Science',
+                            quizzes: [
+                                { name: 'The Scientific Method', questions: [] },
+                                { name: 'The Ethics of Scientific Research', questions: [] }
+                            ],
+                            subtopics: [
+                                {
+                                    name: 'Physics',
+                                    quizzes: [
+                                        { name: 'Physics 101', questions: [] }
+                                    ],
+                                    subtopics: [
+                                        {
+                                            name: 'Quantum Mechanics',
+                                            quizzes: [
+                                                { name: 'Introduction to Quantum Mechanics', questions: [] }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        { name: 'Same Name', quizzes: [], subtopics: [] },
+                        { name: 'Same Name', quizzes: [], subtopics: [] }
+                    ], null);
+                })
+                .then(function () {
+                    // Update user doc
+                    return User.findById(testUser._id).exec();
+                })
+                .then(function (user) {
+                    testUser = user;
+                    return QuizService.getQuizzesAndTopics(testUser);
+                })
+                .then(function (result) {
+                    hierarchy = result;
+                    return;
+                })
+                .done(function () { done(); });
+        });
+
+        it('should be able to find root topics', function () {
+            var result = QuizService.searchHierarchyByName(hierarchy, 'Science');
+            expect(result).to
+                .have.length(1)
+                .and.have.deep.property('[0].name', 'Science');
+        });
+
+        it('should be able to find subtopics', function () {
+            var result = QuizService.searchHierarchyByName(hierarchy, 'Quantum Mechanics');
+            expect(result).to
+                .have.length(1)
+                .and.have.deep.property('[0].name', 'Quantum Mechanics');
+        });
+
+        it('should return full topic objects, complete with _id and parent pointers', function () {
+            var result = QuizService.searchHierarchyByName(hierarchy, 'Quantum Mechanics');
+            expect(result).to.have.length(1);
+            expect(result).to.have.deep.property('[0].name');
+            expect(result).to.have.deep.property('[0]._id');
+            expect(result).to.have.deep.property('[0].parent');
+        });
+
+        it('should return an empty array if there are no matches', function () {
+            var result = QuizService.searchHierarchyByName(hierarchy, 'Managerial Science');
+            expect(result).to.be.empty;
+        });
+
+        it('should return multiple matches', function () {
+            var result = QuizService.searchHierarchyByName(hierarchy, 'Same Name');
+            expect(result).to
+                .have.length(2)
+                .and.all.have.property('name', 'Same Name');
         });
     });
 });
