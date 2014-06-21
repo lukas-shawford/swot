@@ -298,6 +298,24 @@ describe('quizService', function () {
                 .done(function () { done(); });
         });
 
+        it("should add root topics to the user.topics array", function (done) {
+            var topicId;
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    return QuizService.createTopic({
+                        name: "Finance"
+                    }, user);
+                })
+                .then(function (result) {
+                    topicId = result[0]._id;
+                    return User.findById(testUserId).exec();
+                })
+                .then(function (user) {
+                    expect(user.topics).to.contain(topicId);
+                })
+                .done(function () { done(); });
+        });
+
         it('should be able to create a subtopic by specifying the parent topic ID', function (done) {
             var parentTopicId;
             Q(User.findById(testUserId).exec())
@@ -736,6 +754,32 @@ describe('quizService', function () {
                 .then(function (hierarchy) {
                     var philosophyTopic = _.findWhere(hierarchy, { name: 'Philosophy' });
                     expect(philosophyTopic).to.be.undefined;
+                })
+                .done(function () { done(); });
+        });
+
+        it("should remove root topics from the user.topics array when deleting a root topic", function (done) {
+            // Delete the "Underwater Basket Weaving" topic
+
+            var basketWeaving = _.findWhere(hierarchy, { name: 'Underwater Basket Weaving' });
+
+            return Q(User.findById(testUser._id).exec())
+                .then(function (user) {
+                    // Make sure it exists initially
+                    expect(user.topics).to.contain(basketWeaving._id)
+
+                    // Delete the topic
+                    return Topic.findById(basketWeaving._id).exec().then(function (topic) {
+                        return QuizService.deleteTopic(topic);
+                    });
+                })
+                .then(function () {
+                    // Get the updated user doc
+                    return User.findById(testUser._id).exec();
+                })
+                .then(function (user) {
+                    // Make sure the topic is no longer present in the user's topics array
+                    expect(user.topics).not.to.contain(basketWeaving._id)
                 })
                 .done(function () { done(); });
         });
