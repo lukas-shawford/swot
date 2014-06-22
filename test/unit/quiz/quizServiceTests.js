@@ -340,6 +340,33 @@ describe('quizService', function () {
                 .done(function () { done(); });
         });
 
+        it("should add the subtopic to the parent topic's subtopics array", function (done) {
+            var parentTopicId;
+            var subtopicId;
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    return QuizService.createTopic({
+                        name: "Philosophy"
+                    }, user);
+                })
+                .then(function (result) {
+                    var topic = result[0];
+                    parentTopicId = topic._id;
+                    return QuizService.createTopic({
+                        name: "Epistemology",
+                        parent: topic
+                    }, result[1]);
+                })
+                .then(function (result) {
+                    subtopicId = result[0]._id;
+                    return Topic.findById(parentTopicId).exec();
+                })
+                .then(function (topic) {
+                    expect(topic.subtopics).to.contain(subtopicId);
+                })
+                .done(function () { done(); });
+        });
+
         it('should verify parent topic exists when creating a subtopic', function (done) {
             var testUser;
             Q(User.findById(testUserId).exec())
@@ -607,6 +634,7 @@ describe('quizService', function () {
                                         { name: 'Physics 101', questions: [] }
                                     ],
                                     subtopics: [
+                                        { name: "Classical Mechanics" },
                                         {
                                             name: 'Quantum Mechanics',
                                             quizzes: [
@@ -780,6 +808,27 @@ describe('quizService', function () {
                 .then(function (user) {
                     // Make sure the topic is no longer present in the user's topics array
                     expect(user.topics).not.to.contain(basketWeaving._id)
+                })
+                .done(function () { done(); });
+        });
+
+        it("should remove subtopics from the parent topic's subtopics array", function (done) {
+            // Delete the Classical Mechanics subtopic from the Physics topic
+
+            var physics = QuizService.searchHierarchyByName(hierarchy, 'Physics')[0];
+            var classicalMechanics = QuizService.searchHierarchyByName(hierarchy, 'Classical Mechanics')[0];
+            expect([ physics, classicalMechanics ]).all.to.exist;
+
+            return Q(Topic.findById(classicalMechanics._id).exec())
+                .then(function (topic) {
+                    return QuizService.deleteTopic(topic)
+                })
+                .then(function () {
+                    // Retrieve the updated parent topic
+                    return Topic.findById(physics._id).exec()
+                })
+                .then(function (topic) {
+                    expect(topic.subtopics).not.to.contain(classicalMechanics._id);
                 })
                 .done(function () { done(); });
         });
