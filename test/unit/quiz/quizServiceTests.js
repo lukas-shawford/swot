@@ -312,6 +312,11 @@ describe('quizService', function () {
                 })
                 .then(function (user) {
                     expect(user.topics).to.contain(topicId);
+
+                    // Assert the topic has been added to user.topics only once
+                    expect(_.filter(user.topics, function (id) {
+                        return id.equals(topicId)
+                    }).length).to.equal(1);
                 })
                 .done(function () { done(); });
         });
@@ -363,6 +368,11 @@ describe('quizService', function () {
                 })
                 .then(function (topic) {
                     expect(topic.subtopics).to.contain(subtopicId);
+
+                    // Assert the topic has been added to the subtopics array only once
+                    expect(_.filter(topic.subtopics, function (id) {
+                        return id.equals(subtopicId)
+                    }).length).to.equal(1);
                 })
                 .done(function () { done(); });
         });
