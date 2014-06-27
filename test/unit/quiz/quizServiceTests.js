@@ -1077,4 +1077,112 @@ describe('quizService', function () {
                 .and.all.have.property('name', 'Same Name');
         });
     });
+
+    describe('updateTopicPosition', function () {
+
+        var testUserId;
+        var hierarchy;
+
+        before(function (done) {
+            User.createUser({
+                email: 'updateTopicPosition@example.com',
+                password: 'tester'
+            })
+                .then(function (user) {
+                    testUserId = user._id;
+
+                    return QuizService.importTopicTree(user, [
+                        {
+                            name: 'Science',
+                            subtopics: [
+                                { name: 'Physics' },
+                                { name: 'Chemistry' },
+                                { name: 'Biology' }
+                            ]
+                        },
+                        { name: 'Philosophy' },
+                        { name: 'Mathematics' },
+                        { name: 'Social Sciences' }
+                    ], null);
+                })
+                .then(function () {
+                    return User.findById(testUserId).exec();
+                })
+                .then(function (user) {
+                    return QuizService.getQuizzesAndTopics(user);
+                })
+                .then(function (result) {
+                    hierarchy = result;
+
+                    // Verification check
+                    var rootTopics = _.pluck(hierarchy, 'name');
+                    expect(rootTopics).to.eql([ 'General', 'Science', 'Philosophy', 'Mathematics', 'Social Sciences' ]);
+                })
+                .done(function () { done(); });
+        });
+
+        it('should be able to update position of root topics', function (done) {
+            // Move Mathematics to position 1. Root topics should look like this after:
+            // - General [0]
+            // - Mathematics [1]
+            // - Science [2]
+            // - Philosophy [3]
+            // - Social Sciences [4]
+
+            var general = QuizService.searchHierarchyByName(hierarchy, 'General')[0];
+            var math = QuizService.searchHierarchyByName(hierarchy, 'Mathematics')[0];
+            var science = QuizService.searchHierarchyByName(hierarchy, 'Science')[0];
+            var philosophy = QuizService.searchHierarchyByName(hierarchy, 'Philosophy')[0];
+            var socialSciences = QuizService.searchHierarchyByName(hierarchy, 'Social Sciences')[0];
+            expect([ general, math, science, philosophy, socialSciences ]).all.to.exist;
+
+            return Q(Topic.findById(math._id).exec())
+                .then(function (topic) {
+                    return QuizService.updateTopicPosition(topic, 1);
+                })
+                .then(function () {
+                    return User.findById(testUserId).populate('topics').exec();
+                })
+                .then(function (user) {
+                    expect(_.pluck(user.topics, 'name')).to.eql([
+                        'General',
+                        'Mathematics',
+                        'Science',
+                        'Philosophy',
+                        'Social Sciences'
+                    ]);
+                })
+                .done(function () { done(); });
+        });
+
+        it('should be able to reorder subtopics', function (done) {
+            // Move Biology to position 1. Expected order of Science subtopics after:
+            // - Physics [0]
+            // - Biology [1]
+            // - Chemistry [2]
+
+            var science = QuizService.searchHierarchyByName(hierarchy, 'Science')[0];
+            var physics = QuizService.searchHierarchyByName(hierarchy, 'Physics')[0];
+            var biology = QuizService.searchHierarchyByName(hierarchy, 'Biology')[0];
+            var chemistry = QuizService.searchHierarchyByName(hierarchy, 'Chemistry')[0];
+            expect([ science, physics, biology, chemistry ]).all.to.exist;
+
+            return Q(Topic.findById(biology._id).exec())
+                .then(function (topic) {
+                    return QuizService.updateTopicPosition(topic, 1);
+                })
+                .then(function () {
+                    return Topic.findById(science._id).populate('subtopics').exec();
+                })
+                .then(function (topic) {
+                    expect(_.pluck(topic.subtopics, 'name')).to.eql([
+                        'Physics',
+                        'Biology',
+                        'Chemistry'
+                    ]);
+                })
+                .done(function () { done(); });
+        });
+
+    });
 });
