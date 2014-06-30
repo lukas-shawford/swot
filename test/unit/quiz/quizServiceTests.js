@@ -1185,4 +1185,359 @@ describe('quizService', function () {
         });
 
     });
+
+    describe('moveTopic', function () {
+
+        var testUserId;
+        var hierarchy;
+
+        before(function (done) {
+            User.createUser({
+                email: 'moveTopic@example.com',
+                password: 'tester'
+            })
+                .then(function (user) {
+                    testUserId = user._id;
+
+                    return QuizService.importTopicTree(user, [
+                        {
+                            name: 'Science',
+                            subtopics: [
+                                { name: 'Physics' },
+                                { name: 'Chemistry' },
+                                { name: 'Differential Equations' },     // will be moved to Mathematics
+                                { name: 'Number Theory' },              // will be moved to Mathematics (at position 1)
+                                { name: 'Literature' },                 // will be moved so that it's a root topic
+                                {
+                                    name: 'Foo',
+                                    subtopics: [
+                                        { name: 'Multivariable Calculus' }, // will be moved to Mathematics/Calculus
+                                    ]
+                                },
+                                { name: 'Music' }       // will be moved so that it's a root topic at position 2
+                            ]
+                        },
+                        {
+                            name: 'Philosophy'
+                        },
+                        {
+                            name: 'Mathematics',
+                            subtopics: [
+                                { name: 'Calculus' }
+                            ]
+                        },
+                        {
+                            name: 'Biology'     // will be moved to Science
+                        }
+                    ], null);
+                })
+                .then(function () {
+                    return User.findById(testUserId).exec();
+                })
+                .then(function (user) {
+                    return QuizService.getQuizzesAndTopics(user);
+                })
+                .then(function (result) {
+                    hierarchy = result;
+
+                    // Verification check
+                    var rootTopics = _.pluck(hierarchy, 'name');
+                    expect(rootTopics).to.eql([ 'General', 'Science', 'Philosophy', 'Mathematics', 'Biology' ]);
+                })
+                .done(function () { done(); });
+        });
+
+        it('should be able to move a subtopic from one root topic to another', function (done) {
+            // Move "Differential Equations" from Science to Mathematics
+
+            var diffeqs = QuizService.searchHierarchyByName(hierarchy, 'Differential Equations')[0];
+            var science = QuizService.searchHierarchyByName(hierarchy, 'Science')[0];
+            var mathematics = QuizService.searchHierarchyByName(hierarchy, 'Mathematics')[0];
+            expect([ diffeqs, science, mathematics ]).all.to.exist;
+
+            return Q.all([
+                Topic.findById(diffeqs._id).exec(),
+                Topic.findById(mathematics._id).exec()
+            ])
+                .spread(function (diffeqs, mathematics) {
+                    return QuizService.moveTopic(diffeqs, mathematics);
+                })
+                .then(function () {
+                    return Q.all([
+                        Topic.findById(diffeqs._id).exec(),
+                        Topic.findById(science._id).exec(),
+                        Topic.findById(mathematics._id).exec()
+                    ]);
+                })
+                .spread(function (diffeqs, science, mathematics) {
+                    expect(diffeqs.parent.equals(mathematics._id)).to.be.true;
+                    expect(mathematics.subtopics).to.contain(diffeqs._id);
+                    expect(science.subtopics).not.to.contain(diffeqs._id);
+
+                    return Topic.findById(mathematics._id).populate('subtopics').exec();
+                })
+                .then(function (mathematics) {
+                    // Assert that the topic got appended at the end of the list
+                    expect(_.pluck(mathematics.subtopics, 'name')).to.eql([
+                        'Calculus',
+                        'Differential Equations'
+                    ]);
+                })
+                .done(function () { done(); });
+        });
+
+        it('should be able to move a subtopic from one non-root parent topic to another', function (done) {
+            // Move "Multivariable Calculus" from Foo to Mathematics/Calculus
+
+            var mvar = QuizService.searchHierarchyByName(hierarchy, 'Multivariable Calculus')[0];
+            var foo = QuizService.searchHierarchyByName(hierarchy, 'Foo')[0];
+            var calculus = QuizService.searchHierarchyByName(hierarchy, 'Calculus')[0];
+            expect([ mvar, calculus, calculus ]).all.to.exist;
+
+            return Q.all([
+                Topic.findById(mvar._id).exec(),
+                Topic.findById(calculus._id).exec()
+            ])
+                .spread(function (mvar, calculus) {
+                    return QuizService.moveTopic(mvar, calculus);
+                })
+                .then(function () {
+                    return Q.all([
+                        Topic.findById(mvar._id).exec(),
+                        Topic.findById(foo._id).exec(),
+                        Topic.findById(calculus._id).exec()
+                    ]);
+                })
+                .spread(function (mvar, foo, calculus) {
+                    expect(mvar.parent.equals(calculus._id)).to.be.true;
+                    expect(calculus.subtopics).to.contain(mvar._id);
+                    expect(foo.subtopics).not.to.contain(calculus._id);
+                })
+                .done(function () { done(); });
+        });
+
+        it('should be able to make a subtopic a root topic', function (done) {
+            // Move Literature from Science to the root topics list
+
+            var literature = QuizService.searchHierarchyByName(hierarchy, 'Literature')[0];
+            var science = QuizService.searchHierarchyByName(hierarchy, 'Science')[0];
+            expect([ literature, science ]).all.to.exist;
+
+            return Q(Topic.findById(literature._id).exec())
+                .then(function (literature) {
+                    return QuizService.moveTopic(literature, null);
+                })
+                .then(function () {
+                    return Q.all([
+                        Topic.findById(literature._id).exec(),
+                        Topic.findById(science._id).exec(),
+                        User.findById(testUserId).exec()
+                    ]);
+                })
+                .spread(function (literature, science, user) {
+                    expect(literature.parent).to.be.null;
+                    expect(user.topics).to.contain(literature._id);
+                    expect(science.subtopics).not.to.contain(literature._id);
+
+                    // Assert that the topic got appended at the end of the list
+                    expect(user.topics.indexOf(literature._id)).to.equal(5);
+                })
+                .done(function () { done(); });
+        });
+
+        it('should be able to move a root topic so that it becomes a subtopic', function (done) {
+            // Move Biology (initially a root topic) so that it becomes a subtopic of Science
+
+            var biology = QuizService.searchHierarchyByName(hierarchy, 'Biology')[0];
+            var science = QuizService.searchHierarchyByName(hierarchy, 'Science')[0];
+            expect([ biology, science ]).all.to.exist;
+
+            return Q.all([
+                Topic.findById(biology._id).exec(),
+                Topic.findById(science._id).exec()
+            ])
+                .spread(function (biology, science) {
+                    return QuizService.moveTopic(biology, science);
+                })
+                .then(function () {
+                    return Q.all([
+                        Topic.findById(biology._id).exec(),
+                        Topic.findById(science._id).exec(),
+                        User.findById(testUserId).exec()
+                    ]);
+                })
+                .spread(function (biology, science, user) {
+                    expect(biology.parent.equals(science._id)).to.be.true;
+                    expect(user.topics).not.to.contain(biology._id);
+                    expect(science.subtopics).to.contain(biology._id);
+
+                    return Topic.findById(science._id).populate('subtopics').exec();
+                })
+                .then(function (science) {
+                    expect(_.pluck(science.subtopics, 'name')).to.eql([
+                        'Physics',
+                        'Chemistry',
+                        'Number Theory',
+                        'Foo',
+                        'Music',
+                        'Biology'
+                    ]);
+                })
+                .done(function () { done(); });
+        });
+
+        it('should be able to move a subtopic to a different parent topic at a specific position', function (done) {
+            // Move Number Theory from Science into Mathematics at position 1
+
+            var numtheory = QuizService.searchHierarchyByName(hierarchy, 'Number Theory')[0];
+            var science = QuizService.searchHierarchyByName(hierarchy, 'Science')[0];
+            var mathematics = QuizService.searchHierarchyByName(hierarchy, 'Mathematics')[0];
+            expect([ numtheory, science, mathematics ]).all.to.exist;
+
+            return Q.all([
+                Topic.findById(numtheory._id).exec(),
+                Topic.findById(mathematics._id).exec()
+            ])
+                .spread(function (numtheory, mathematics) {
+                    return QuizService.moveTopic(numtheory, mathematics, 1);
+                })
+                .then(function () {
+                    return Q.all([
+                        Topic.findById(numtheory._id).exec(),
+                        Topic.findById(science._id).exec(),
+                        Topic.findById(mathematics._id).exec()
+                    ]);
+                })
+                .spread(function (numtheory, science, mathematics) {
+                    expect(numtheory.parent.equals(mathematics._id)).to.be.true;
+                    expect(mathematics.subtopics).to.contain(numtheory._id);
+                    expect(science.subtopics).not.to.contain(numtheory._id);
+
+                    return Topic.findById(mathematics._id).populate('subtopics').exec();
+                })
+                .then(function (topic) {
+                    expect(_.pluck(topic.subtopics, 'name')).to.eql([
+                        'Calculus',
+                        'Number Theory',
+                        'Differential Equations'
+                    ]);
+                })
+                .done(function () { done(); });
+        });
+
+        it('should be able to make a subtopic a root topic with a specific position', function (done) {
+            // Move Music from Science to the root topics list at position 2
+
+            var music = QuizService.searchHierarchyByName(hierarchy, 'Music')[0];
+            var science = QuizService.searchHierarchyByName(hierarchy, 'Science')[0];
+            expect([ music, science ]).all.to.exist;
+
+            return Q(Topic.findById(music._id).exec())
+                .then(function (music) {
+                    return QuizService.moveTopic(music, null, 2);
+                })
+                .then(function () {
+                    return Q.all([
+                        Topic.findById(music._id).exec(),
+                        Topic.findById(science._id).exec(),
+                        User.findById(testUserId).exec()
+                    ]);
+                })
+                .spread(function (music, science, user) {
+                    expect(music.parent).to.be.null;
+                    expect(user.topics).to.contain(music._id);
+                    expect(science.subtopics).not.to.contain(music._id);
+
+                    return User.findById(testUserId).populate('topics').exec()
+                })
+                .then(function (user) {
+                    expect(_.pluck(user.topics, 'name')).to.eql([
+                        'General',
+                        'Science',
+                        'Music',
+                        'Philosophy',
+                        'Mathematics',
+                        'Literature'
+                    ]);
+                })
+                .done(function () { done(); });
+        });
+
+        it('should verify new parent topic actually exists before changing anything', function (done) {
+            // Attempt to move topic "Foo" into a deleted topic
+
+            var foo = QuizService.searchHierarchyByName(hierarchy, 'Foo')[0];
+            var science = QuizService.searchHierarchyByName(hierarchy, 'Science')[0];
+            var deleted;
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    return QuizService.createTopic({
+                        name: "Delete Me"
+                    }, user);
+                })
+                .then(function (result) {
+                    deleted = result[0];
+                    return Topic.findByIdAndRemove(deleted._id).exec();
+                })
+                .then(function () {
+                    return Topic.findById(foo._id).exec();
+                })
+                .then(function (fooTopic) {
+                    return expect(QuizService.moveTopic(fooTopic, deleted)).to.be.rejectedWith("Topic not found.");
+                })
+                .then(function () {
+                    return Q.all([
+                        Topic.findById(foo._id).exec(),
+                        Topic.findById(science._id).exec()
+                    ]);
+                })
+                .spread(function (fooTopic, science) {
+                    // Make sure nothing got changed
+                    expect(fooTopic.parent.equals(science._id)).to.be.true;
+                    expect(science.subtopics).to.contain(fooTopic._id);
+                })
+                .done(function () { done(); });
+        });
+
+        it('should verify new parent topic is owned by user before changing anything', function (done) {
+            // Attempt to move topic "Foo" into a new user's "General" topic
+
+            var foreignTopic;
+            return User.createUser({
+                email: 'moveTopic-newUser@example.com',
+                password: 'tester'
+            })
+                .then(function (newUser) {
+                    return User.findById(newUser._id).populate('topics').exec();
+                })
+                .then(function (user) {
+                    foreignTopic = user.topics[0];
+
+                    // Sanity checks
+                    expect(foreignTopic).to.exist;
+                    expect(foreignTopic.name).to.equal("General");
+
+                    // Retrieve the "Foo" topic
+                    var foo = QuizService.searchHierarchyByName(hierarchy, 'Foo')[0];
+                    return Topic.findById(foo._id).exec();
+                })
+                .then(function (foo) {
+                    // Attempt to move the "Foo" topic into another user's General topic
+                    return expect(QuizService.moveTopic(foo, foreignTopic)).to.be.rejectedWith("Failed to move topic: parent topic is not owned by user.");
+                })
+                .then(function () {
+                    return Q.all([
+                        Topic.findById(foo._id).exec(),
+                        Topic.findById(science._id).exec()
+                    ]);
+                })
+                .spread(function (fooTopic, science) {
+                    // Make sure nothing got changed
+                    expect(fooTopic.parent.equals(science._id)).to.be.true;
+                    expect(science.subtopics).to.contain(fooTopic._id);
+                })
+                .done(function () { done(); });
+        });
+
+    });
 });
