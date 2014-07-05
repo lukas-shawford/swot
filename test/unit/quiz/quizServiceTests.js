@@ -1502,7 +1502,7 @@ describe('quizService', function () {
         it('should verify new parent topic is owned by user before changing anything', function (done) {
             // Attempt to move topic "Foo" into a new user's "General" topic
 
-            var foreignTopic;
+            var foreignTopic, foo, science;
             return User.createUser({
                 email: 'moveTopic-newUser@example.com',
                 password: 'tester'
@@ -1518,7 +1518,7 @@ describe('quizService', function () {
                     expect(foreignTopic.name).to.equal("General");
 
                     // Retrieve the "Foo" topic
-                    var foo = QuizService.searchHierarchyByName(hierarchy, 'Foo')[0];
+                    foo = QuizService.searchHierarchyByName(hierarchy, 'Foo')[0];
                     return Topic.findById(foo._id).exec();
                 })
                 .then(function (foo) {
@@ -1526,6 +1526,7 @@ describe('quizService', function () {
                     return expect(QuizService.moveTopic(foo, foreignTopic)).to.be.rejectedWith("Failed to move topic: parent topic is not owned by user.");
                 })
                 .then(function () {
+                    science = QuizService.searchHierarchyByName(hierarchy, 'Science')[0];
                     return Q.all([
                         Topic.findById(foo._id).exec(),
                         Topic.findById(science._id).exec()
