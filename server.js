@@ -104,7 +104,7 @@ app.post('/submit', quiz.submitQuestion);
 // Topics
 app.get('/topics/:id', quiz.getTopic);
 app.post('/topics', quiz.addTopic);
-app.patch('/topics/:id', quiz.updateTopic);
+app.patch('/topics/:id', quiz.patchTopic);
 app.delete('/topics/:id', quiz.deleteTopic);
 
 // ----------------------------------------------------------------------------

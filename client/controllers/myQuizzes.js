@@ -20,7 +20,7 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
         return $http({
             url: '/topics/' + topic._id,
             method: "PATCH",
-            data: { name: name }
+            data: [{ op: 'replace', path: '/name', value: name }]
         }).then(function (response) {
             topic.name = name;
             return true;

@@ -3,6 +3,7 @@ var _ = require('underscore');
 var Q = require('q');
 var moment = require('moment');
 var mongoose = require('mongoose-q')();
+var jsonpatch = require('json-patch');
 var User = require('../lib/user');
 var Quiz = require('../lib/quiz').Quiz;
 var QuizService = require('../lib/quiz/quizService');
@@ -412,13 +413,23 @@ exports.addTopic = function (req, res) {
         .done();
 };
 
-exports.updateTopic = function (req, res) {
+exports.patchTopic = function (req, res) {
     return getTopicAndVerifyOwnership(req.params.id, req.user)
         .then(function (topic) {
             if (!topic) { return res.send(404); }
-            delete req.body.createdBy;
-            delete req.body.dateCreated;
-            return topic.update(req.body).exec()
+
+            // Do not allow modifications to the following properties
+            var createdBy = topic.createdBy;
+            var dateCreated = topic.dateCreated;
+
+            // Apply the patches specified in the request
+            jsonpatch.apply(topic, req.body);
+
+            // Override any changes to read-only properties
+            topic.createdBy = createdBy;
+            topic.dateCreated = dateCreated;
+
+            return topic.saveQ()
                 .then(function (topic) {
                     return res.send(204);
                 });

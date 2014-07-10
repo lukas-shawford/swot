@@ -22,7 +22,8 @@
     "execSync": "~1.0.1-pre",
     "q": "~1.0.0",
     "less-middleware": "~0.1.15",
-    "mongoose-q": "0.0.9"
+    "mongoose-q": "0.0.9",
+    "json-patch": "~0.4.3"
   },
   "devDependencies": {
     "chai": "~1.8.1",
