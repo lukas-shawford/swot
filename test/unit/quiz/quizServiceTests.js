@@ -22,14 +22,18 @@ describe('quizService', function () {
         this.timeout(5000);
         mongoose.connect(MONGODB_URL);
 
-        // Delete all users and quizzes so we start off with a clean slate
-        User.remove({}, function (err) {
-            if (err) throw err;
-            Quiz.remove({}, function (err) {
-                if (err) throw err;
-                User.remove({}, done);
-            });
-        });
+        // Delete all users, quizzes, and topics so we start off with a clean slate
+        return Q()
+            .then(function () {
+                return User.remove({}).exec();
+            })
+            .then(function () {
+                return Quiz.remove({}).exec();
+            })
+            .then(function () {
+                return Topic.remove({}).exec();
+            })
+            .done(function () { done(); });
     });
 
     after(function () {
@@ -317,6 +321,23 @@ describe('quizService', function () {
                     expect(_.filter(user.topics, function (id) {
                         return id.equals(topicId)
                     }).length).to.equal(1);
+                })
+                .done(function () { done(); });
+        });
+
+        it("should return the updated user doc via second array entry", function (done) {
+            var topicId;
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    return QuizService.createTopic({
+                        name: "Accounting"
+                    }, user);
+                })
+                .then(function (result) {
+                    var topicId = result[0]._id;
+                    var user = result[1];
+                    expect(user).to.be.defined;
+                    expect(user.topics).to.contain(topicId);
                 })
                 .done(function () { done(); });
         });
@@ -1211,7 +1232,7 @@ describe('quizService', function () {
                                 {
                                     name: 'Foo',
                                     subtopics: [
-                                        { name: 'Multivariable Calculus' }, // will be moved to Mathematics/Calculus
+                                        { name: 'Multivariable Calculus' } // will be moved to Mathematics/Calculus
                                     ]
                                 },
                                 { name: 'Music' }       // will be moved so that it's a root topic at position 2
