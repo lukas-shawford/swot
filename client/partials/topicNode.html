@@ -1,7 +1,7 @@
 <div class="nav-item topic-nav-item" ui-tree-handle ng-click="selectTopic(topic)"
     ng-class="{active: (topic === currentTopic)}">
 
-    <span class="toggle-subtopics" ng-hide="renameTopicForm.$visible">
+    <span class="toggle-subtopics" ng-hide="renameTopicForm.$visible" data-nodrag>
         <a ng-click="toggle(this)" ng-show="topic.subtopics.length > 0">
             <span class="toggle-icon glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span>
         </a>

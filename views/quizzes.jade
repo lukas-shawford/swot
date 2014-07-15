@@ -10,7 +10,7 @@ block content
                 .topics-label Topics:
 
                 // Topic tree
-                #topics(ui-tree="topicTreeOptions", data-drag-delay="200")
+                #topics(ui-tree="topicTreeOptions")
                     ol.nav.nav-list.nav-pills.nav-stacked(ui-tree-nodes="", ng-model="topics" id="tree-root")
                         li(ng-repeat="topic in topics", ui-tree-node
                         ng-class="{active: (topic === currentTopic)}"

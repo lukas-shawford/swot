@@ -6,8 +6,16 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
 
     $scope.topicTreeOptions = {
         dropped: function (event) {
+
             // Topic being dragged
             var topic = event.source.nodeScope.$modelValue;
+
+            // Since we don't have any drag delay on the topic tree, there is hardly any distinction
+            // between clicking on a topic to select it, and beginning a drag operation - single
+            // clicking a topic actually triggers the drag event. Accommodate both possibilities by
+            // automatically selecting the topic being dragged. (Note: we don't want to have any
+            // drag delay as that would hurt the discoverability of the dragging feature.)
+            $scope.currentTopic = topic;
 
             // Old parent topic (null if topic was previously a root topic)
             var oldParent = event.source.nodesScope.$parent.$modelValue || null;
