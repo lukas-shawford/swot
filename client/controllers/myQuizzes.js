@@ -4,6 +4,39 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
         $scope.currentTopic = $scope.topics[0];
     };
 
+    $scope.topicTreeOptions = {
+        dropped: function (event) {
+            // Topic being dragged
+            var topic = event.source.nodeScope.$modelValue;
+
+            // Old parent topic (null if topic was previously a root topic)
+            var oldParent = event.source.nodesScope.$parent.$modelValue;
+
+            // New parent topic (null if topic was dragged into root-level position)
+            var newParent = event.dest.nodesScope.$parent.$modelValue || null;
+
+            // Destination index that the topic was dragged to within its new parent;
+            var index = event.dest.index;
+
+            // Create the patch array containing the changes
+            var patch = [];
+            if (newParent !== oldParent) {
+                patch.push({ op: 'replace', path: '/parent', value: (newParent ? newParent._id : null) });
+            }
+            patch.push({ op: 'add', path: '/position', value: index });     // always specify position
+
+            return $http({
+                url: '/topics/' + topic._id,
+                method: "PATCH",
+                data: patch
+            }).then(function () {
+                return true;
+            }, function (response) {
+                return response.data.error || "Oops, something went wrong! Please try again later.";
+            });
+        }
+    };
+
     $scope.selectTopic = function (topic) {
         $scope.currentTopic = topic;
     };
