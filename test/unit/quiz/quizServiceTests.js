@@ -1099,7 +1099,7 @@ describe('quizService', function () {
         });
     });
 
-    describe('updateTopicPosition', function () {
+    describe('Topic.position', function () {
 
         var testUserId;
         var hierarchy;
@@ -1159,7 +1159,8 @@ describe('quizService', function () {
 
             return Q(Topic.findById(math._id).exec())
                 .then(function (topic) {
-                    return QuizService.updateTopicPosition(topic, 1);
+                    topic.position = 1;
+                    return topic.saveQ();
                 })
                 .then(function () {
                     return User.findById(testUserId).populate('topics').exec();
@@ -1190,7 +1191,8 @@ describe('quizService', function () {
 
             return Q(Topic.findById(biology._id).exec())
                 .then(function (topic) {
-                    return QuizService.updateTopicPosition(topic, 1);
+                    topic.position = 1;
+                    return topic.saveQ();
                 })
                 .then(function () {
                     return Topic.findById(science._id).populate('subtopics').exec();
@@ -1207,7 +1209,7 @@ describe('quizService', function () {
 
     });
 
-    describe('moveTopic', function () {
+    describe('Topic.parent', function () {
 
         var testUserId;
         var hierarchy;
@@ -1281,7 +1283,8 @@ describe('quizService', function () {
                 Topic.findById(mathematics._id).exec()
             ])
                 .spread(function (diffeqs, mathematics) {
-                    return QuizService.moveTopic(diffeqs, mathematics);
+                    diffeqs.parent = mathematics;
+                    return diffeqs.saveQ();
                 })
                 .then(function () {
                     return Q.all([
@@ -1320,7 +1323,8 @@ describe('quizService', function () {
                 Topic.findById(calculus._id).exec()
             ])
                 .spread(function (mvar, calculus) {
-                    return QuizService.moveTopic(mvar, calculus);
+                    mvar.parent = calculus;
+                    return mvar.saveQ();
                 })
                 .then(function () {
                     return Q.all([
@@ -1346,7 +1350,8 @@ describe('quizService', function () {
 
             return Q(Topic.findById(literature._id).exec())
                 .then(function (literature) {
-                    return QuizService.moveTopic(literature, null);
+                    literature.parent = null;
+                    return literature.saveQ();
                 })
                 .then(function () {
                     return Q.all([
@@ -1378,7 +1383,8 @@ describe('quizService', function () {
                 Topic.findById(science._id).exec()
             ])
                 .spread(function (biology, science) {
-                    return QuizService.moveTopic(biology, science);
+                    biology.parent = science;
+                    return biology.saveQ();
                 })
                 .then(function () {
                     return Q.all([
@@ -1420,7 +1426,9 @@ describe('quizService', function () {
                 Topic.findById(mathematics._id).exec()
             ])
                 .spread(function (numtheory, mathematics) {
-                    return QuizService.moveTopic(numtheory, mathematics, 1);
+                    numtheory.parent = mathematics;
+                    numtheory.position = 1;
+                    return numtheory.saveQ();
                 })
                 .then(function () {
                     return Q.all([
@@ -1455,7 +1463,9 @@ describe('quizService', function () {
 
             return Q(Topic.findById(music._id).exec())
                 .then(function (music) {
-                    return QuizService.moveTopic(music, null, 2);
+                    music.parent = null;
+                    music.position = 2;
+                    return music.saveQ();
                 })
                 .then(function () {
                     return Q.all([
@@ -1504,7 +1514,8 @@ describe('quizService', function () {
                     return Topic.findById(foo._id).exec();
                 })
                 .then(function (fooTopic) {
-                    return expect(QuizService.moveTopic(fooTopic, deleted)).to.be.rejectedWith("Topic not found.");
+                    fooTopic.parent = deleted;
+                    return expect(fooTopic.saveQ()).to.be.rejectedWith("Topic not found.");
                 })
                 .then(function () {
                     return Q.all([
@@ -1544,7 +1555,8 @@ describe('quizService', function () {
                 })
                 .then(function (foo) {
                     // Attempt to move the "Foo" topic into another user's General topic
-                    return expect(QuizService.moveTopic(foo, foreignTopic)).to.be.rejectedWith("Failed to move topic: parent topic is not owned by user.");
+                    foo.parent = foreignTopic;
+                    return expect(foo.saveQ()).to.be.rejectedWith("Failed to move topic: parent topic is not owned by user.");
                 })
                 .then(function () {
                     science = QuizService.searchHierarchyByName(hierarchy, 'Science')[0];
