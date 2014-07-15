@@ -10,13 +10,21 @@ angular.module('swot').controller('MyQuizzesCtrl', function ($scope, $http, $tim
             var topic = event.source.nodeScope.$modelValue;
 
             // Old parent topic (null if topic was previously a root topic)
-            var oldParent = event.source.nodesScope.$parent.$modelValue;
+            var oldParent = event.source.nodesScope.$parent.$modelValue || null;
 
             // New parent topic (null if topic was dragged into root-level position)
             var newParent = event.dest.nodesScope.$parent.$modelValue || null;
 
-            // Destination index that the topic was dragged to within its new parent;
+            // Old index before the topic was moved
+            var oldIndex = event.source.index;
+
+            // Destination index that the topic was dragged to within its new parent
             var index = event.dest.index;
+
+            // Return if nothing actually changed
+            if (oldParent === newParent && index === oldIndex) {
+                return;
+            }
 
             // Create the patch array containing the changes
             var patch = [];
