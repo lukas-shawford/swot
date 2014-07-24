@@ -110,7 +110,32 @@ describe('quizService', function () {
                     });
                 })
                 .done(function () { done(); });
+        });
 
+        it('should add quiz to Topic.quizzes array', function (done) {
+            var quiz;
+            var topicId;
+            Q(User.findById(testUserId).exec())
+                .then(function (user) {
+                    topicId = user.topics[0];
+                    return QuizService.createQuiz({
+                        name: 'Another Test Quiz',
+                        topic: topicId
+                    }, user);
+                })
+                .then(function (result) {
+                    quiz = result[0];
+                    return Topic.findById(topicId).exec();
+                })
+                .then(function (topic) {
+                    expect(topic.quizzes).to.contain(quiz._id);
+
+                    // Assert the quiz has been added to topic.quizzes only once
+                    expect(_.filter(topic.quizzes, function (id) {
+                        return id.equals(quiz._id)
+                    }).length).to.equal(1);
+                })
+                .done(function () { done(); });
         });
 
         it('should save questions when creating a quiz', function (done) {
@@ -1569,6 +1594,185 @@ describe('quizService', function () {
                     // Make sure nothing got changed
                     expect(fooTopic.parent.equals(science._id)).to.be.true;
                     expect(science.subtopics).to.contain(fooTopic._id);
+                })
+                .done(function () { done(); });
+        });
+
+    });
+
+    describe('Quiz.position', function () {
+        var testUserId;
+        var topic;
+        var algebra;
+        var trigonometry;
+        var calculus;
+
+        before(function (done) {
+            User.createUser({
+                email: 'updateQuizPosition@example.com',
+                password: 'tester'
+            })
+                .then(function (user) {
+                    testUserId = user._id;
+
+                    return QuizService.createTopic({ name: "Math" }, user);
+                })
+                .then(function (result) {
+                    topic = result[0];
+
+                    return QuizService.createQuiz({
+                        name: 'Trigonometry',
+                        topic: topic
+                    }, result[1]);
+                })
+                .then(function (result) {
+                    trigonometry = result[0];
+
+                    return QuizService.createQuiz({
+                        name: 'Algebra',
+                        topic: topic
+                    }, result[1]);
+                })
+                .then(function (result) {
+                    algebra = result[0];
+
+                    return QuizService.createQuiz({
+                        name: 'Calculus',
+                        topic: topic
+                    }, result[1]);
+                })
+                .then(function (result) {
+                    calculus = result[0];
+
+                    // Reload topic from database
+                    return Topic.findById(topic._id).populate('quizzes').exec();
+                })
+                .then(function (_topic) {
+                    topic = _topic;
+
+                    // Verify each quiz is at the correct position to start with
+                    expect(_.pluck(topic.quizzes, 'name')).deep.equals([
+                        'Trigonometry',
+                        'Algebra',
+                        'Calculus'
+                    ]);
+                })
+                .done(function () { done(); });
+        });
+
+        it('should be able to update quiz position', function (done) {
+            // Move Algebra to the start of the list
+            algebra.position = 0;
+            return algebra.saveQ()
+                .then(function () {
+                    // Reload topic from database
+                    return Topic.findById(topic._id).populate('quizzes').exec();
+                })
+                .then(function (topic) {
+                    expect(_.pluck(topic.quizzes, 'name')).deep.equals([
+                        'Algebra',
+                        'Trigonometry',
+                        'Calculus'
+                    ]);
+                })
+                .done(function () { done(); });
+        });
+    });
+
+    describe("Quiz.topic (move quiz from one topic to another)", function () {
+
+        var testUserId;
+        var science;
+        var mathematics;
+        var computerScience;
+        var calculus;
+        var statistics;
+
+        before(function (done) {
+            User.createUser({
+                email: 'moveQuiz@example.com',
+                password: 'tester'
+            })
+                .then(function (user) {
+                    testUserId = user._id;
+                    return QuizService.createTopic({ name: "Mathematics" }, user);
+                })
+                .then(function (result) {
+                    mathematics = result[0];
+                    return QuizService.createTopic({ name: "Science" }, result[1]);
+                })
+                .then(function (result) {
+                    science = result[0];
+                    return QuizService.createQuiz({
+                        name: 'Computer Science',
+                        topic: science
+                    }, result[1]);
+                })
+                .then(function (result) {
+                    computerScience = result[0];
+                    return QuizService.createQuiz({
+                        name: 'Calculus',
+                        topic: mathematics
+                    }, result[1]);
+                })
+                .then(function (result) {
+                    calculus = result[0];
+                    return QuizService.createQuiz({
+                        name: 'Statistics',
+                        topic: science
+                    }, result[1]);
+                })
+                .then(function (result) {
+                    statistics = result[0];
+                })
+                .done(function () { done(); });
+        });
+
+        it('should be able to move a quiz from one topic to another', function (done) {
+            // Move "Computer Science" from Science to Mathematics
+            computerScience.topic = mathematics;
+            return computerScience.saveQ()
+                .then(function () {
+                    // Reload Science and make sure the quiz is no longer there
+                    return Q(Topic.findById(science._id).exec());
+                })
+                .then(function (science) {
+                    expect(science.quizzes).not.to.contain(computerScience._id);
+
+                    // Reload Mathematics and make sure Computer Science is there
+                    return Q(Topic.findById(mathematics._id).populate('quizzes').exec());
+                })
+                .then(function (mathematics) {
+                    expect(_.pluck(mathematics.quizzes, 'name')).to.deep.equal([
+                        'Calculus',
+                        'Computer Science'
+                    ]);
+                })
+                .done(function () { done(); });
+        });
+
+        it("should be able to move a quiz and also specify its position", function (done) {
+            // Move "Statistics" from Science to Mathematics, and insert it at position 1
+            statistics.topic = mathematics;
+            statistics.position = 1;
+            return statistics.saveQ()
+                .then(function () {
+                    // Reload Science and make sure the quiz is no longer there
+                    return Q(Topic.findById(science._id).exec());
+                })
+                .then(function (science) {
+                    expect(science.quizzes).not.to.contain(statistics._id);
+
+                    // Reload Mathematics and make sure Computer Science is there, and in the correct
+                    // position
+                    return Q(Topic.findById(mathematics._id).populate('quizzes').exec());
+                })
+                .then(function (mathematics) {
+                    expect(_.pluck(mathematics.quizzes, 'name')).to.deep.equal([
+                        'Calculus',
+                        'Statistics',
+                        'Computer Science'
+                    ]);
                 })
                 .done(function () { done(); });
         });
