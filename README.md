@@ -39,7 +39,7 @@ The app should now be running on port 3000.  You should be able to connect to ht
 
 swot uses the following testing frameworks:
 
-- [mocha](http://visionmedia.github.io/mocha/): Test runner.
+- [mocha](http://mochajs.org/): Test runner.
 - [chai](http://chaijs.com/): Assertion library. swot uses [BDD style](http://chaijs.com/api/bdd/) assertions using `expect`.
 - [sinon](): Mock/stub framework.
 - [Protractor](https://github.com/angular/protractor): Framework for writing end-to-end (e2e) tests.
